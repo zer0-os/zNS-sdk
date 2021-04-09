@@ -1,6 +1,6 @@
 # Wilder World MVP
 
-The scope of these stories will be fulfilling the web3 middleware needs of the [Wilder World](https://www.wilderworld.com/) minimally viable product (MVP) (see [Figma](https://www.figma.com/file/5bOkQKkrQ2jCZR6N3oUCMj/ZNS-Front-End?node-id=3151%3A12)). They are ordered by priority
+The scope of these stories will be fulfilling the web3 middleware needs of the [Wilder World](https://www.wilderworld.com/) minimally viable product (MVP) (see [Figma](https://www.figma.com/file/5bOkQKkrQ2jCZR6N3oUCMj/ZNS-Front-End?node-id=3151%3A12)). They are ordered by priority.
 
 ## Developer
 
