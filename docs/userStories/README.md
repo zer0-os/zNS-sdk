@@ -10,4 +10,6 @@ Here is our user story template:
 As {who} {when} {where}, I {want} because {why}
 
 Current user story categories:
-- [Wild World MVP](wilderWorldMvp.md)
+- [Wild World MVP #1](wilderWorldMvp1.md)
+- [Wild World MVP #2](wilderWorldMvp2.md)
+- [Wild World MVP #3](wilderWorldMvp3.md)
