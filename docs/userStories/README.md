@@ -11,5 +11,5 @@ As {who} {when} {where}, I {want} because {why}
 
 Current user story categories:
 - [Wild World MVP #1](wilderWorldMvp1.md)
-- [Wild World MVP #2](wilderWorldMvp2.md)
-- [Wild World MVP #3](wilderWorldMvp3.md)
+- Wild World MVP #2 (TBD)
+- Wild World MVP #3 (TBD)
