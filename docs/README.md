@@ -6,13 +6,15 @@ This documentation is intended to fulfill [developer user story #1](userStories/
 
 The SDK will be organized as a [npm package](https://docs.npmjs.com/packages-and-modules) under a [Zer0 organization](https://docs.npmjs.com/creating-an-organization), such as the following:
 `
-@zer0/zNS-sdk-js
+@zer0/zNS/sdk-js
 `
+
+// TO-DO: Figure out whether Apollo Client can be truly decoupled from React or if this SDK will inevitably be a React SDK
+
 As more functionality is added that broadens the scope of the SDK, it will eventually be broken out into multiple SDKs, such as:
 `
-@zer0/zNS-sdk-js
-@zer0/zNS-sdk-react
-@zer0/wilder-world/sdk-js
+@zer0/zNS/sdk-js
+@zer0/zNS/sdk-react
 @zer0/...
 `
 
@@ -20,34 +22,37 @@ As more functionality is added that broadens the scope of the SDK, it will event
 
 The root level context can be initialized explicitly in JavaScript: 
 ```
-const zns = new ZnsSdk({
-    subgraph: new SubgraphProvider({
-      provider: "url to the hosted service"
-      // in the future, this class can be upgraded to support queries on The Graph Network
-    }),
-    ethereum: new EthereumProvider({
-      provider, // "rpc" | jsProvider /*window.ethereum*/
-      signer?: // address | accIndex | Signer (priv key)
-      // Reference: https://github.com/Web3-API/monorepo/blob/6a84f6875f7b6d9ca3e283b796f1c70f9eb6185b/packages/js/plugins/ethereum/src/index.ts#L20-L36
-    })
-  });
+    import { Sdk } from "@zer0/zNS/sdk-js"
+    const zns = new Sdk({
+        demoMode: false, // Uses mock data for all operations
+        ethereum: new EthereumProvider({
+            provider, // "rpc" | jsProvider /*window.ethereum*/
+            signer?: // address | accIndex | Signer (priv key)
+            // Reference: https://github.com/Web3-API/monorepo/blob/6a84f6875f7b6d9ca3e283b796f1c70f9eb6185b/packages/js/plugins/ethereum/src/index.ts#L20-L36
+        }),
+        subgraph: new SubgraphProvider({
+            provider: "url to the hosted service"
+            // in the future, this class can be upgraded to support queries on The Graph Network
+        }),
+    });
 ```
 
 To make it easy for users of the SDK, default providers are constructed if no configuration or explicit initialization is done (fulfills [developer user story #2](userStories/wilderWorldMvp1.md)):
 ```
-export const mainnetZnsSdk = (ethProvider: ExternalProvider) => new ZnsSdk({
-    subgraph: new SubgraphProvider({
-        provider: "url to the hosted service"
-    }),
-    ethereum: new EthereumProvider({
-        provider: ethProvider
+    export const mainnetZnsSdk = (ethProvider: ExternalProvider) => new ZnsSdk({
+        demoMode: false,
+        ethereum: new EthereumProvider({
+            provider: ethProvider
+        }),
+        subgraph: new SubgraphProvider({
+            provider: "url to the hosted service"
+        }),
     })
-})
 ```
 
 For domains, as an example, the simplest initialization is done in the following manner: 
 ```
-    import { Domain, mainnetZnsSdk } from "@zer0/zNS-sdk-js"
+    import { Domain, mainnetZnsSdk } from "@zer0/zNS/sdk-js"
     const sdk = mainnetZnsSdk(window.ethereum); // Pass in Ethereum provider here
     let domain: Domain = new Domain(sdk, "0xID");   // Note: initializing domains does not query the subgraph
 ```
@@ -69,7 +74,7 @@ This is an example of the constructor being used for domains:
 Wallet connection will be provided via a separate React SDK so as not to couple the JavaScript SDK to React libraries (fulfills [developer user story #3](userStories/wilderWorldMvp1.md)):
 ```
     import { connectZns } from "@zer0/zNS-sdk-react";
-    import { mainnetZnsSdk } from "@zer0/zNS-sdk-js"
+    import { mainnetZnsSdk } from "@zer0/zNS/sdk-js"
     
     const provider = await connectZns() // pop-up the React web3 connect modal w/ all the supported options (ledger, metamask, etc)
     const sdk = mainnetZnsSdk(window.ethereum);
@@ -78,7 +83,7 @@ Wallet connection will be provided via a separate React SDK so as not to couple 
 ## Reading
 Domains can be consumed in the following manner: 
 ```
-    import { Domain, mainnetZnsSdk } from "@zer0/zNS-sdk-js"
+    import { Domain, mainnetZnsSdk } from "@zer0/zNS/sdk-js"
     const sdk = mainnetZnsSdk(window.ethereum);
     let initializedDomain: Domain = new Domain(sdk, "0xID");    // Note: initializing domains does not query the subgraph
     let queriedDomain = await domain.getDomain();               // Queried domains query the subgraph
@@ -89,6 +94,13 @@ Domains can be consumed in the following manner:
     }
 ```
 
+// TO-DO: Define [subscriptions](https://www.apollographql.com/docs/react/data/subscriptions/)
+
+// TO-DO: Define [polling](https://www.apollographql.com/docs/react/data/queries/#polling)
+
+// TO-DO: Finish defining [queries](https://www.apollographql.com/docs/react/data/queries/) and [refetching](https://www.apollographql.com/docs/react/data/queries/#refetching)
+
+Domain data can be obtained on demand via read methods found on the `Domain` class:
 ```
     class Domain {
         //...        
@@ -96,6 +108,7 @@ Domains can be consumed in the following manner:
             return getDomain(this.sdk, this.id, this.mockData);
         }
 
+        // if mockData is true, the function will not make subgraph queries or web3 transactions
         static getDomain(sdk: ZnsSdk, id: string, bool mockData = false) {
             // TODO:
             // - do a "where" query to the subgraph
@@ -127,6 +140,31 @@ Domains can be consumed in the following manner:
     
             return new Domain(zns, data.id/*, ...*/);
         }
+        //...        
+    }
+``` 
+
+Account data can be obtained on demand via read methods found on the `Account` class:
+```
+    class Account {
+        //...        
+        static getAccount() {
+            return getDomain(this.sdk, this.id, this.mockData);
+        }
+
+        static getAccount(sdk: ZnsSdk, id: string, bool mockData = false) {
+            // TODO:
+            // - do a "where" query to the subgraph
+            data = {
+                accounts(where: { id: $id }) {
+                    id
+                    }
+                }
+            // Maybe get all the neccesary fields here using a fragment
+    
+            return new Domain(zns, data.id);
+        }
+
         //...        
     }
 ```
