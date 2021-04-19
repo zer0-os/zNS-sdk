@@ -1,6 +1,6 @@
 # zNS-SDK
 
-This documentation is intended to fulfill [developer user story #1](userStories/wilderWorldMvp1.md).
+This documentation is intended to fulfill [developer user story #1](userStories/wilderWorldMvp1.md) by developing a JavaScript SDK using [Apollo Core Client](https://www.apollographql.com/docs/react/api/core/ApolloClient/) and the [Ethers Project](https://github.com/ethers-io/ethers.js/).
 
 ## Package
 
@@ -9,12 +9,12 @@ The SDK will be organized as a [npm package](https://docs.npmjs.com/packages-and
 @zer0/zNS/sdk-js
 `
 
-// TO-DO: Figure out whether Apollo Client can be truly decoupled from React or if this SDK will inevitably be a React SDK
-
 As more functionality is added that broadens the scope of the SDK, it will eventually be broken out into multiple SDKs, such as:
 `
 @zer0/zNS/sdk-js
 @zer0/zNS/sdk-react
+@zer0/zAuction/sdk-js
+@zer0/zDAO/sdk-js
 @zer0/...
 `
 
@@ -94,11 +94,11 @@ Domains can be consumed in the following manner:
     }
 ```
 
-// TO-DO: Define [subscriptions](https://www.apollographql.com/docs/react/data/subscriptions/)
+// TO-DO: Define [observables](https://www.apollographql.com/docs/react/api/core/ApolloClient/#ApolloClient.watchQuery)
 
-// TO-DO: Define [polling](https://www.apollographql.com/docs/react/data/queries/#polling)
+// TO-DO: Define [polling](https://www.apollographql.com/docs/react/api/core/ApolloClient/#ApolloClient.query)
 
-// TO-DO: Finish defining [queries](https://www.apollographql.com/docs/react/data/queries/) and [refetching](https://www.apollographql.com/docs/react/data/queries/#refetching)
+// TO-DO: Finish defining [queries](https://www.apollographql.com/docs/react/api/core/ApolloClient/#ApolloClient.query)
 
 Domain data can be obtained on demand via read methods found on the `Domain` class:
 ```
