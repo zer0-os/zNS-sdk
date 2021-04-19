@@ -95,6 +95,14 @@ Domains can be consumed in the following manner:
 ```
 
 // TO-DO: Define [observables](https://www.apollographql.com/docs/react/api/core/ApolloClient/#ApolloClient.watchQuery)
+Observable domain events can be consumed like this: 
+```
+import { sdk } from 'mySdkInitialization';
+import { Observable } from 'rxjs';
+let observer: Observable = sdk.observeDomainTransfers();
+observer.subscribe(x => console.log(x), (e)=>console.log(e), 
+   ()=>console.log("Observable is complete"));
+```
 
 // TO-DO: Define [polling](https://www.apollographql.com/docs/react/api/core/ApolloClient/#ApolloClient.query)
 
