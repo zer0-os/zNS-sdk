@@ -38,10 +38,10 @@ export const performQuery = async <T, TCacheShape = {}>(
  * @returns Domain type
  */
 export const convertDomainDtoToDomain = (e: DomainDto): Domain => {
-  const domain = {
+  const domain: Domain = {
     id: e.id,
     name: e.name,
-    parent: e.parent,
+    parentId: e.parent.id,
     owner: e.owner.id,
     minter: e.minter.id,
     metadataUri: e.metadata,

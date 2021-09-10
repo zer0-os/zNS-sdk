@@ -1,5 +1,7 @@
 import * as subgraph from "./subgraph";
-import { Domain } from "./types";
+import { Domain, DomainTradingData } from "./types";
+import * as zAuction from "@zero-tech/zauction-sdk";
+import { getSubdomainTradingData } from "./trading";
 
 export * from "./types";
 
@@ -30,9 +32,15 @@ export interface Instance {
    * @param domainId (parent) domain id
    */
   getSubdomainsById(domainId: string): Promise<Domain[]>;
+
+  getSubdomainTradingData(domainId: string): Promise<DomainTradingData>;
 }
 
-export const createInstance = (subgraphUri: string): Instance => {
+export const createInstance = (
+  znsRegistryAddress: string,
+  subgraphUri: string,
+  zAuctionInstance: zAuction.Instance
+): Instance => {
   const subgraphClient = subgraph.createClient(subgraphUri);
 
   const instance: Instance = {
@@ -40,6 +48,13 @@ export const createInstance = (subgraphUri: string): Instance => {
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
     getSubdomainsById: subgraphClient.getSubdomainsById,
+    getSubdomainTradingData: (domainId: string) =>
+      getSubdomainTradingData(
+        domainId,
+        subgraphClient.getSubdomainsById,
+        (domainId: string) =>
+          zAuctionInstance.listSales(znsRegistryAddress, domainId)
+      ),
   };
 
   return instance;
