@@ -1,7 +1,7 @@
 import * as subgraph from "./subgraph";
-import { Domain, DomainTradingData } from "./types";
+import * as actions from "./actions";
+import { Domain, DomainEvent, DomainTradingData } from "./types";
 import * as zAuction from "@zero-tech/zauction-sdk";
-import { getSubdomainTradingData } from "./trading";
 
 export * from "./types";
 
@@ -33,6 +33,16 @@ export interface Instance {
    */
   getSubdomainsById(domainId: string): Promise<Domain[]>;
 
+  /**
+   * Gets all domain events for a domain
+   * @param domainId Domain id to get events for
+   */
+  getDomainEvents(domainId: string): Promise<DomainEvent[]>;
+
+  /**
+   * Gets trading data for a sub domain.
+   * @param domainId Domain id to get subdomain trading data for
+   */
   getSubdomainTradingData(domainId: string): Promise<DomainTradingData>;
 }
 
@@ -48,8 +58,14 @@ export const createInstance = (
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
     getSubdomainsById: subgraphClient.getSubdomainsById,
+    getDomainEvents: (domainId: string) =>
+      actions.getDomainEvents(
+        domainId,
+        subgraphClient.getDomainMintedEvent,
+        subgraphClient.getDomainTransferEvents
+      ),
     getSubdomainTradingData: (domainId: string) =>
-      getSubdomainTradingData(
+      actions.getSubdomainTradingData(
         domainId,
         subgraphClient.getSubdomainsById,
         (domainId: string) =>

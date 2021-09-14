@@ -1,6 +1,6 @@
-import { getSubdomainTradingData } from "../src/trading";
 import * as subgraph from "../src/subgraph";
 import * as zAuction from "@zero-tech/zauction-sdk";
+import { getSubdomainTradingData } from "../src/actions";
 
 const main = async () => {
   const domainId =

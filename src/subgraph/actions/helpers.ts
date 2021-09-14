@@ -15,7 +15,7 @@ import { DomainDto } from "../types";
  * @param variables Variables for the query
  * @returns Query Result
  */
-export const performQuery = async <T, TCacheShape = {}>(
+export const performQuery = async <T, TCacheShape = unknown>(
   apolloClient: ApolloClient<TCacheShape>,
   query: DocumentNode,
   variables?: OperationVariables

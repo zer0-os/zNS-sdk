@@ -131,3 +131,28 @@ export const getDomainsByOwner = gql`
     }
   }
 `;
+
+export const getDomainTransfers = gql`
+  query DomainTransfers($id: ID!) {
+    domainTransferreds(where: { id: $id }) {
+      timestamp
+      from {
+        id
+      }
+      to {
+        id
+      }
+    }
+  }
+`;
+
+export const getDomainMintEvent = gql`
+  query DomainMinted($id: ID!) {
+    domainMinted(id: $id) {
+      timestamp
+      minter {
+        id
+      }
+    }
+  }
+`;

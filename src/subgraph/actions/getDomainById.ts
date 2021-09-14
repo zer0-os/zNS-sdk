@@ -7,7 +7,7 @@ import { convertDomainDtoToDomain, performQuery } from "./helpers";
 export const getDomainById = async <T>(
   apolloClient: ApolloClient<T>,
   domainId: string
-) => {
+): Promise<Domain> => {
   const queryResult = await performQuery<DomainQueryDto>(
     apolloClient,
     queries.getDomainById,

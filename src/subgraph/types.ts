@@ -6,8 +6,11 @@ export interface ParentDomainDto {
   id: string;
 }
 
-export interface DomainDto {
+export interface DomainIdDto {
   id: string;
+}
+
+export interface DomainDto extends DomainIdDto {
   name: string;
   parent: ParentDomainDto;
   owner: AccountDto;

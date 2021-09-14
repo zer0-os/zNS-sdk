@@ -1,6 +1,6 @@
 import * as apollo from "@apollo/client/core";
 import fetch from "cross-fetch";
-import { Domain } from "../types";
+import { Domain, DomainMintEvent, DomainTransferEvent } from "../types";
 import * as actions from "./actions";
 
 export interface SubgraphClient {
@@ -8,9 +8,13 @@ export interface SubgraphClient {
   getDomainsByName(name: string): Promise<Domain[]>;
   getDomainsByOwner(owner: string): Promise<Domain[]>;
   getSubdomainsById(domainId: string): Promise<Domain[]>;
+  getDomainTransferEvents(domainId: string): Promise<DomainTransferEvent[]>;
+  getDomainMintedEvent(domainId: string): Promise<DomainMintEvent>;
 }
 
-const createApolloClient = (subgraphUri: string) => {
+const createApolloClient = (
+  subgraphUri: string
+): apollo.ApolloClient<apollo.NormalizedCacheObject> => {
   const client = new apollo.ApolloClient({
     link: new apollo.HttpLink({ uri: subgraphUri, fetch }),
     cache: new apollo.InMemoryCache(),
@@ -19,7 +23,7 @@ const createApolloClient = (subgraphUri: string) => {
   return client;
 };
 
-export const createClient = (subgraphUri: string) => {
+export const createClient = (subgraphUri: string): Promise<SubgraphClient> => {
   const apolloClient = createApolloClient(subgraphUri);
 
   const subgraphClient: SubgraphClient = {
@@ -38,6 +42,21 @@ export const createClient = (subgraphUri: string) => {
     getSubdomainsById: async (domainId: string): Promise<Domain[]> => {
       const domains = await actions.getSubdomainsById(apolloClient, domainId);
       return domains;
+    },
+    getDomainTransferEvents: async (
+      domainId: string
+    ): Promise<DomainTransferEvent[]> => {
+      const events = await actions.getDomainTransferEvents(
+        apolloClient,
+        domainId
+      );
+      return events;
+    },
+    getDomainMintedEvent: async (
+      domainId: string
+    ): Promise<DomainMintEvent> => {
+      const event = await actions.getDomainMintEvent(apolloClient, domainId);
+      return event;
     },
   };
 

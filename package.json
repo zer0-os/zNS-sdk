@@ -10,15 +10,18 @@
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.ts' --exit",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit",
     "prepublish": "yarn build"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "7.0.1",
+    "@types/chai": "4.2.21",
     "@types/mocha": "9.0.0",
     "@types/node": "16.7.13",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
+    "@zero-tech/zauction-sdk": "0.0.1",
+    "chai": "4.3.4",
     "eslint": "7.32.0",
     "eslint-plugin-prettier": "4.0.0",
     "mocha": "9.1.1",
@@ -32,9 +35,11 @@
     "@ethersproject/abi": "5.4.1",
     "@ethersproject/bytes": "5.4.0",
     "@ethersproject/providers": "5.4.5",
-    "@zero-tech/zauction-sdk": "0.0.1",
     "cross-fetch": "3.1.4",
     "ethers": "5.4.6",
     "graphql": "15.5.3"
+  },
+  "peerDependencies": {
+    "@zero-tech/zauction-sdk": "^0.0.1"
   }
 }
