@@ -26,8 +26,7 @@ const main = async () => {
     const data = await getSubdomainTradingData(
       domainId,
       znsSubgraphClient.getSubdomainsById,
-      (domainId: string) =>
-        zAuctionInstance.listSales(znsRegistryAddress, domainId)
+      (domainId: string) => zAuctionInstance.listSales(domainId)
     );
 
     console.log(data);

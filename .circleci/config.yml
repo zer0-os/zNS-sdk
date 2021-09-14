@@ -19,17 +19,14 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
-  deploy:
+  publish:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Auth With NPM
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN"
-      - run:
           name: Publish to NPM
-          command: npm publish --access public
+          command: yarn publish --access public --non-interactive
 
 workflows:
   version: 2
@@ -48,7 +45,8 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
-      - deploy:
+      - publish:
+          context: NPM_Publish
           requires:
             - test
           filters:

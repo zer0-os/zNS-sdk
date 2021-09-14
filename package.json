@@ -6,6 +6,9 @@
   "repository": "git@github.com:zer0-os/zNS-sdk.git",
   "author": "zero-tech",
   "license": "MIT",
+  "files": [
+    "lib/"
+  ],
   "scripts": {
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
@@ -20,7 +23,7 @@
     "@types/node": "16.7.13",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
-    "@zero-tech/zauction-sdk": "0.0.1",
+    "@zero-tech/zauction-sdk": "0.0.18",
     "chai": "4.3.4",
     "eslint": "7.32.0",
     "eslint-plugin-prettier": "4.0.0",
@@ -40,6 +43,6 @@
     "graphql": "15.5.3"
   },
   "peerDependencies": {
-    "@zero-tech/zauction-sdk": "^0.0.1"
+    "@zero-tech/zauction-sdk": "^0.0.18"
   }
 }

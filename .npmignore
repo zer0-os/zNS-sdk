@@ -1,0 +1,11 @@
+.circleci/
+.github/
+.eslintignore
+.eslintrc
+.prettierrc
+README.md
+src/
+tsconfig.json
+tsconfig.build.json
+tsconfig.build.tsbuildinfo
+test/

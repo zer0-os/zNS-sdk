@@ -23,7 +23,7 @@ const createApolloClient = (
   return client;
 };
 
-export const createClient = (subgraphUri: string): Promise<SubgraphClient> => {
+export const createClient = (subgraphUri: string): SubgraphClient => {
   const apolloClient = createApolloClient(subgraphUri);
 
   const subgraphClient: SubgraphClient = {

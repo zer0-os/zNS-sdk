@@ -47,7 +47,6 @@ export interface Instance {
 }
 
 export const createInstance = (
-  znsRegistryAddress: string,
   subgraphUri: string,
   zAuctionInstance: zAuction.Instance
 ): Instance => {
@@ -68,8 +67,7 @@ export const createInstance = (
       actions.getSubdomainTradingData(
         domainId,
         subgraphClient.getSubdomainsById,
-        (domainId: string) =>
-          zAuctionInstance.listSales(znsRegistryAddress, domainId)
+        (domainId: string) => zAuctionInstance.listSales(domainId)
       ),
   };
 
