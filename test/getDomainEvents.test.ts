@@ -2,6 +2,7 @@ import { DomainEventType, DomainMintEvent, DomainTransferEvent } from "../src";
 import { getDomainEvents } from "../src/actions";
 
 import { expect } from "chai";
+import Sinon from "sinon";
 
 describe("getDomainEvents", () => {
   let mintEvent: DomainMintEvent = {
@@ -11,14 +12,6 @@ describe("getDomainEvents", () => {
   };
 
   let transferEvents: DomainTransferEvent[] = [];
-
-  const getMintEventsStub = async () => {
-    return mintEvent;
-  };
-
-  const getTransferEventsStub = async () => {
-    return transferEvents;
-  };
 
   it("Removes the first two transfer events if they have the same timestamp", async () => {
     transferEvents = [
@@ -38,8 +31,12 @@ describe("getDomainEvents", () => {
 
     const events = await getDomainEvents(
       "testid",
-      getMintEventsStub,
-      getTransferEventsStub
+      {
+        getBidEvents: Sinon.fake.returns([]),
+        getMintEvents: Sinon.fake.returns(mintEvent),
+        getTransferEvents: Sinon.fake.returns(transferEvents);
+        getSaleEvents: Sinon.fake.returns([])
+      }
     );
 
     expect(events.length).eq(1);
@@ -57,8 +54,12 @@ describe("getDomainEvents", () => {
 
     const events = await getDomainEvents(
       "testid",
-      getMintEventsStub,
-      getTransferEventsStub
+      {
+        getBidEvents: Sinon.fake.returns([]),
+        getMintEvents: Sinon.fake.returns(mintEvent),
+        getTransferEvents: Sinon.fake.returns(transferEvents);
+        getSaleEvents: Sinon.fake.returns([])
+      }
     );
 
     expect(events.length).eq(2);
@@ -88,8 +89,12 @@ describe("getDomainEvents", () => {
 
     const events = await getDomainEvents(
       "testid",
-      getMintEventsStub,
-      getTransferEventsStub
+      {
+        getBidEvents: Sinon.fake.returns([]),
+        getMintEvents: Sinon.fake.returns(mintEvent),
+        getTransferEvents: Sinon.fake.returns(transferEvents);
+        getSaleEvents: Sinon.fake.returns([])
+      }
     );
 
     expect(events[1].timestamp).eq("2");
