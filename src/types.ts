@@ -17,6 +17,8 @@ export interface Domain {
 export enum DomainEventType {
   mint,
   transfer,
+  bid,
+  sale,
 }
 
 export interface DomainEvent {
@@ -31,6 +33,17 @@ export interface DomainTransferEvent extends DomainEvent {
 
 export interface DomainMintEvent extends DomainEvent {
   minter: string;
+}
+
+export interface DomainBidEvent extends DomainEvent {
+  bidder: string;
+  amount: string;
+}
+
+export interface DomainSaleEvent extends DomainEvent {
+  buyer: string;
+  seller: string;
+  amount: string;
 }
 
 export interface DomainTradingData {

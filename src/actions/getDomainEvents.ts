@@ -1,7 +1,22 @@
-import { DomainEvent, DomainMintEvent, DomainTransferEvent } from "../types";
+import {
+  DomainBidEvent,
+  DomainEvent,
+  DomainMintEvent,
+  DomainSaleEvent,
+  DomainTransferEvent,
+} from "../types";
 
 type GetMintEvent = (domainId: string) => Promise<DomainMintEvent>;
 type GetTransferEvents = (domainId: string) => Promise<DomainTransferEvent[]>;
+type GetBidEvents = (domainId: string) => Promise<DomainBidEvent[]>;
+type GetSaleEvents = (domainId: string) => Promise<DomainSaleEvent[]>;
+
+export interface DomainEventFetchers {
+  getMintEvents: GetMintEvent;
+  getTransferEvents: GetTransferEvents;
+  getBidEvents: GetBidEvents;
+  getSaleEvents: GetSaleEvents;
+}
 
 /**
  * Returns a list of all events for a domain
@@ -12,13 +27,12 @@ type GetTransferEvents = (domainId: string) => Promise<DomainTransferEvent[]>;
  */
 export const getDomainEvents = async (
   domainId: string,
-  getMintEvents: GetMintEvent,
-  getTransferEvents: GetTransferEvents
+  fetchers: DomainEventFetchers
 ): Promise<DomainEvent[]> => {
   let events: DomainEvent[] = [];
 
-  const mintEvent = await getMintEvents(domainId);
-  const transferEvents = await getTransferEvents(domainId);
+  const mintEvent = await fetchers.getMintEvents(domainId);
+  const transferEvents = await fetchers.getTransferEvents(domainId);
 
   /**
    * If the first two transfer events are on the same block it means that it was
@@ -31,7 +45,11 @@ export const getDomainEvents = async (
     }
   }
 
-  events = [mintEvent, ...transferEvents];
+  const saleEvents = await fetchers.getSaleEvents(domainId);
+  const bidEvents = await fetchers.getBidEvents(domainId);
+
+  events = [mintEvent];
+  events = events.concat(transferEvents, saleEvents, bidEvents);
 
   events = events.sort((a, b) => {
     return Number(a.timestamp) - Number(b.timestamp);

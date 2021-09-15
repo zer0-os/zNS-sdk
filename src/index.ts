@@ -1,6 +1,6 @@
 import * as subgraph from "./subgraph";
 import * as actions from "./actions";
-import * as zAuction from "@zero-tech/zauction-sdk";
+import * as zAuction from "./zAuction";
 import { Domain, DomainEvent, DomainTradingData, zAuctionRoute } from "./types";
 import { getZAuctionInstanceForDomain } from "./utilities";
 
@@ -71,12 +71,20 @@ export const createInstance = (config: Config): Instance => {
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
     getSubdomainsById: subgraphClient.getSubdomainsById,
-    getDomainEvents: (domainId: string) =>
-      actions.getDomainEvents(
+    getDomainEvents: async (domainId: string) => {
+      const zAuctionInstance = await getZAuctionInstanceForDomain(
         domainId,
-        subgraphClient.getDomainMintedEvent,
-        subgraphClient.getDomainTransferEvents
-      ),
+        config.zAuctionRoutes,
+        domainIdToDomainName
+      );
+
+      return actions.getDomainEvents(domainId, {
+        getMintEvents: subgraphClient.getDomainMintedEvent,
+        getTransferEvents: subgraphClient.getDomainTransferEvents,
+        getBidEvents: zAuction.getBidEventsFunction(zAuctionInstance),
+        getSaleEvents: zAuction.getSaleEventsFunction(zAuctionInstance),
+      });
+    },
     getZAuctionInstanceForDomain: (domainId: string) =>
       getZAuctionInstanceForDomain(
         domainId,
