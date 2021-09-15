@@ -1,9 +1,15 @@
 import * as subgraph from "./subgraph";
 import * as actions from "./actions";
-import { Domain, DomainEvent, DomainTradingData } from "./types";
 import * as zAuction from "@zero-tech/zauction-sdk";
+import { Domain, DomainEvent, DomainTradingData, zAuctionRoute } from "./types";
+import { getZAuctionInstanceForDomain } from "./utilities";
 
 export * from "./types";
+
+export interface Config {
+  subgraphUri: string;
+  zAuctionRoutes: zAuctionRoute[];
+}
 
 /**
  * An instance of the zNS SDK
@@ -40,17 +46,25 @@ export interface Instance {
   getDomainEvents(domainId: string): Promise<DomainEvent[]>;
 
   /**
+   * Gets the zAuction Instance for a domain.
+   * @param domainId Domain id to fetch for
+   */
+  getZAuctionInstanceForDomain(domainId: string): Promise<zAuction.Instance>;
+
+  /**
    * Gets trading data for a sub domain.
    * @param domainId Domain id to get subdomain trading data for
    */
   getSubdomainTradingData(domainId: string): Promise<DomainTradingData>;
 }
 
-export const createInstance = (
-  subgraphUri: string,
-  zAuctionInstance: zAuction.Instance
-): Instance => {
-  const subgraphClient = subgraph.createClient(subgraphUri);
+export const createInstance = (config: Config): Instance => {
+  const subgraphClient = subgraph.createClient(config.subgraphUri);
+
+  const domainIdToDomainName = async (domainId: string) => {
+    const domainData = await subgraphClient.getDomainById(domainId);
+    return domainData.id;
+  };
 
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
@@ -63,12 +77,28 @@ export const createInstance = (
         subgraphClient.getDomainMintedEvent,
         subgraphClient.getDomainTransferEvents
       ),
-    getSubdomainTradingData: (domainId: string) =>
-      actions.getSubdomainTradingData(
+    getZAuctionInstanceForDomain: (domainId: string) =>
+      getZAuctionInstanceForDomain(
+        domainId,
+        config.zAuctionRoutes,
+        domainIdToDomainName
+      ),
+    getSubdomainTradingData: async (
+      domainId: string
+    ): Promise<DomainTradingData> => {
+      const zAuctionInstance = await getZAuctionInstanceForDomain(
+        domainId,
+        config.zAuctionRoutes,
+        domainIdToDomainName
+      );
+
+      const tradingData = await actions.getSubdomainTradingData(
         domainId,
         subgraphClient.getSubdomainsById,
         (domainId: string) => zAuctionInstance.listSales(domainId)
-      ),
+      );
+      return tradingData;
+    },
   };
 
   return instance;

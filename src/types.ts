@@ -1,3 +1,10 @@
+import * as zAuction from "@zero-tech/zauction-sdk";
+
+export interface zAuctionRoute {
+  uriPattern: string;
+  instance: zAuction.Instance;
+}
+
 export interface Domain {
   id: string;
   name: string;
