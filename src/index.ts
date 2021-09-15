@@ -1,5 +1,6 @@
 import * as subgraph from "./subgraph";
 import * as actions from "./actions";
+import * as zAuction from "@zero-tech/zauction-sdk";
 import { Domain, DomainEvent, DomainTradingData, zAuctionRoute } from "./types";
 import { getZAuctionInstanceForDomain } from "./utilities";
 
@@ -45,6 +46,12 @@ export interface Instance {
   getDomainEvents(domainId: string): Promise<DomainEvent[]>;
 
   /**
+   * Gets the zAuction Instance for a domain.
+   * @param domainId Domain id to fetch for
+   */
+  getZAuctionInstanceForDomain(domainId: string): Promise<zAuction.Instance>;
+
+  /**
    * Gets trading data for a sub domain.
    * @param domainId Domain id to get subdomain trading data for
    */
@@ -53,6 +60,11 @@ export interface Instance {
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
+
+  const domainIdToDomainName = async (domainId: string) => {
+    const domainData = await subgraphClient.getDomainById(domainId);
+    return domainData.id;
+  };
 
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
@@ -65,14 +77,19 @@ export const createInstance = (config: Config): Instance => {
         subgraphClient.getDomainMintedEvent,
         subgraphClient.getDomainTransferEvents
       ),
-    getSubdomainTradingData: async (domainId: string) => {
+    getZAuctionInstanceForDomain: (domainId: string) =>
+      getZAuctionInstanceForDomain(
+        domainId,
+        config.zAuctionRoutes,
+        domainIdToDomainName
+      ),
+    getSubdomainTradingData: async (
+      domainId: string
+    ): Promise<DomainTradingData> => {
       const zAuctionInstance = await getZAuctionInstanceForDomain(
         domainId,
         config.zAuctionRoutes,
-        async (domainId: string) => {
-          const domainData = await subgraphClient.getDomainById(domainId);
-          return domainData.id;
-        }
+        domainIdToDomainName
       );
 
       const tradingData = await actions.getSubdomainTradingData(
