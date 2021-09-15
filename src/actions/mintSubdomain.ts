@@ -78,7 +78,8 @@ export const mintSubdomain = async (
       params.lockOnCreate
     );
   } catch (e) {
-    if (e.code === 4001) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((e as any).code === 4001) {
       throw Error(`User rejected transaction.`);
     }
 
