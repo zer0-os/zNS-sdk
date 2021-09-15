@@ -1,14 +1,26 @@
 import * as subgraph from "./subgraph";
+import * as api from "./api";
 import * as actions from "./actions";
 import * as zAuction from "./zAuction";
-import { Domain, DomainEvent, DomainTradingData, zAuctionRoute } from "./types";
+import {
+  Domain,
+  DomainEvent,
+  DomainTradingData,
+  MintSubdomainStatusCallback,
+  SubdomainParams,
+  zAuctionRoute,
+} from "./types";
 import { getZAuctionInstanceForDomain } from "./utilities";
+import { ethers } from "ethers";
+import { getBasicController } from "./contracts";
 
 export * from "./types";
 
 export interface Config {
   subgraphUri: string;
+  apiUri: string;
   zAuctionRoutes: zAuctionRoute[];
+  basicController: string;
 }
 
 /**
@@ -56,10 +68,23 @@ export interface Instance {
    * @param domainId Domain id to get subdomain trading data for
    */
   getSubdomainTradingData(domainId: string): Promise<DomainTradingData>;
+
+  /**
+   * Mints a new subdomain
+   * @param params The subdomain parameters
+   * @param signer The signer (wallet to create sub domain)
+   * @param statusCallback Callback to know when each step completes
+   */
+  mintSubdomain(
+    params: SubdomainParams,
+    signer: ethers.Signer,
+    statusCallback?: MintSubdomainStatusCallback
+  ): Promise<ethers.ContractTransaction>;
 }
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
+  const apiClient = api.createClient(config.apiUri);
 
   const domainIdToDomainName = async (domainId: string) => {
     const domainData = await subgraphClient.getDomainById(domainId);
@@ -106,6 +131,28 @@ export const createInstance = (config: Config): Instance => {
         (domainId: string) => zAuctionInstance.listSales(domainId)
       );
       return tradingData;
+    },
+    mintSubdomain: async (
+      params: SubdomainParams,
+      signer: ethers.Signer,
+      statusCallback?: MintSubdomainStatusCallback
+    ): Promise<ethers.ContractTransaction> => {
+      const basicController = await getBasicController(
+        signer,
+        config.basicController
+      );
+      const owner = await signer.getAddress();
+
+      const tx = await actions.mintSubdomain(
+        params,
+        owner,
+        basicController.registerSubdomainExtended,
+        apiClient.uploadMedia,
+        apiClient.uploadMetadata,
+        statusCallback
+      );
+
+      return tx;
     },
   };
 

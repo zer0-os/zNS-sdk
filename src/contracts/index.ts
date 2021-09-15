@@ -1,0 +1,43 @@
+import { ethers } from "ethers";
+import {
+  BasicController,
+  BasicController__factory,
+  IERC20,
+  IERC20__factory,
+  Registrar,
+  Registrar__factory,
+  StakingController,
+  StakingController__factory,
+} from "./types";
+
+export const getRegistrar = async (
+  web3Provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<Registrar> => {
+  const contract = Registrar__factory.connect(address, web3Provider);
+  return contract;
+};
+
+export const getBasicController = async (
+  web3Provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<BasicController> => {
+  const contract = BasicController__factory.connect(address, web3Provider);
+  return contract;
+};
+
+export const getStakingController = async (
+  web3Provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<StakingController> => {
+  const contract = StakingController__factory.connect(address, web3Provider);
+  return contract;
+};
+
+export const getERC20Contract = async (
+  web3Provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<IERC20> => {
+  const contract = IERC20__factory.connect(address, web3Provider);
+  return contract;
+};

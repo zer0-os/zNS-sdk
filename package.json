@@ -14,6 +14,7 @@
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
     "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit",
+    "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\"",
     "prepublish": "yarn build"
   },
   "devDependencies": {

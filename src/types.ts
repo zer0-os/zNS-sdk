@@ -14,6 +14,14 @@ export interface Domain {
   metadataUri: string;
 }
 
+export interface DomainMetadata {
+  [key: string]: unknown | undefined;
+  image: string;
+  title: string;
+  description: string;
+  previewImage?: string;
+}
+
 export enum DomainEventType {
   mint,
   transfer,
@@ -50,4 +58,25 @@ export interface DomainTradingData {
   lastSale: string;
   lowestSale: string;
   highestSale: string;
+}
+
+export enum MintSubdomainStep {
+  UploadingImage,
+  UploadingMetadata,
+  SubmittingTransaction,
+  Completed,
+}
+
+export type MintSubdomainStatusCallback = (step: MintSubdomainStep) => void;
+
+export interface SubdomainParams {
+  parentId: string;
+  label: string;
+  image: Buffer;
+  previewImage?: Buffer;
+  title: string;
+  description: string;
+  additionalMetadata: Record<string, unknown>;
+  royaltyAmount: string;
+  lockOnCreate: boolean;
 }
