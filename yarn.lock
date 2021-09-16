@@ -632,17 +632,16 @@
   dependencies:
     tslib "^2.3.0"
 
-"@zero-tech/zauction-sdk@0.0.18":
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.0.18.tgz#689f59c596bd8afc62e0026750e0a459474d2d64"
-  integrity sha512-T6GoELPMNPD5Y32OYEUKmjZnzX/UaJtN7Dn4CloVK/E3Xl7S+Ip7nEQZ/q9GAk7RnFAvb/8wAQkuLgqORf9IsA==
+"@zero-tech/zauction-sdk@0.0.19":
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.0.19.tgz#e47f15d12539ff56edc2f329560a1418bef1756e"
+  integrity sha512-VIAfq7E6FFA/HF4crXnWOst83d5pUKBgwRP6DDVvrTjGQDdmunV68uJiJFmL8S3iaasqgaFLVlhLLi8b7FlPzQ==
   dependencies:
     "@apollo/client" "3.4.10"
     "@ethersproject/abi" "5.4.1"
     "@ethersproject/bytes" "5.4.0"
     "@ethersproject/providers" "5.4.5"
     cross-fetch "3.1.4"
-    ethers "5.4.6"
     graphql "15.5.3"
 
 acorn-jsx@^5.3.1:
