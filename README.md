@@ -2,9 +2,9 @@
 
 ## Functionality Requirements
 
-- [ ] Convert domain name to id
+- [x] Convert domain name to id
 - [x] Get Domain data by name
-- [x] Get Domain by name 
+- [x] Get Domain by name
 - [x] Get Domains by Owner
 - [x] Get Subdomains of a domain (by Id)
 - [x] Get Domain Events by id
@@ -26,4 +26,3 @@
 - [ ] Lock Domain
 - [ ] Set Domain Metadata
 - [ ] Set Domain Royalty Amount
-

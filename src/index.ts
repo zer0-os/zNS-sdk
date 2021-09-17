@@ -16,6 +16,9 @@ import { getBasicController } from "./contracts";
 
 export * from "./types";
 
+import * as domains from "./utilities/domains";
+export { domains };
+
 export interface Config {
   subgraphUri: string;
   apiUri: string;
