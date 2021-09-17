@@ -19,9 +19,12 @@
 - [ ] Approve Staking Request
 - [ ] View All staking requests created by a user
 - [ ] Fulfill Staking Request
-- [ ] Place a Bid on a Domain
-- [ ] Check Token Approval Status for a Accepting a bid on a Domain
-- [ ] Accept a Bid on a Domain
+- [x] Check Approval of zAuction to place bid
+- [x] Approve zAuction to spend tokens
+- [x] Place a Bid on a Domain
+- [x] Check approval for zAuction to transfer domains
+- [x] Approve zAuction to transfer Domains
+- [x] Accept a Bid on a Domain
 - [ ] Unlock Domain
 - [ ] Lock Domain
 - [ ] Set Domain Metadata
