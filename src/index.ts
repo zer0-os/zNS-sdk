@@ -3,12 +3,12 @@ import * as api from "./api";
 import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
-  Domain,
-  DomainEvent,
+  Config,
   DomainTradingData,
+  Instance,
   MintSubdomainStatusCallback,
+  PlaceBidParams,
   SubdomainParams,
-  zAuctionRoute,
 } from "./types";
 import { getZAuctionInstanceForDomain } from "./utilities";
 import { ethers } from "ethers";
@@ -16,71 +16,9 @@ import { getBasicController } from "./contracts";
 
 export * from "./types";
 
-export interface Config {
-  subgraphUri: string;
-  apiUri: string;
-  zAuctionRoutes: zAuctionRoute[];
-  basicController: string;
-}
-
-/**
- * An instance of the zNS SDK
- */
-export interface Instance {
-  /**
-   * Gets domain data for a domain
-   * @param domainId Id of a domain
-   */
-  getDomainById(domainId: string): Promise<Domain>;
-
-  /**
-   * Finds domains whose name has *name* in their name
-   * @param name domain name search pattern
-   */
-  getDomainsByName(name: string): Promise<Domain[]>;
-
-  /**
-   * Gets all domains owner by an address
-   * @param owner Owner address
-   */
-  getDomainsByOwner(owner: string): Promise<Domain[]>;
-
-  /**
-   * Finds all subdomains of a given domain
-   * @param domainId (parent) domain id
-   */
-  getSubdomainsById(domainId: string): Promise<Domain[]>;
-
-  /**
-   * Gets all domain events for a domain
-   * @param domainId Domain id to get events for
-   */
-  getDomainEvents(domainId: string): Promise<DomainEvent[]>;
-
-  /**
-   * Gets the zAuction Instance for a domain.
-   * @param domainId Domain id to fetch for
-   */
-  getZAuctionInstanceForDomain(domainId: string): Promise<zAuction.Instance>;
-
-  /**
-   * Gets trading data for a sub domain.
-   * @param domainId Domain id to get subdomain trading data for
-   */
-  getSubdomainTradingData(domainId: string): Promise<DomainTradingData>;
-
-  /**
-   * Mints a new subdomain
-   * @param params The subdomain parameters
-   * @param signer The signer (wallet to create sub domain)
-   * @param statusCallback Callback to know when each step completes
-   */
-  mintSubdomain(
-    params: SubdomainParams,
-    signer: ethers.Signer,
-    statusCallback?: MintSubdomainStatusCallback
-  ): Promise<ethers.ContractTransaction>;
-}
+import * as domains from "./utilities/domains";
+import { Bid } from "./zAuction";
+export { domains };
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
@@ -153,6 +91,102 @@ export const createInstance = (config: Config): Instance => {
       );
 
       return tx;
+    },
+    bidding: {
+      needsToApproveZAuctionToSpendTokens: async (
+        domainId: string,
+        account: string,
+        bidAmount: ethers.BigNumber
+      ): Promise<boolean> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          domainId,
+          config.zAuctionRoutes,
+          domainIdToDomainName
+        );
+
+        const allowance = await zAuctionInstance.getZAuctionSpendAllowance(
+          account
+        );
+        const isApproved = allowance.gte(bidAmount);
+        return isApproved;
+      },
+      approveZAuctionToSpendTokens: async (
+        domainId: string,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          domainId,
+          config.zAuctionRoutes,
+          domainIdToDomainName
+        );
+
+        const tx = await zAuctionInstance.approveZAuctionSpendTradeTokens(
+          signer
+        );
+
+        return tx;
+      },
+      placeBid: async (
+        params: PlaceBidParams,
+        signer: ethers.Signer
+      ): Promise<void> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          params.domainId,
+          config.zAuctionRoutes,
+          domainIdToDomainName
+        );
+
+        await zAuctionInstance.placeBid(
+          {
+            tokenId: params.domainId,
+            bidAmount: params.bidAmount.toString(), // perhaps changes this to ethers.BigNumber
+          } as zAuction.NewBidParameters,
+          signer
+        );
+      },
+      needsToApproveZAuctionToTransferNfts: async (
+        domainId: string,
+        account: string
+      ): Promise<boolean> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          domainId,
+          config.zAuctionRoutes,
+          domainIdToDomainName
+        );
+
+        const isApproved =
+          await zAuctionInstance.isZAuctionApprovedToTransferNft(account);
+
+        return isApproved;
+      },
+      approveZAuctionToTransferNfts: async (
+        domainId: string,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          domainId,
+          config.zAuctionRoutes,
+          domainIdToDomainName
+        );
+
+        const tx = await zAuctionInstance.approveZAuctionTransferNft(signer);
+
+        return tx;
+      },
+      acceptBid: async (
+        bid: Bid,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          bid.tokenId,
+          config.zAuctionRoutes,
+          domainIdToDomainName
+        );
+
+        const tx = await zAuctionInstance.acceptBid(bid, signer);
+
+        return tx;
+      },
     },
   };
 
