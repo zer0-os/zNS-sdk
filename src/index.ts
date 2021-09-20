@@ -20,6 +20,9 @@ import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
 export { domains };
 
+import * as configurations from "./configurations";
+export { configurations };
+
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
   const apiClient = api.createClient(config.apiUri);
