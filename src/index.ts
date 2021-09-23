@@ -29,7 +29,7 @@ export const createInstance = (config: Config): Instance => {
 
   const domainIdToDomainName = async (domainId: string) => {
     const domainData = await subgraphClient.getDomainById(domainId);
-    return domainData.id;
+    return domainData.name;
   };
 
   const instance: Instance = {
