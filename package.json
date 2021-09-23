@@ -46,7 +46,7 @@
     "graphql": "15.5.3"
   },
   "peerDependencies": {
-    "@zero-tech/zauction-sdk": "^0.0.20",
+    "@zero-tech/zauction-sdk": ">=0.0.21",
     "ethers": "^5.4.6"
   }
 }
