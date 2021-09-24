@@ -11,7 +11,7 @@ export const getDomainsByOwner = async <T>(
   const queryResult = await performQuery<DomainsQueryDto>(
     apolloClient,
     queries.getDomainsByOwner,
-    { owner }
+    { owner: owner.toLowerCase() }
   );
 
   const queriedDomains = queryResult.data.domains;
