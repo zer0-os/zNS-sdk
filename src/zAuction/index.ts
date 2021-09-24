@@ -32,7 +32,7 @@ export const getSaleEventsFunction = (
     const sales = await instance.listSales(domainId);
     const saleEvents = sales.map((e) => {
       return {
-        type: DomainEventType.bid,
+        type: DomainEventType.sale,
         timestamp: e.timestamp,
         buyer: e.buyer,
         seller: e.seller,
