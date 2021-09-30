@@ -15,6 +15,10 @@ export const getDomainById = async <T>(
   );
 
   const queriedDomain = queryResult.data.domain;
+  if (queriedDomain === null) {
+    throw Error(`No domain found with id ${domainId}`);
+  }
+
   const domain: Domain = convertDomainDtoToDomain(queriedDomain);
   return domain;
 };
