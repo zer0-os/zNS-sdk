@@ -7,18 +7,6 @@ export const getDomainById = gql`
       name
       parent {
         id
-        name
-      }
-      subdomains {
-        id
-        name
-        metadata
-        owner {
-          id
-        }
-        minter {
-          id
-        }
       }
       owner {
         id
@@ -40,18 +28,6 @@ export const getDomainsByName = gql`
       name
       parent {
         id
-        name
-      }
-      subdomains {
-        id
-        name
-        metadata
-        owner {
-          id
-        }
-        minter {
-          id
-        }
       }
       owner {
         id
@@ -68,23 +44,11 @@ export const getDomainsByName = gql`
 
 export const getSubdomainsById = gql`
   query Subdomains($parent: ID!) {
-    domains(where: { parent: $parent }) {
+    domains(where: { parent: $parent }, first: 1000) {
       id
       name
       parent {
         id
-        name
-      }
-      subdomains {
-        id
-        name
-        metadata
-        owner {
-          id
-        }
-        minter {
-          id
-        }
       }
       owner {
         id
@@ -106,18 +70,6 @@ export const getDomainsByOwner = gql`
       name
       parent {
         id
-        name
-      }
-      subdomains {
-        id
-        name
-        metadata
-        owner {
-          id
-        }
-        minter {
-          id
-        }
       }
       owner {
         id

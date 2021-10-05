@@ -139,6 +139,26 @@ export interface Instance {
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
   };
+
+  /**
+   * An assortment of utility functions
+   */
+  utility: {
+    /**
+     * Uploads some media content that is either a video or image to IPFS
+     * and the zNS content api.
+     * @param media Buffer of image or video data
+     * @returns A string which is the URL that the content is uploaded to
+     */
+    uploadMedia(media: Buffer): Promise<string>;
+
+    /**
+     * Uploads an object to IPFS as JSON
+     * @param object Some object
+     * @returns A string which is the URL that the content is uploaded to
+     */
+    uploadObjectAsJson(object: Record<string, unknown>): Promise<string>;
+  };
 }
 
 export interface zAuctionRoute {
