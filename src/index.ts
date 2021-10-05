@@ -4,6 +4,7 @@ import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
   Config,
+  DomainMetadata,
   DomainTradingData,
   Instance,
   MintSubdomainStatusCallback,
@@ -95,6 +96,7 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
+
     bidding: {
       needsToApproveZAuctionToSpendTokens: async (
         domainId: string,
@@ -190,6 +192,14 @@ export const createInstance = (config: Config): Instance => {
 
         return tx;
       },
+    },
+
+    utility: {
+      uploadMedia: async (media: Buffer): Promise<string> =>
+        apiClient.uploadMedia(media),
+      uploadObjectAsJson: async (
+        object: Record<string, unknown>
+      ): Promise<string> => apiClient.uploadObject(object),
     },
   };
 

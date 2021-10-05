@@ -19,7 +19,7 @@ export interface DomainDto extends DomainIdDto {
 }
 
 export interface DomainQueryDto {
-  domain: DomainDto;
+  domain: DomainDto | null;
 }
 
 export interface DomainsQueryDto {
