@@ -221,6 +221,7 @@ export interface DomainTradingData {
   highestSale: string;
   lastBid: string;
   highestBid: string;
+  volume: string; // all time $ sold (sum of all sales)
 }
 
 export enum MintSubdomainStep {

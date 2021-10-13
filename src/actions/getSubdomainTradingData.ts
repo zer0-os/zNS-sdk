@@ -25,6 +25,7 @@ interface InternalDomainTradingData {
   lastSale: TimeAmountPair;
   lastBid: TimeAmountPair;
   highestBid: BigNumber;
+  volume: BigNumber;
 }
 
 const subdomainTradingData = async (
@@ -47,6 +48,7 @@ const subdomainTradingData = async (
     amount: "0",
   };
   let highestBid: BigNumber = BigNumber.from(0);
+  let volume: BigNumber = BigNumber.from(0);
 
   for (const subdomain of subdomains) {
     const data = await domainTradingData(
@@ -75,6 +77,8 @@ const subdomainTradingData = async (
     if (data.highestBid.gt(highestBid)) {
       highestBid = data.highestBid;
     }
+
+    volume = volume.add(data.volume);
   }
 
   const data: InternalDomainTradingData = {
@@ -83,6 +87,7 @@ const subdomainTradingData = async (
     lastSale,
     lastBid,
     highestBid,
+    volume,
   };
 
   return data;
@@ -105,6 +110,7 @@ const domainTradingData = async (
     amount: "0",
   };
   let highestBid: BigNumber = BigNumber.from(0);
+  let volume: BigNumber = BigNumber.from(0);
 
   const sales: DomainSaleData[] = await listSales(domainId);
 
@@ -122,6 +128,8 @@ const domainTradingData = async (
     if (highestSalePrice.lt(salePrice)) {
       highestSalePrice = salePrice;
     }
+
+    volume = volume.add(salePrice);
   }
 
   // Look to see if the most recent sale of this subdomain
@@ -186,12 +194,15 @@ const domainTradingData = async (
     highestBid = subDomainData.highestBid;
   }
 
+  volume = volume.add(subDomainData.volume);
+
   return {
     lowestSalePrice,
     highestSalePrice,
     lastSale,
     lastBid,
     highestBid,
+    volume,
   };
 };
 
@@ -218,6 +229,7 @@ export const getSubdomainTradingData = async (
     highestSale: data.highestSalePrice.toString(),
     lastBid: data.lastBid.amount,
     highestBid: data.highestBid.toString(),
+    volume: data.volume.toString(),
   };
 
   return tradingData;
