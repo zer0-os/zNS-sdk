@@ -43,8 +43,8 @@ export const getDomainsByName = gql`
 `;
 
 export const getSubdomainsById = gql`
-  query Subdomains($parent: ID!) {
-    domains(where: { parent: $parent }, first: 1000) {
+  query Subdomains($parent: ID!, $count: Int!, $skipAmount: Int!) {
+    domains(where: { parent: $parent }, first: $count, skip: $skipAmount) {
       id
       name
       parent {
