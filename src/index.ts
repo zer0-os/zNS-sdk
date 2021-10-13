@@ -33,6 +33,19 @@ export const createInstance = (config: Config): Instance => {
     return domainData.name;
   };
 
+  const listBids = async (domainId: string) => {
+    const zAuctionInstance = await getZAuctionInstanceForDomain(
+      domainId,
+      config.zAuctionRoutes,
+      domainIdToDomainName
+    );
+
+    const bidCollection = await zAuctionInstance.listBids([domainId]);
+    const domainBids = bidCollection[domainId];
+
+    return domainBids;
+  };
+
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
     getDomainsByName: subgraphClient.getDomainsByName,
@@ -70,7 +83,8 @@ export const createInstance = (config: Config): Instance => {
       const tradingData = await actions.getSubdomainTradingData(
         domainId,
         subgraphClient.getSubdomainsById,
-        (domainId: string) => zAuctionInstance.listSales(domainId)
+        (domainId: string) => zAuctionInstance.listSales(domainId),
+        listBids
       );
       return tradingData;
     },

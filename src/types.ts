@@ -219,6 +219,7 @@ export interface DomainTradingData {
   lastSale: string;
   lowestSale: string;
   highestSale: string;
+  lastBid: string;
 }
 
 export enum MintSubdomainStep {

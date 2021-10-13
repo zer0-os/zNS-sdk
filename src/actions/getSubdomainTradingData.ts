@@ -1,3 +1,4 @@
+import { Bid, TokenBidCollection } from "@zero-tech/zauction-sdk";
 import { BigNumber, ethers } from "ethers";
 import { Domain, DomainTradingData } from "..";
 import { Maybe } from "../utilities";
@@ -11,8 +12,9 @@ interface DomainSaleData {
 
 type ListSubdomainsByIdFunction = (domainId: string) => Promise<Domain[]>;
 type ListSalesByIdFunction = (domainId: string) => Promise<DomainSaleData[]>;
+type ListBidsByIdFunction = (domainId: string) => Promise<Bid[]>;
 
-interface LastSale {
+interface TimeAmountPair {
   time: number;
   amount: string;
 }
@@ -20,20 +22,26 @@ interface LastSale {
 interface InternalDomainTradingData {
   lowestSalePrice: BigNumber;
   highestSalePrice: BigNumber;
-  lastSale: LastSale;
+  lastSale: TimeAmountPair;
+  lastBid: TimeAmountPair;
 }
 
 const subdomainTradingData = async (
   domainId: string,
   listSubDomains: ListSubdomainsByIdFunction,
-  listSales: ListSalesByIdFunction
+  listSales: ListSalesByIdFunction,
+  listBids: ListBidsByIdFunction
 ): Promise<InternalDomainTradingData> => {
   // get all sub domains
   const subdomains: Domain[] = await listSubDomains(domainId);
 
   let lowestSalePrice: BigNumber = ethers.constants.MaxUint256;
   let highestSalePrice: BigNumber = BigNumber.from(0);
-  let lastSale: LastSale = {
+  let lastSale: TimeAmountPair = {
+    time: 0,
+    amount: "0",
+  };
+  let lastBid: TimeAmountPair = {
     time: 0,
     amount: "0",
   };
@@ -42,7 +50,8 @@ const subdomainTradingData = async (
     const data = await domainTradingData(
       subdomain.id,
       listSubDomains,
-      listSales
+      listSales,
+      listBids
     );
 
     if (data.lowestSalePrice.lt(lowestSalePrice)) {
@@ -56,12 +65,17 @@ const subdomainTradingData = async (
     if (data.lastSale.time > lastSale.time) {
       lastSale = data.lastSale;
     }
+
+    if (data.lastBid.time > lastBid.time) {
+      lastBid = data.lastSale;
+    }
   }
 
   const data: InternalDomainTradingData = {
     lowestSalePrice,
     highestSalePrice,
     lastSale,
+    lastBid,
   };
 
   return data;
@@ -70,11 +84,16 @@ const subdomainTradingData = async (
 const domainTradingData = async (
   domainId: string,
   listSubDomains: ListSubdomainsByIdFunction,
-  listSales: ListSalesByIdFunction
+  listSales: ListSalesByIdFunction,
+  listBids: ListBidsByIdFunction
 ): Promise<InternalDomainTradingData> => {
   let lowestSalePrice: BigNumber = ethers.constants.MaxUint256;
   let highestSalePrice: BigNumber = BigNumber.from(0);
-  let lastSale: LastSale = {
+  let lastSale: TimeAmountPair = {
+    time: 0,
+    amount: "0",
+  };
+  let lastBid: TimeAmountPair = {
     time: 0,
     amount: "0",
   };
@@ -102,7 +121,7 @@ const domainTradingData = async (
   if (sales[0]) {
     const sale = sales[0];
     const saleTime = Number(sale.timestamp);
-    if (!lastSale || lastSale.time < saleTime) {
+    if (lastSale.time < saleTime) {
       lastSale = {
         time: saleTime,
         amount: sale.saleAmount,
@@ -110,10 +129,23 @@ const domainTradingData = async (
     }
   }
 
+  const bids = await listBids(domainId);
+  if (bids[0]) {
+    const bid = bids[0];
+    const bidTime = Number(bid.timestamp);
+    if (lastBid.time < bidTime) {
+      lastBid = {
+        time: bidTime,
+        amount: bid.amount,
+      };
+    }
+  }
+
   const subDomainData = await subdomainTradingData(
     domainId,
     listSubDomains,
-    listSales
+    listSales,
+    listBids
   );
 
   if (subDomainData.lowestSalePrice.lt(lowestSalePrice)) {
@@ -128,19 +160,30 @@ const domainTradingData = async (
     lastSale = subDomainData.lastSale;
   }
 
+  if (subDomainData.lastBid.time > lastBid.time) {
+    lastBid = subDomainData.lastBid;
+  }
+
   return {
     lowestSalePrice,
     highestSalePrice,
     lastSale,
+    lastBid,
   };
 };
 
 export const getSubdomainTradingData = async (
   domainId: string,
   listSubDomains: ListSubdomainsByIdFunction,
-  listSales: ListSalesByIdFunction
+  listSales: ListSalesByIdFunction,
+  listBids: ListBidsByIdFunction
 ): Promise<DomainTradingData> => {
-  const data = await domainTradingData(domainId, listSubDomains, listSales);
+  const data = await domainTradingData(
+    domainId,
+    listSubDomains,
+    listSales,
+    listBids
+  );
 
   // Format results and default where needed
   const tradingData: DomainTradingData = {
@@ -151,6 +194,7 @@ export const getSubdomainTradingData = async (
         : data.lowestSalePrice
       ).toString() ?? "0",
     highestSale: data.highestSalePrice.toString() ?? "0",
+    lastBid: data.lastBid.amount ?? "0",
   };
 
   return tradingData;
