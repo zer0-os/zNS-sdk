@@ -27,6 +27,7 @@ interface InternalDomainTradingData {
   highestBid: BigNumber;
   volume: BigNumber;
   items: number;
+  holders: string[];
 }
 
 const subdomainTradingData = async (
@@ -51,8 +52,11 @@ const subdomainTradingData = async (
   let highestBid: BigNumber = BigNumber.from(0);
   let volume: BigNumber = BigNumber.from(0);
   let items = subdomains.length;
+  let holders: string[] = [];
 
   for (const subdomain of subdomains) {
+    holders.push(subdomain.owner);
+
     const data = await domainTradingData(
       subdomain.id,
       listSubDomains,
@@ -83,6 +87,7 @@ const subdomainTradingData = async (
     volume = volume.add(data.volume);
 
     items += data.items;
+    holders = holders.concat(holders, data.holders);
   }
 
   const data: InternalDomainTradingData = {
@@ -93,6 +98,7 @@ const subdomainTradingData = async (
     highestBid,
     volume,
     items,
+    holders,
   };
 
   return data;
@@ -117,6 +123,7 @@ const domainTradingData = async (
   let highestBid: BigNumber = BigNumber.from(0);
   let volume: BigNumber = BigNumber.from(0);
   let items = 0;
+  let holders: string[] = [];
 
   const sales: DomainSaleData[] = await listSales(domainId);
 
@@ -203,6 +210,8 @@ const domainTradingData = async (
   volume = volume.add(subDomainData.volume);
   items = subDomainData.items;
 
+  holders = subDomainData.holders;
+
   return {
     lowestSalePrice,
     highestSalePrice,
@@ -211,6 +220,7 @@ const domainTradingData = async (
     highestBid,
     volume,
     items,
+    holders,
   };
 };
 
@@ -227,6 +237,10 @@ export const getSubdomainTradingData = async (
     listBids
   );
 
+  const uniqueHolders = data.holders.filter(
+    (value, index) => data.holders.indexOf(value) === index
+  );
+
   // Format results and default where needed
   const tradingData: DomainTradingData = {
     lastSale: data.lastSale.amount,
@@ -239,6 +253,7 @@ export const getSubdomainTradingData = async (
     highestBid: data.highestBid.toString(),
     volume: data.volume.toString(),
     items: data.items,
+    holders: uniqueHolders.length,
   };
 
   return tradingData;
