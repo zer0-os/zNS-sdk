@@ -4,7 +4,6 @@ import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
   Config,
-  DomainMetadata,
   DomainTradingData,
   Instance,
   MintSubdomainStatusCallback,

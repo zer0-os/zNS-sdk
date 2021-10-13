@@ -1,7 +1,6 @@
-import { Bid, TokenBidCollection } from "@zero-tech/zauction-sdk";
+import { Bid } from "@zero-tech/zauction-sdk";
 import { BigNumber, ethers } from "ethers";
 import { Domain, DomainTradingData } from "..";
-import { Maybe } from "../utilities";
 
 // Required information about domain sales
 interface DomainSaleData {
