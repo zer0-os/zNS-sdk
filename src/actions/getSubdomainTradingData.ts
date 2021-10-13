@@ -26,6 +26,7 @@ interface InternalDomainTradingData {
   lastBid: TimeAmountPair;
   highestBid: BigNumber;
   volume: BigNumber;
+  items: number;
 }
 
 const subdomainTradingData = async (
@@ -49,6 +50,7 @@ const subdomainTradingData = async (
   };
   let highestBid: BigNumber = BigNumber.from(0);
   let volume: BigNumber = BigNumber.from(0);
+  let items = subdomains.length;
 
   for (const subdomain of subdomains) {
     const data = await domainTradingData(
@@ -79,6 +81,8 @@ const subdomainTradingData = async (
     }
 
     volume = volume.add(data.volume);
+
+    items += data.items;
   }
 
   const data: InternalDomainTradingData = {
@@ -88,6 +92,7 @@ const subdomainTradingData = async (
     lastBid,
     highestBid,
     volume,
+    items,
   };
 
   return data;
@@ -111,6 +116,7 @@ const domainTradingData = async (
   };
   let highestBid: BigNumber = BigNumber.from(0);
   let volume: BigNumber = BigNumber.from(0);
+  let items = 0;
 
   const sales: DomainSaleData[] = await listSales(domainId);
 
@@ -195,6 +201,7 @@ const domainTradingData = async (
   }
 
   volume = volume.add(subDomainData.volume);
+  items = subDomainData.items;
 
   return {
     lowestSalePrice,
@@ -203,6 +210,7 @@ const domainTradingData = async (
     lastBid,
     highestBid,
     volume,
+    items,
   };
 };
 
@@ -230,6 +238,7 @@ export const getSubdomainTradingData = async (
     lastBid: data.lastBid.amount,
     highestBid: data.highestBid.toString(),
     volume: data.volume.toString(),
+    items: data.items,
   };
 
   return tradingData;
