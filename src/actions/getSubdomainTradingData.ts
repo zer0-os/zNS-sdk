@@ -77,7 +77,7 @@ const subdomainTradingData = async (
     }
 
     if (data.lastBid.time > lastBid.time) {
-      lastBid = data.lastSale;
+      lastBid = data.lastBid;
     }
 
     if (data.highestBid.gt(highestBid)) {
@@ -143,12 +143,8 @@ const domainTradingData = async (
     }
 
     volume = volume.add(salePrice);
-  }
 
-  // Look to see if the most recent sale of this subdomain
-  // is the most recent for all subdomains
-  if (sales[0]) {
-    const sale = sales[0];
+    // get the most recent sale
     const saleTime = Number(sale.timestamp);
     if (lastSale.time < saleTime) {
       lastSale = {
@@ -160,23 +156,21 @@ const domainTradingData = async (
 
   const bids = await listBids(domainId);
 
-  // Get the last bid placed
-  if (bids[0]) {
-    const bid = bids[0];
+  for (const bid of bids) {
+    const bidAmount = BigNumber.from(bid.amount);
+
+    // Calculate the highest bid
+    if (bidAmount.gt(highestBid)) {
+      highestBid = bidAmount;
+    }
+
+    // calculate the last bid
     const bidTime = Number(bid.timestamp);
     if (lastBid.time < bidTime) {
       lastBid = {
         time: bidTime,
         amount: bid.amount,
       };
-    }
-  }
-
-  // Calculate the highest bid
-  for (const bid of bids) {
-    const bidAmount = BigNumber.from(bid.amount);
-    if (bidAmount.gt(highestBid)) {
-      highestBid = bidAmount;
     }
   }
 
