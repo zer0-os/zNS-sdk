@@ -230,7 +230,7 @@ export const getSubdomainTradingData = async (
   listSales: ListSalesByIdFunction,
   listBids: ListBidsByIdFunction
 ): Promise<DomainTradingData> => {
-  const data = await domainTradingData(
+  const data = await subdomainTradingData(
     domainId,
     listSubDomains,
     listSales,
