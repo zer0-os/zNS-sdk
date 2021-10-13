@@ -24,6 +24,7 @@ interface InternalDomainTradingData {
   highestSalePrice: BigNumber;
   lastSale: TimeAmountPair;
   lastBid: TimeAmountPair;
+  highestBid: BigNumber;
 }
 
 const subdomainTradingData = async (
@@ -45,6 +46,7 @@ const subdomainTradingData = async (
     time: 0,
     amount: "0",
   };
+  let highestBid: BigNumber = BigNumber.from(0);
 
   for (const subdomain of subdomains) {
     const data = await domainTradingData(
@@ -69,6 +71,10 @@ const subdomainTradingData = async (
     if (data.lastBid.time > lastBid.time) {
       lastBid = data.lastSale;
     }
+
+    if (data.highestBid.gt(highestBid)) {
+      highestBid = data.highestBid;
+    }
   }
 
   const data: InternalDomainTradingData = {
@@ -76,6 +82,7 @@ const subdomainTradingData = async (
     highestSalePrice,
     lastSale,
     lastBid,
+    highestBid,
   };
 
   return data;
@@ -97,6 +104,7 @@ const domainTradingData = async (
     time: 0,
     amount: "0",
   };
+  let highestBid: BigNumber = BigNumber.from(0);
 
   const sales: DomainSaleData[] = await listSales(domainId);
 
@@ -108,10 +116,10 @@ const domainTradingData = async (
   for (const sale of sales) {
     // Search for new lowest/highest sale price
     const salePrice = BigNumber.from(sale.saleAmount);
-    if (!lowestSalePrice || lowestSalePrice.gt(salePrice)) {
+    if (lowestSalePrice.gt(salePrice)) {
       lowestSalePrice = salePrice;
     }
-    if (!highestSalePrice || highestSalePrice.lt(salePrice)) {
+    if (highestSalePrice.lt(salePrice)) {
       highestSalePrice = salePrice;
     }
   }
@@ -130,6 +138,8 @@ const domainTradingData = async (
   }
 
   const bids = await listBids(domainId);
+
+  // Get the last bid placed
   if (bids[0]) {
     const bid = bids[0];
     const bidTime = Number(bid.timestamp);
@@ -138,6 +148,14 @@ const domainTradingData = async (
         time: bidTime,
         amount: bid.amount,
       };
+    }
+  }
+
+  // Calculate the highest bid
+  for (const bid of bids) {
+    const bidAmount = BigNumber.from(bid.amount);
+    if (bidAmount.gt(highestBid)) {
+      highestBid = bidAmount;
     }
   }
 
@@ -164,11 +182,16 @@ const domainTradingData = async (
     lastBid = subDomainData.lastBid;
   }
 
+  if (subDomainData.highestBid.gt(highestBid)) {
+    highestBid = subDomainData.highestBid;
+  }
+
   return {
     lowestSalePrice,
     highestSalePrice,
     lastSale,
     lastBid,
+    highestBid,
   };
 };
 
@@ -187,14 +210,14 @@ export const getSubdomainTradingData = async (
 
   // Format results and default where needed
   const tradingData: DomainTradingData = {
-    lastSale: data.lastSale.amount ?? "0",
-    lowestSale:
-      (data.lowestSalePrice.eq(ethers.constants.MaxUint256)
-        ? 0
-        : data.lowestSalePrice
-      ).toString() ?? "0",
-    highestSale: data.highestSalePrice.toString() ?? "0",
-    lastBid: data.lastBid.amount ?? "0",
+    lastSale: data.lastSale.amount,
+    lowestSale: (data.lowestSalePrice.eq(ethers.constants.MaxUint256)
+      ? 0
+      : data.lowestSalePrice
+    ).toString(),
+    highestSale: data.highestSalePrice.toString(),
+    lastBid: data.lastBid.amount,
+    highestBid: data.highestBid.toString(),
   };
 
   return tradingData;
