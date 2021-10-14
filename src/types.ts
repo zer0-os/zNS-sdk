@@ -219,6 +219,11 @@ export interface DomainTradingData {
   lastSale: string;
   lowestSale: string;
   highestSale: string;
+  lastBid: string;
+  highestBid: string;
+  volume: string; // all time $ sold (sum of all sales)
+  items: number; // total # of subdomains (recursive)
+  holders: number; // number of unique wallets that own domains
 }
 
 export enum MintSubdomainStep {

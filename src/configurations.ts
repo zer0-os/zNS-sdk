@@ -42,13 +42,13 @@ export const kovanConfiguration = (
       {
         uriPattern: "wilder",
         instance: zAuction.createInstance({
-            apiUri: "https://zauction-kovan-api.herokuapp.com/api",
-            subgraphUri:
-              "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-kovan",
-            zAuctionAddress: "0x18A804a028aAf1F30082E91d2947734961Dd7f89",
-            tokenContract: kovanRegistrar,
-            web3Provider: provider,
-          } as zAuction.Config)
+          apiUri: "https://zauction-kovan-api.herokuapp.com/api",
+          subgraphUri:
+            "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-kovan",
+          zAuctionAddress: "0x18A804a028aAf1F30082E91d2947734961Dd7f89",
+          tokenContract: kovanRegistrar,
+          web3Provider: provider,
+        } as zAuction.Config),
       } as zAuctionRoute,
     ],
     basicController: "0x2EF34C52138781C901Fe9e50B64d80aA9903f730",
