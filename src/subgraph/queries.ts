@@ -86,7 +86,7 @@ export const getDomainsByOwner = gql`
 
 export const getDomainTransfers = gql`
   query DomainTransfers($id: ID!) {
-    domainTransferreds(where: { id: $id }) {
+    domainTransferreds(where: { domain: $id }) {
       timestamp
       from {
         id
