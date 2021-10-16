@@ -173,6 +173,7 @@ export interface Domain {
   owner: string;
   minter: string;
   metadataUri: string;
+  isRoot?: boolean;
 }
 
 export interface DomainMetadata {
