@@ -46,6 +46,7 @@ export const convertDomainDtoToDomain = (e: DomainDto): Domain => {
     owner: e.owner.id,
     minter: e.minter?.id ?? ethers.constants.AddressZero,
     metadataUri: e.metadata,
+    isRoot: e.id === ethers.constants.HashZero,
   };
 
   return domain;
