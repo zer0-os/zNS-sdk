@@ -4,6 +4,7 @@ import {
   DocumentNode,
   OperationVariables,
 } from "@apollo/client/core";
+import { ethers } from "ethers";
 import { Domain } from "../../types";
 import { DomainDto } from "../types";
 
@@ -41,9 +42,9 @@ export const convertDomainDtoToDomain = (e: DomainDto): Domain => {
   const domain: Domain = {
     id: e.id,
     name: e.name,
-    parentId: e.parent.id,
+    parentId: e.parent?.id ?? ethers.constants.HashZero,
     owner: e.owner.id,
-    minter: e.minter.id,
+    minter: e.minter?.id ?? ethers.constants.HashZero,
     metadataUri: e.metadata,
   };
 
