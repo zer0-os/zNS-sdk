@@ -21,6 +21,7 @@ import { Bid } from "./zAuction";
 export { domains };
 
 import * as configurations from "./configurations";
+import { getDomainMetrics } from "./actions/getDomainMetrics";
 export { configurations };
 
 export const createInstance = (config: Config): Instance => {
@@ -71,23 +72,8 @@ export const createInstance = (config: Config): Instance => {
         domainIdToDomainName
       ),
     getAllDomains: subgraphClient.getAllDomains,
-    getSubdomainTradingData: async (
-      domainId: string
-    ): Promise<DomainTradingData> => {
-      const zAuctionInstance = await getZAuctionInstanceForDomain(
-        domainId,
-        config.zAuctionRoutes,
-        domainIdToDomainName
-      );
-
-      const tradingData = await actions.getSubdomainTradingData(
-        domainId,
-        subgraphClient.getSubdomainsById,
-        (domainId: string) => zAuctionInstance.listSales(domainId),
-        listBids
-      );
-      return tradingData;
-    },
+    getDomainMetrics: async (domainIds: string[]) =>
+      getDomainMetrics(config.metricsUri, domainIds),
     mintSubdomain: async (
       params: SubdomainParams,
       signer: ethers.Signer,

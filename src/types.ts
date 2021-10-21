@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 
 export interface Config {
   subgraphUri: string;
+  metricsUri: string;
   apiUri: string;
   zAuctionRoutes: zAuctionRoute[];
   basicController: string;
@@ -56,9 +57,9 @@ export interface Instance {
 
   /**
    * Gets trading data for a sub domain.
-   * @param domainId Domain id to get subdomain trading data for
+   * @param domainIds Domain ids to get subdomain trading data for
    */
-  getSubdomainTradingData(domainId: string): Promise<DomainTradingData>;
+  getDomainMetrics(domainIds: string[]): Promise<DomainTradingData>;
 
   /**
    * Mints a new subdomain
@@ -221,15 +222,19 @@ export interface DomainSaleEvent extends DomainEvent {
   amount: string;
 }
 
-export interface DomainTradingData {
-  lastSale: string;
-  lowestSale: string;
+export interface DomainMetrics {
   highestSale: string;
+  lowestSale: string;
+  lastSale: string;
   lastBid: string;
   highestBid: string;
   volume: string; // all time $ sold (sum of all sales)
   items: number; // total # of subdomains (recursive)
   holders: number; // number of unique wallets that own domains
+}
+
+export interface DomainMetricsCollection {
+  [domainId: string]: DomainMetrics;
 }
 
 export enum MintSubdomainStep {
