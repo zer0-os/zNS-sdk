@@ -108,3 +108,24 @@ export const getDomainMintEvent = gql`
     }
   }
 `;
+
+export const getAllDomains = gql`
+  query Domains($count: Int!, $skipAmount: Int!) {
+    domains(first: $count, skip: $skipAmount) {
+      id
+      name
+      parent {
+        id
+      }
+      owner {
+        id
+      }
+      minter {
+        id
+      }
+      lockedBy
+      isLocked
+      metadata
+    }
+  }
+`;
