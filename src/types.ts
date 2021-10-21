@@ -59,7 +59,7 @@ export interface Instance {
    * Gets trading data for a sub domain.
    * @param domainIds Domain ids to get subdomain trading data for
    */
-  getDomainMetrics(domainIds: string[]): Promise<DomainTradingData>;
+  getDomainMetrics(domainIds: string[]): Promise<DomainMetricsCollection>;
 
   /**
    * Mints a new subdomain
