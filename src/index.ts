@@ -70,6 +70,7 @@ export const createInstance = (config: Config): Instance => {
         config.zAuctionRoutes,
         domainIdToDomainName
       ),
+    getAllDomains: subgraphClient.getAllDomains,
     getSubdomainTradingData: async (
       domainId: string
     ): Promise<DomainTradingData> => {

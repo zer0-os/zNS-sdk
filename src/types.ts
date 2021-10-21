@@ -50,6 +50,11 @@ export interface Instance {
   getZAuctionInstanceForDomain(domainId: string): Promise<zAuction.Instance>;
 
   /**
+   * Gets all domains
+   */
+  getAllDomains(): Promise<Domain[]>;
+
+  /**
    * Gets trading data for a sub domain.
    * @param domainId Domain id to get subdomain trading data for
    */
