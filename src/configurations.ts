@@ -12,6 +12,7 @@ export const mainnetConfiguration = (
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
     apiUri: "https://zns.api.zero.tech/api",
+    metricsUri: "https://zns-metrics.herokuapp.com",
     zAuctionRoutes: [
       {
         uriPattern: "wilder",
@@ -38,6 +39,7 @@ export const kovanConfiguration = (
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
     apiUri: "https://zns.api.zero.tech/api",
+    metricsUri: "https://zns-metrics-kovan.herokuapp.com",
     zAuctionRoutes: [
       {
         uriPattern: "wilder",
