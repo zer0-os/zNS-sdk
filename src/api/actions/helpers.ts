@@ -29,5 +29,5 @@ export const makeApiCall = async <T>(
 };
 
 export const ipfsHashToUrl = (hash: string): string => {
-  return `https://ipfs.fleek.co/ipfs/${hash}`;
+  return `ipfs://${hash}`;
 };

@@ -37,10 +37,10 @@ export const mintSubdomain = async (
     throw Error(`Failed to upload image: ${e}`);
   }
 
-  let previewImageUri: Maybe<string>;
+  let animationUri: Maybe<string>;
   try {
-    if (params.previewImage) {
-      previewImageUri = await uploadMedia(params.previewImage);
+    if (params.animation) {
+      animationUri = await uploadMedia(params.animation);
     }
   } catch (e) {
     throw Error(`Failed to upload preview image: ${e}`);
@@ -48,9 +48,9 @@ export const mintSubdomain = async (
 
   const metadata: DomainMetadata = {
     image: imageUri,
-    previewImage: previewImageUri,
+    animation_url: animationUri,
     description: params.description,
-    title: params.title,
+    name: params.name,
     ...params.additionalMetadata,
   };
 
