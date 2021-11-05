@@ -228,7 +228,13 @@ export interface DomainMetrics {
   lastSale: string;
   lastBid: string;
   highestBid: string;
-  volume: string; // all time $ sold (sum of all sales)
+  volume: {
+    all: string;
+    day: string;
+    week: string;
+    month: string;
+    year: string;
+  };
   items: number; // total # of subdomains (recursive)
   holders: number; // number of unique wallets that own domains
 }
