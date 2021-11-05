@@ -129,3 +129,24 @@ export const getAllDomains = gql`
     }
   }
 `;
+
+export const setAndLockDomainMetadata = gql`
+  mutation setAndLockDomainMetadata($id: ID!, $metadata: String!) {
+    domain(id: $id, metadata: $metadata) {
+      id
+      name
+      parent {
+        id
+      }
+      owner {
+        id
+      }
+      minter {
+        id
+      }
+      lockedBy
+      isLocked
+      metadata
+    }
+  }
+`;

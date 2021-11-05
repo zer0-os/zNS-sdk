@@ -4,6 +4,7 @@ import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
   Config,
+  Domain,
   Instance,
   MintSubdomainStatusCallback,
   PlaceBidParams,
@@ -12,8 +13,6 @@ import {
 import { getZAuctionInstanceForDomain } from "./utilities";
 import { ethers } from "ethers";
 import { getBasicController } from "./contracts";
-
-export * from "./types";
 
 import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
@@ -94,6 +93,10 @@ export const createInstance = (config: Config): Instance => {
       );
 
       return tx;
+    },
+    setAndLockMetadata: async (domainId: string, domainUri: string, toLock: boolean): Promise<Domain> => {
+      const domain: Domain = await subgraphClient.setAndLockDomainMetadata(domainId, domainUri, toLock);
+      return domain;
     },
 
     bidding: {

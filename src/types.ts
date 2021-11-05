@@ -72,7 +72,8 @@ export interface Instance {
     signer: ethers.Signer,
     statusCallback?: MintSubdomainStatusCallback
   ): Promise<ethers.ContractTransaction>;
-
+  
+  setAndLockMetadata(domainId: string, uri: string, toLock: boolean): Promise<Domain>;
   /**
    * These methods are for bidding/auctions
    */
