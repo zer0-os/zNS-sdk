@@ -2,7 +2,6 @@ import * as apollo from "@apollo/client/core";
 import fetch from "cross-fetch";
 import { Domain, DomainMintEvent, DomainTransferEvent } from "../types";
 import * as actions from "./actions";
-import { DomainDto } from "./types";
 
 export interface SubgraphClient {
   getDomainById(domainId: string): Promise<Domain>;
