@@ -185,7 +185,8 @@ export interface Domain {
 export interface DomainMetadata {
   [key: string]: unknown | undefined;
   image: string;
-  title: string;
+  animation_url: string | undefined;
+  name: string;
   description: string;
   previewImage?: string;
 }
@@ -256,8 +257,8 @@ export interface SubdomainParams {
   parentId: string;
   label: string;
   image: Buffer;
-  previewImage?: Buffer;
-  title: string;
+  animation?: Buffer;
+  name: string;
   description: string;
   additionalMetadata: Record<string, unknown>;
   royaltyAmount: string;
