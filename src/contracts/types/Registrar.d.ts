@@ -33,21 +33,22 @@ interface RegistrarInterface extends ethers.utils.Interface {
     "getApproved(uint256)": FunctionFragment;
     "initialize()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "isAvailable(uint256)": FunctionFragment;
+    "isController(address)": FunctionFragment;
     "isDomainMetadataLocked(uint256)": FunctionFragment;
-    "lockDomainMetadata(uint256)": FunctionFragment;
-    "lockDomainMetadataForOwner(uint256)": FunctionFragment;
+    "lockDomainMetadata(uint256,bool)": FunctionFragment;
     "minterOf(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
+    "parentOf(uint256)": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "records(uint256)": FunctionFragment;
-    "registerDomain(uint256,string,address,address)": FunctionFragment;
+    "registerDomain(uint256,string,address,string,uint256,bool)": FunctionFragment;
     "removeController(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
+    "setAndLockDomainMetadata(uint256,string)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setDomainMetadataUri(uint256,string)": FunctionFragment;
     "setDomainRoyaltyAmount(uint256,uint256)": FunctionFragment;
@@ -59,7 +60,6 @@ interface RegistrarInterface extends ethers.utils.Interface {
     "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "unlockDomainMetadata(uint256)": FunctionFragment;
     "unpause()": FunctionFragment;
   };
 
@@ -103,8 +103,8 @@ interface RegistrarInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "isAvailable",
-    values: [BigNumberish]
+    functionFragment: "isController",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "isDomainMetadataLocked",
@@ -112,11 +112,7 @@ interface RegistrarInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "lockDomainMetadata",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "lockDomainMetadataForOwner",
-    values: [BigNumberish]
+    values: [BigNumberish, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "minterOf",
@@ -128,6 +124,10 @@ interface RegistrarInterface extends ethers.utils.Interface {
     functionFragment: "ownerOf",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "parentOf",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
@@ -136,7 +136,7 @@ interface RegistrarInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "registerDomain",
-    values: [BigNumberish, string, string, string]
+    values: [BigNumberish, string, string, string, BigNumberish, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "removeController",
@@ -149,6 +149,10 @@ interface RegistrarInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "safeTransferFrom",
     values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAndLockDomainMetadata",
+    values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
@@ -191,10 +195,6 @@ interface RegistrarInterface extends ethers.utils.Interface {
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "unlockDomainMetadata",
-    values: [BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
   decodeFunctionResult(
@@ -234,7 +234,7 @@ interface RegistrarInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "isAvailable",
+    functionFragment: "isController",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -245,14 +245,11 @@ interface RegistrarInterface extends ethers.utils.Interface {
     functionFragment: "lockDomainMetadata",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "lockDomainMetadataForOwner",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "minterOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "parentOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "records", data: BytesLike): Result;
@@ -270,6 +267,10 @@ interface RegistrarInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAndLockDomainMetadata",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -310,10 +311,6 @@ interface RegistrarInterface extends ethers.utils.Interface {
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "unlockDomainMetadata",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
 
   events: {
@@ -321,10 +318,9 @@ interface RegistrarInterface extends ethers.utils.Interface {
     "ApprovalForAll(address,address,bool)": EventFragment;
     "ControllerAdded(address)": EventFragment;
     "ControllerRemoved(address)": EventFragment;
-    "DomainCreated(uint256,string,uint256,uint256,address,address)": EventFragment;
+    "DomainCreated(uint256,string,uint256,uint256,address,address,string,uint256)": EventFragment;
     "MetadataChanged(uint256,string)": EventFragment;
-    "MetadataLocked(uint256,address)": EventFragment;
-    "MetadataUnlocked(uint256)": EventFragment;
+    "MetadataLockChanged(uint256,address,bool)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "RoyaltiesAmountChanged(uint256,uint256)": EventFragment;
@@ -338,8 +334,7 @@ interface RegistrarInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ControllerRemoved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DomainCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MetadataChanged"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "MetadataLocked"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "MetadataUnlocked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MetadataLockChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoyaltiesAmountChanged"): EventFragment;
@@ -443,8 +438,8 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    isAvailable(
-      id: BigNumberish,
+    isController(
+      account: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
@@ -455,11 +450,7 @@ export class Registrar extends BaseContract {
 
     lockDomainMetadata(
       id: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    lockDomainMetadataForOwner(
-      id: BigNumberish,
+      toLock: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -474,6 +465,8 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -484,20 +477,23 @@ export class Registrar extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, boolean, string, string, BigNumber] & {
+      [string, boolean, string, string, BigNumber, BigNumber] & {
         minter: string;
         metadataLocked: boolean;
         metadataLockedBy: string;
         controller: string;
         royaltyAmount: BigNumber;
+        parentId: BigNumber;
       }
     >;
 
     registerDomain(
       parentId: BigNumberish,
       name: string,
-      domainOwner: string,
       minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -522,6 +518,12 @@ export class Registrar extends BaseContract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setAndLockDomainMetadata(
+      id: BigNumberish,
+      uri: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -580,11 +582,6 @@ export class Registrar extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    unlockDomainMetadata(
-      id: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -639,7 +636,7 @@ export class Registrar extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  isAvailable(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+  isController(account: string, overrides?: CallOverrides): Promise<boolean>;
 
   isDomainMetadataLocked(
     id: BigNumberish,
@@ -648,11 +645,7 @@ export class Registrar extends BaseContract {
 
   lockDomainMetadata(
     id: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  lockDomainMetadataForOwner(
-    id: BigNumberish,
+    toLock: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -664,6 +657,8 @@ export class Registrar extends BaseContract {
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+  parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
   pause(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -674,20 +669,23 @@ export class Registrar extends BaseContract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [string, boolean, string, string, BigNumber] & {
+    [string, boolean, string, string, BigNumber, BigNumber] & {
       minter: string;
       metadataLocked: boolean;
       metadataLockedBy: string;
       controller: string;
       royaltyAmount: BigNumber;
+      parentId: BigNumber;
     }
   >;
 
   registerDomain(
     parentId: BigNumberish,
     name: string,
-    domainOwner: string,
     minter: string,
+    metadataUri: string,
+    royaltyAmount: BigNumberish,
+    locked: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -712,6 +710,12 @@ export class Registrar extends BaseContract {
     to: string,
     tokenId: BigNumberish,
     _data: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setAndLockDomainMetadata(
+    id: BigNumberish,
+    uri: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -767,11 +771,6 @@ export class Registrar extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  unlockDomainMetadata(
-    id: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   unpause(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -821,7 +820,7 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    isAvailable(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+    isController(account: string, overrides?: CallOverrides): Promise<boolean>;
 
     isDomainMetadataLocked(
       id: BigNumberish,
@@ -830,11 +829,7 @@ export class Registrar extends BaseContract {
 
     lockDomainMetadata(
       id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    lockDomainMetadataForOwner(
-      id: BigNumberish,
+      toLock: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -846,6 +841,8 @@ export class Registrar extends BaseContract {
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+    parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
     pause(overrides?: CallOverrides): Promise<void>;
 
     paused(overrides?: CallOverrides): Promise<boolean>;
@@ -854,20 +851,23 @@ export class Registrar extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, boolean, string, string, BigNumber] & {
+      [string, boolean, string, string, BigNumber, BigNumber] & {
         minter: string;
         metadataLocked: boolean;
         metadataLockedBy: string;
         controller: string;
         royaltyAmount: BigNumber;
+        parentId: BigNumber;
       }
     >;
 
     registerDomain(
       parentId: BigNumberish,
       name: string,
-      domainOwner: string,
       minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -890,6 +890,12 @@ export class Registrar extends BaseContract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setAndLockDomainMetadata(
+      id: BigNumberish,
+      uri: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -945,11 +951,6 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    unlockDomainMetadata(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     unpause(overrides?: CallOverrides): Promise<void>;
   };
 
@@ -986,9 +987,20 @@ export class Registrar extends BaseContract {
       nameHash?: BigNumberish | null,
       parent?: BigNumberish | null,
       minter?: null,
-      controller?: null
+      controller?: null,
+      metadataUri?: null,
+      royaltyAmount?: null
     ): TypedEventFilter<
-      [BigNumber, string, BigNumber, BigNumber, string, string],
+      [
+        BigNumber,
+        string,
+        BigNumber,
+        BigNumber,
+        string,
+        string,
+        string,
+        BigNumber
+      ],
       {
         id: BigNumber;
         name: string;
@@ -996,6 +1008,8 @@ export class Registrar extends BaseContract {
         parent: BigNumber;
         minter: string;
         controller: string;
+        metadataUri: string;
+        royaltyAmount: BigNumber;
       }
     >;
 
@@ -1004,14 +1018,14 @@ export class Registrar extends BaseContract {
       uri?: null
     ): TypedEventFilter<[BigNumber, string], { id: BigNumber; uri: string }>;
 
-    MetadataLocked(
+    MetadataLockChanged(
       id?: BigNumberish | null,
-      locker?: null
-    ): TypedEventFilter<[BigNumber, string], { id: BigNumber; locker: string }>;
-
-    MetadataUnlocked(
-      id?: BigNumberish | null
-    ): TypedEventFilter<[BigNumber], { id: BigNumber }>;
+      locker?: null,
+      isLocked?: null
+    ): TypedEventFilter<
+      [BigNumber, string, boolean],
+      { id: BigNumber; locker: string; isLocked: boolean }
+    >;
 
     OwnershipTransferred(
       previousOwner?: string | null,
@@ -1096,8 +1110,8 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    isAvailable(
-      id: BigNumberish,
+    isController(
+      account: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1108,11 +1122,7 @@ export class Registrar extends BaseContract {
 
     lockDomainMetadata(
       id: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    lockDomainMetadataForOwner(
-      id: BigNumberish,
+      toLock: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1127,6 +1137,8 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1138,8 +1150,10 @@ export class Registrar extends BaseContract {
     registerDomain(
       parentId: BigNumberish,
       name: string,
-      domainOwner: string,
       minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1164,6 +1178,12 @@ export class Registrar extends BaseContract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setAndLockDomainMetadata(
+      id: BigNumberish,
+      uri: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1219,11 +1239,6 @@ export class Registrar extends BaseContract {
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    unlockDomainMetadata(
-      id: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1291,8 +1306,8 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    isAvailable(
-      id: BigNumberish,
+    isController(
+      account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1303,11 +1318,7 @@ export class Registrar extends BaseContract {
 
     lockDomainMetadata(
       id: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    lockDomainMetadataForOwner(
-      id: BigNumberish,
+      toLock: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1325,6 +1336,11 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    parentOf(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1339,8 +1355,10 @@ export class Registrar extends BaseContract {
     registerDomain(
       parentId: BigNumberish,
       name: string,
-      domainOwner: string,
       minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1365,6 +1383,12 @@ export class Registrar extends BaseContract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setAndLockDomainMetadata(
+      id: BigNumberish,
+      uri: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1420,11 +1444,6 @@ export class Registrar extends BaseContract {
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    unlockDomainMetadata(
-      id: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

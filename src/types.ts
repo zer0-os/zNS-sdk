@@ -8,6 +8,7 @@ export interface Config {
   apiUri: string;
   zAuctionRoutes: zAuctionRoute[];
   basicController: string;
+  registrar: string;
 }
 
 /**
@@ -73,7 +74,9 @@ export interface Instance {
     statusCallback?: MintSubdomainStatusCallback
   ): Promise<ethers.ContractTransaction>;
   
-  setAndLockMetadata(domainId: string, uri: string, toLock: boolean): Promise<Domain>;
+  lockDomainMetadata(domainId: string, lockStatus: boolean, signer: ethers.Signer): Promise<ethers.ContractTransaction>
+  setDomainMetadata(domainId: string, domainUri: string, signer: ethers.Signer): Promise<ethers.ContractTransaction>;
+  setAndLockMetadata(domainId: string, domainUri: string, signer: ethers.Signer): Promise<ethers.ContractTransaction>
   /**
    * These methods are for bidding/auctions
    */

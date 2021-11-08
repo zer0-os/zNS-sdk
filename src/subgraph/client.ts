@@ -11,7 +11,6 @@ export interface SubgraphClient {
   getDomainTransferEvents(domainId: string): Promise<DomainTransferEvent[]>;
   getDomainMintedEvent(domainId: string): Promise<DomainMintEvent>;
   getAllDomains(): Promise<Domain[]>;
-  setAndLockDomainMetadata(domainId: string, uri: string, toLock: boolean): Promise<Domain>; // TODO new interface? not a Dto?
 }
 
 const createApolloClient = (
@@ -63,10 +62,6 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
     getAllDomains: async (): Promise<Domain[]> => {
       const domains = await actions.getAllDomains(apolloClient);
       return domains;
-    },
-    setAndLockDomainMetadata: async (domainId: string, uri: string, toLock: boolean): Promise<Domain> => {
-      const domain: Domain = await actions.setAndLockDomainMetadata(apolloClient, domainId, uri, toLock);
-      return domain;
     }
   };
 
