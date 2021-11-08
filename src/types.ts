@@ -81,12 +81,12 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
   setDomainMetadata(
     domainId: string,
-    domainUri: string,
+    metadataUri: string,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
   setAndLockMetadata(
     domainId: string,
-    domainUri: string,
+    metadataUri: string,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
   /**

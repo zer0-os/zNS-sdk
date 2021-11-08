@@ -1,20 +1,20 @@
-import { BigNumberish, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Registrar } from "../contracts/types";
-import { validateOwner, validateStatus } from "./helpers";
+import { validateUserOwnsDomain, validateStatus } from "./helpers";
 
 export const setAndLockDomainMetadata = async (
-  domainId: BigNumberish,
+  domainId: string,
   metadataUri: string,
-  potentialOwner: string,
   registrar: Registrar
 ): Promise<ethers.ContractTransaction> => {
-  validateOwner(
+  const potentialOwner = await registrar.signer.getAddress();
+  validateUserOwnsDomain(
     domainId,
     potentialOwner,
     registrar,
-    "Cannot set metadata of unowned domain"
+    "Must own domain to lock metadata"
   );
-  validateStatus(domainId, registrar, "Locked metadata cannot be modified");
+  validateStatus(domainId, registrar, "Metadata must be unlocked to be modified");
 
   // Always will call with lockStatus: true, so can ignore
   const tx = await registrar.setAndLockDomainMetadata(domainId, metadataUri);

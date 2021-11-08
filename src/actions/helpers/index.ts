@@ -1,8 +1,7 @@
-import { BigNumber, BigNumberish } from "ethers";
 import { Registrar } from "../../contracts/types";
 
-export const validateOwner = async (
-  domainId: BigNumberish,
+export const validateUserOwnsDomain = async (
+  domainId: string,
   potentialOwner: string,
   registrar: Registrar,
   message: string
@@ -12,7 +11,7 @@ export const validateOwner = async (
 };
 
 export const validateStatus = async (
-  domainId: BigNumberish,
+  domainId: string,
   registrar: Registrar,
   message: string
 ) => {

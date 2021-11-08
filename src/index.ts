@@ -102,12 +102,10 @@ export const createInstance = (config: Config): Instance => {
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-      const potentialOwner = await signer.getAddress();
 
       const tx = await actions.lockDomainMetadata(
         domainId,
         lockStatus,
-        potentialOwner,
         registrar
       );
 
@@ -119,12 +117,10 @@ export const createInstance = (config: Config): Instance => {
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-      const potentialOwner = await signer.getAddress();
 
       const tx = await actions.setDomainMetadata(
         domainId,
         metadataUri,
-        potentialOwner,
         registrar
       );
 
@@ -136,12 +132,10 @@ export const createInstance = (config: Config): Instance => {
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-      const potentialOwner = await signer.getAddress();
 
       const tx = await actions.setAndLockDomainMetadata(
         domainId,
         metadataUri,
-        potentialOwner,
         registrar
       );
       return tx;
