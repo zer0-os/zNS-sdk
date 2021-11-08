@@ -1,4 +1,4 @@
-import { DomainMetadata } from "../..";
+import { DomainMetadata } from "../../types";
 import { Maybe } from "../../utilities";
 import { UploadedFileDto } from "../types";
 import { ipfsHashToUrl, makeApiCall } from "./helpers";

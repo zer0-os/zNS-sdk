@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { SubdomainParams } from "..";
+import { SubdomainParams } from "../types";
 import {
   DomainMetadata,
   MintSubdomainStatusCallback,

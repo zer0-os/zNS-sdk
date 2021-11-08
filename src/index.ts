@@ -11,9 +11,8 @@ import {
 } from "./types";
 import { getZAuctionInstanceForDomain } from "./utilities";
 import { ethers } from "ethers";
-import { getBasicController } from "./contracts";
-
-export * from "./types";
+import { Registrar } from "./contracts/types";
+import { getBasicController, getRegistrar } from "./contracts";
 
 import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
@@ -21,6 +20,8 @@ export { domains };
 
 import * as configurations from "./configurations";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
+
+export { Config } from "./types";
 export { configurations };
 
 export const createInstance = (config: Config): Instance => {
@@ -93,6 +94,50 @@ export const createInstance = (config: Config): Instance => {
         statusCallback
       );
 
+      return tx;
+    },
+    lockDomainMetadata: async (
+      domainId: string,
+      lockStatus: boolean,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.lockDomainMetadata(
+        domainId,
+        lockStatus,
+        registrar
+      );
+
+      return tx;
+    },
+    setDomainMetadata: async (
+      domainId: string,
+      metadataUri: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.setDomainMetadata(
+        domainId,
+        metadataUri,
+        registrar
+      );
+
+      return tx;
+    },
+    setAndLockMetadata: async (
+      domainId: string,
+      metadataUri: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.setAndLockDomainMetadata(
+        domainId,
+        metadataUri,
+        registrar
+      );
       return tx;
     },
 

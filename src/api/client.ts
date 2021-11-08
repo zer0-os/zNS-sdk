@@ -1,4 +1,4 @@
-import { DomainMetadata } from "..";
+import { DomainMetadata } from "../types";
 import * as actions from "./actions";
 
 export interface ApiClient {
