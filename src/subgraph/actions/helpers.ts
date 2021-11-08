@@ -2,7 +2,6 @@ import {
   ApolloClient,
   ApolloQueryResult,
   DocumentNode,
-  FetchResult,
   OperationVariables,
 } from "@apollo/client/core";
 import { ethers } from "ethers";
@@ -33,32 +32,6 @@ export const performQuery = async <T, TCacheShape = unknown>(
 
   return queryResult;
 };
-
-/**
- * Helper function to perform a mutation on Apollo client.
- * If an error occurs an exception is thrown.
- * @param apolloClient The Apollo client
- * @param mutation The mutation to run
- * @param variables The variable for the mutation
- * @returns The updated data
- */
-export const performMutation = async <T, TCacheShape = unknown>(
-  apolloClient: ApolloClient<TCacheShape>,
-  mutation: DocumentNode,
-  variables: OperationVariables
-): Promise<FetchResult<T>> => {
-
-  const result: FetchResult<T> = await apolloClient.mutate<T>({
-    mutation,
-    variables
-  });
-
-  if(result.errors){
-    throw result.errors;
-  }
-
-  return result;
-}
 
 /**
  * Converts a subgraph domain Dto to our Domain object

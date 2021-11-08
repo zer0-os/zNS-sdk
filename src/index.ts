@@ -4,7 +4,6 @@ import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
   Config,
-  Domain,
   Instance,
   MintSubdomainStatusCallback,
   PlaceBidParams,
@@ -97,7 +96,11 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
-    lockDomainMetadata: async (domainId: string, lockStatus: boolean, signer: ethers.Signer): Promise<ethers.ContractTransaction> => {
+    lockDomainMetadata: async (
+      domainId: string,
+      lockStatus: boolean,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
       const potentialOwner = await signer.getAddress();
 
@@ -107,10 +110,14 @@ export const createInstance = (config: Config): Instance => {
         potentialOwner,
         registrar
       );
-      
+
       return tx;
     },
-    setDomainMetadata: async (domainId: string, metadataUri: string, signer: ethers.Signer): Promise<ethers.ContractTransaction> => {
+    setDomainMetadata: async (
+      domainId: string,
+      metadataUri: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
       const potentialOwner = await signer.getAddress();
 
@@ -120,14 +127,17 @@ export const createInstance = (config: Config): Instance => {
         potentialOwner,
         registrar
       );
-      
+
       return tx;
-      
     },
-    setAndLockMetadata: async (domainId: string, metadataUri: string, signer: ethers.Signer): Promise<ethers.ContractTransaction> => {
+    setAndLockMetadata: async (
+      domainId: string,
+      metadataUri: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
       const potentialOwner = await signer.getAddress();
-      
+
       const tx = await actions.setAndLockDomainMetadata(
         domainId,
         metadataUri,

@@ -27,7 +27,7 @@ export const mainnetConfiguration = (
       } as zAuctionRoute,
     ],
     basicController: "0xa05Ae774Da859943B7B859cd2A6aD9F5f1651d6a",
-    registrar: mainnetRegistrar
+    registrar: mainnetRegistrar,
   };
 };
 
@@ -55,6 +55,6 @@ export const kovanConfiguration = (
       } as zAuctionRoute,
     ],
     basicController: "0x2EF34C52138781C901Fe9e50B64d80aA9903f730",
-    registrar: kovanRegistrar
+    registrar: kovanRegistrar,
   };
 };

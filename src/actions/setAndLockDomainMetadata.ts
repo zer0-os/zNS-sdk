@@ -8,10 +8,15 @@ export const setAndLockDomainMetadata = async (
   potentialOwner: string,
   registrar: Registrar
 ): Promise<ethers.ContractTransaction> => {
-  validateOwner(domainId, potentialOwner, registrar, "Cannot set metadata of unowned domain")
+  validateOwner(
+    domainId,
+    potentialOwner,
+    registrar,
+    "Cannot set metadata of unowned domain"
+  );
   validateStatus(domainId, registrar, "Locked metadata cannot be modified");
-  
+
   // Always will call with lockStatus: true, so can ignore
-  const tx = await registrar.setAndLockDomainMetadata(domainId, metadataUri)
+  const tx = await registrar.setAndLockDomainMetadata(domainId, metadataUri);
   return tx;
-}
+};

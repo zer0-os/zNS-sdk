@@ -62,7 +62,7 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
     getAllDomains: async (): Promise<Domain[]> => {
       const domains = await actions.getAllDomains(apolloClient);
       return domains;
-    }
+    },
   };
 
   return subgraphClient;
