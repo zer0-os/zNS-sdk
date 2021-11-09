@@ -140,6 +140,16 @@ export const createInstance = (config: Config): Instance => {
       );
       return tx;
     },
+    setDomainRoyalty: async (
+      domainId: string,
+      amount: ethers.BigNumber,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.setDomainRoyalty(domainId, amount, registrar);
+      return tx;
+    },
 
     bidding: {
       needsToApproveZAuctionToSpendTokens: async (
