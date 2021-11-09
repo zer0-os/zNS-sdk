@@ -89,6 +89,11 @@ export interface Instance {
     metadataUri: string,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+  setDomainRoyalty(
+    domainId: string,
+    amount: ethers.BigNumber,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
   /**
    * These methods are for bidding/auctions
    */
