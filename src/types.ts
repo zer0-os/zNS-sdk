@@ -74,21 +74,53 @@ export interface Instance {
     statusCallback?: MintSubdomainStatusCallback
   ): Promise<ethers.ContractTransaction>;
 
+  /**
+   * Set the lock status of metadata to define whether it can
+   * or cannot be changed
+   * @param domainId The domain with metadata to be locked/unlocked
+   * @param lockStatus What to set the locked status too (true/false)
+   * @param signer The account that signs and sends the transaction
+   */
   lockDomainMetadata(
     domainId: string,
     lockStatus: boolean,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+
+  /**
+   * Update the metadata of a given domain
+   * @param domainId The domain with metadata to be locked/unlocked
+   * @param metadataUri The link that the metadata should be updated to
+   * @param signer The account that signs and sends the transaction
+   */
   setDomainMetadata(
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+
+  /**
+   * Update the metadata of a given domain and then lock the domain
+   * metadata from changing in the future. Note we do not accept a
+   * `lockStatus` param because we can always assume that a call to
+   * `setAndLockMetadata` intends to lock the metadata after modifying it
+   * @param domainId The domain with metadata to be locked/unlocked
+   * @param metadataUri The link that the metadata should be updated to
+   * @param signer The account that signs and sends the transaction
+   */
   setAndLockMetadata(
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+
+  /**
+   * Update the royalty amount for a given domain that gets paid
+   * to the minter on domain sale
+   * @param domainId The domain with metadata to be locked/unlocked
+   * @param amount The link that the metadata should be updated to
+   * @param signer The account that signs and sends the transaction
+   */
   setDomainRoyalty(
     domainId: string,
     amount: ethers.BigNumber,
