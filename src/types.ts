@@ -185,7 +185,7 @@ export interface Instance {
 
 export interface zAuctionRoute {
   uriPattern: string;
-  instance: zAuction.Instance;
+  config: zAuction.Config;
 }
 
 export interface Domain {

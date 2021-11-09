@@ -18,7 +18,7 @@ import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
 export { domains };
 
-import * as configurations from "./configurations";
+import * as configurations from "./configuration/configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 
 export { Config } from "./types";
