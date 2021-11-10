@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
+import * as zAuction from "@zero-tech/zauction-sdk";
 
-export class Configuration {
+export class Configuration implements zAuction.Config{
   web3Provider: ethers.providers.Web3Provider;
   apiUri: string;
   subgraphUri: string;
