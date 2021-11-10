@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 import { Config } from "..";
-import { Configuration } from "./configuration";
+import { zAuctionConfiguration } from "./configuration";
 import { zAuctionRoute } from "../types";
 
 const mainnetRegistrar = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
@@ -17,7 +17,8 @@ export const mainnetConfiguration = (
     zAuctionRoutes: [
       {
         uriPattern: "wilder",
-        config: new Configuration(provider) as zAuction.Config,
+        // Use default values
+        config: zAuctionConfiguration(provider, "mainnet") as zAuction.Config,
       } as zAuctionRoute,
     ],
     basicController: "0xa05Ae774Da859943B7B859cd2A6aD9F5f1651d6a",
@@ -38,7 +39,8 @@ export const kovanConfiguration = (
     zAuctionRoutes: [
       {
         uriPattern: "wilder",
-        config: new Configuration(provider) as zAuction.Config,
+        // Use default values
+        config: zAuctionConfiguration(provider, "kovan") as zAuction.Config,
       } as zAuctionRoute,
     ],
     basicController: "0x2EF34C52138781C901Fe9e50B64d80aA9903f730",
