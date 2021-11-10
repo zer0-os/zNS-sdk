@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 import { Config } from "..";
-import { Configuration } from "./configuration"
+import { Configuration } from "./configuration";
 import { zAuctionRoute } from "../types";
 
 const mainnetRegistrar = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
