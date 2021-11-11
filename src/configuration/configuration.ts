@@ -3,18 +3,17 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 
 export const zAuctionConfiguration = (
   web3Provider: ethers.providers.Web3Provider,
-  network: string,
   apiUri?: string,
   subgraphUri?: string,
   zAuctionAddress?: string,
   tokenContract?: string
-) => {
+): zAuction.Config => {
   let defaultApiUri;
   let defaultSubgraphUri;
   let defaultZAuctionAddress;
   let defaultTokenContract;
 
-  if (network == "mainnet") {
+  if (web3Provider.network.name == "mainnet") {
     defaultApiUri = "https://mainnet.zauction.api.zero.tech/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction";

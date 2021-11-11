@@ -9,7 +9,7 @@ import {
   PlaceBidParams,
   SubdomainParams,
 } from "./types";
-import { getZAuctionInstanceForDomain } from "./utilities";
+import { getZAuctionInstanceForDomain, createZAuctionInstances as createZAuctionInstance } from "./utilities";
 import { ethers } from "ethers";
 import { Registrar } from "./contracts/types";
 import { getBasicController, getRegistrar } from "./contracts";
@@ -18,16 +18,18 @@ import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
 export { domains };
 
-import * as configurations from "./configuration/configuration";
+import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 
 export { Config } from "./types";
-export { configurations };
+export { configuration };
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
   const apiClient = api.createClient(config.apiUri);
 
+  createZAuctionInstance(config);
+  
   const domainIdToDomainName = async (domainId: string) => {
     const domainData = await subgraphClient.getDomainById(domainId);
     return domainData.name;
@@ -39,7 +41,7 @@ export const createInstance = (config: Config): Instance => {
       config.zAuctionRoutes,
       domainIdToDomainName
     );
-
+    
     const bidCollection = await zAuctionInstance.listBids([domainId]);
     const domainBids = bidCollection[domainId];
 

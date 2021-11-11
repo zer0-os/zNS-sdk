@@ -2,7 +2,8 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 import { expect } from "chai";
 import * as ethers from "ethers";
 import { zAuctionRoute } from "../src/types";
-import { getZAuctionInstanceForDomain } from "../src/utilities/zAuctionRouting";
+import { Config } from "..";
+import { createZAuctionInstances, getZAuctionInstanceForDomain } from "../src/utilities/zAuctionRouting";
 
 describe("zAuctionRouting", () => {
   const idToName: { [key: string]: string } = {
@@ -14,8 +15,29 @@ describe("zAuctionRouting", () => {
     return idToName[id];
   };
 
-  const dummyConfig1 = { foo: "1" } as unknown as zAuction.Config;
-  const dummyConfig2 = { bar: "2" } as unknown as zAuction.Config;
+    // apiUri: "",
+    // subgraphUri: "",
+    // zAuctionAddress: "",
+    // tokenContract: "",
+    // web3Provider: ethers.providers.getDefaultProvider(),
+  const dummyZAuctionConfig = {
+    apiUri: "http",
+    subgraphUri: "http",
+    zAuctionAddress: "0x1",
+    tokenContract: "http",
+    web3Provider: ethers.providers.getDefaultProvider(),
+  }
+
+  const dummyConfig = {
+    subgraphUri: "http",
+    metricsUri: "http",
+    apiUri: "http",
+    zAuctionRoutes: [],
+    basicController: "http",
+    registrar: "http",
+  } as Config
+
+  createZAuctionInstances(dummyConfig);
 
   const dummyInstance = {
     listSales: () => {},
@@ -34,20 +56,23 @@ describe("zAuctionRouting", () => {
     const routes = [
       {
         uriPattern: "wilder",
-        config: dummyConfig1 as zAuction.Config,
+        config: dummyZAuctionConfig as zAuction.Config,
       } as zAuctionRoute,
       {
         uriPattern: "",
-        config: dummyConfig2 as zAuction.Config,
+        config: dummyZAuctionConfig as zAuction.Config,
       } as zAuctionRoute,
     ];
+
+    dummyConfig.zAuctionRoutes = routes;
+    createZAuctionInstances(dummyConfig);
 
     const instance: zAuction.Instance = await getZAuctionInstanceForDomain(
       "0x1",
       routes,
       idToNameStub
     );
-    
+    // const instance = zAuction.createInstance();
     expect(JSON.stringify(instance)).to.eq(JSON.stringify(dummyInstance))
   });
 
@@ -55,15 +80,18 @@ describe("zAuctionRouting", () => {
     const routes = [
       {
         uriPattern: "wilder",
-        config: dummyConfig1,
+        config: dummyZAuctionConfig,
       } as zAuctionRoute,
       {
         uriPattern: "",
-        config: dummyConfig2,
+        config: dummyZAuctionConfig,
       } as zAuctionRoute,
     ];
 
-    const instance = await getZAuctionInstanceForDomain(
+    dummyConfig.zAuctionRoutes = routes;
+    createZAuctionInstances(dummyConfig);
+
+    const instance: zAuction.Instance = await getZAuctionInstanceForDomain(
       "0x2",
       routes,
       idToNameStub
