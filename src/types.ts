@@ -11,6 +11,10 @@ export interface Config {
   registrar: string;
 }
 
+export interface RouteUriToInstance {
+  [key: string]: zAuction.Instance
+}
+
 /**
  * An instance of the zNS SDK
  */
@@ -222,7 +226,7 @@ export interface Instance {
 
 export interface zAuctionRoute {
   uriPattern: string;
-  instance: zAuction.Instance;
+  config: zAuction.Config;
 }
 
 export interface Domain {

@@ -9,7 +9,10 @@ import {
   PlaceBidParams,
   SubdomainParams,
 } from "./types";
-import { getZAuctionInstanceForDomain } from "./utilities";
+import {
+  getZAuctionInstanceForDomain,
+  createZAuctionInstances,
+} from "./utilities";
 import { ethers } from "ethers";
 import { Registrar } from "./contracts/types";
 import { getBasicController, getRegistrar } from "./contracts";
@@ -18,15 +21,17 @@ import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
 export { domains };
 
-import * as configurations from "./configurations";
+import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 
-export { Config } from "./types";
-export { configurations };
+export { Config, RouteUriToInstance } from "./types";
+export { configuration };
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
   const apiClient = api.createClient(config.apiUri);
+
+  const zAuctionRouteUriToInstance = createZAuctionInstances(config);
 
   const domainIdToDomainName = async (domainId: string) => {
     const domainData = await subgraphClient.getDomainById(domainId);
@@ -37,6 +42,7 @@ export const createInstance = (config: Config): Instance => {
     const zAuctionInstance = await getZAuctionInstanceForDomain(
       domainId,
       config.zAuctionRoutes,
+      zAuctionRouteUriToInstance,
       domainIdToDomainName
     );
 
@@ -55,6 +61,7 @@ export const createInstance = (config: Config): Instance => {
       const zAuctionInstance = await getZAuctionInstanceForDomain(
         domainId,
         config.zAuctionRoutes,
+        zAuctionRouteUriToInstance,
         domainIdToDomainName
       );
 
@@ -69,6 +76,7 @@ export const createInstance = (config: Config): Instance => {
       getZAuctionInstanceForDomain(
         domainId,
         config.zAuctionRoutes,
+        zAuctionRouteUriToInstance,
         domainIdToDomainName
       ),
     getAllDomains: subgraphClient.getAllDomains,
@@ -160,6 +168,7 @@ export const createInstance = (config: Config): Instance => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
 
@@ -176,6 +185,7 @@ export const createInstance = (config: Config): Instance => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
 
@@ -192,6 +202,7 @@ export const createInstance = (config: Config): Instance => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           params.domainId,
           config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
 
@@ -210,6 +221,7 @@ export const createInstance = (config: Config): Instance => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
 
@@ -225,6 +237,7 @@ export const createInstance = (config: Config): Instance => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
 
@@ -239,6 +252,7 @@ export const createInstance = (config: Config): Instance => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           bid.tokenId,
           config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
 

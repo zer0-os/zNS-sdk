@@ -1,4 +1,4 @@
-import { DomainEventType, DomainMintEvent, DomainTransferEvent } from "../src";
+import { DomainEventType, DomainMintEvent, DomainTransferEvent } from "../src/types";
 import { getDomainEvents } from "../src/actions";
 
 import { expect } from "chai";
@@ -34,7 +34,7 @@ describe("getDomainEvents", () => {
       {
         getBidEvents: Sinon.fake.returns([]),
         getMintEvents: Sinon.fake.returns(mintEvent),
-        getTransferEvents: Sinon.fake.returns(transferEvents);
+        getTransferEvents: Sinon.fake.returns(transferEvents),
         getSaleEvents: Sinon.fake.returns([])
       }
     );
@@ -57,7 +57,7 @@ describe("getDomainEvents", () => {
       {
         getBidEvents: Sinon.fake.returns([]),
         getMintEvents: Sinon.fake.returns(mintEvent),
-        getTransferEvents: Sinon.fake.returns(transferEvents);
+        getTransferEvents: Sinon.fake.returns(transferEvents),
         getSaleEvents: Sinon.fake.returns([])
       }
     );
@@ -92,7 +92,7 @@ describe("getDomainEvents", () => {
       {
         getBidEvents: Sinon.fake.returns([]),
         getMintEvents: Sinon.fake.returns(mintEvent),
-        getTransferEvents: Sinon.fake.returns(transferEvents);
+        getTransferEvents: Sinon.fake.returns(transferEvents),
         getSaleEvents: Sinon.fake.returns([])
       }
     );
