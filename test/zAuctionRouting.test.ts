@@ -102,6 +102,16 @@ describe("zAuctionRouting", () => {
       zAuctionRouteUriToInstance,
       idToNameStub
     );
-    expect(JSON.stringify(instance)).to.eq(JSON.stringify(dummyInstance));
+
+    expect(instance).to.have.deep.property(dummyInstance.listSales.name);
+    expect(instance).to.have.deep.property(dummyInstance.listBids.name);
+    expect(instance).to.have.deep.property(dummyInstance.listBidsByAccount.name);
+    expect(instance).to.have.deep.property(dummyInstance.placeBid.name);
+    expect(instance).to.have.deep.property(dummyInstance.isZAuctionApprovedToTransferNft.name);
+    expect(instance).to.have.deep.property(dummyInstance.getZAuctionSpendAllowance.name);
+    expect(instance).to.have.deep.property(dummyInstance.getTradeTokenAddress.name);
+    expect(instance).to.have.deep.property(dummyInstance.approveZAuctionSpendTradeTokens.name);
+    expect(instance).to.have.deep.property(dummyInstance.approveZAuctionTransferNft.name);
+    expect(instance).to.have.deep.property(dummyInstance.acceptBid.name);
   });
 });
