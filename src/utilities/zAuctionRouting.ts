@@ -4,11 +4,12 @@ import { Config } from "..";
 
 type GetDomainNameFromIdFunction = (domainId: string) => Promise<string>;
 
-const zAuctionRouteUriToInstance: RouteUriToInstance = {};
+// const zAuctionRouteUriToInstance: RouteUriToInstance = {};
 
 export const getZAuctionInstanceForDomain = async (
   domainId: string,
   zAuctionRoutes: zAuctionRoute[],
+  routeUriToInstance: RouteUriToInstance,
   getDomainName: GetDomainNameFromIdFunction
 ): Promise<zAuction.Instance> => {
   const domainName = await getDomainName(domainId);
@@ -16,20 +17,19 @@ export const getZAuctionInstanceForDomain = async (
   for (const route of zAuctionRoutes) {
     const match = RegExp(`^${route.uriPattern}`).exec(domainName);
     if (match) {
-
-      return getInstanceByRouteUri(route.uriPattern);
+      return routeUriToInstance[route.uriPattern];
     }
   }
 
   throw Error(`No zAuction Route configured for this domain!`);
 };
 
-export const createZAuctionInstances = (config: Config) => {
+export const createZAuctionInstances = (config: Config): RouteUriToInstance => {
+  const routeUriToInstance: RouteUriToInstance = {};
   for (const route of config.zAuctionRoutes) {
-    zAuctionRouteUriToInstance[route.uriPattern] = zAuction.createInstance(route.config)
+    routeUriToInstance[route.uriPattern] = zAuction.createInstance(
+      route.config
+    );
   }
-}
-
-export const getInstanceByRouteUri = (routeUri: string) => {
-  return zAuctionRouteUriToInstance[routeUri];
-} 
+  return routeUriToInstance;
+};

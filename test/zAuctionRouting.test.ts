@@ -65,11 +65,12 @@ describe("zAuctionRouting", () => {
     ];
 
     dummyConfig.zAuctionRoutes = routes;
-    createZAuctionInstances(dummyConfig);
+    const zAuctionRouteUriToInstance = createZAuctionInstances(dummyConfig);
 
     const instance: zAuction.Instance = await getZAuctionInstanceForDomain(
       "0x1",
       routes,
+      zAuctionRouteUriToInstance,
       idToNameStub
     );
     // const instance = zAuction.createInstance();
@@ -89,11 +90,12 @@ describe("zAuctionRouting", () => {
     ];
 
     dummyConfig.zAuctionRoutes = routes;
-    createZAuctionInstances(dummyConfig);
+    const zAuctionRouteUriToInstance = createZAuctionInstances(dummyConfig);
 
     const instance: zAuction.Instance = await getZAuctionInstanceForDomain(
       "0x2",
       routes,
+      zAuctionRouteUriToInstance,
       idToNameStub
     );
     expect(JSON.stringify(instance)).to.eq(JSON.stringify(dummyInstance));
