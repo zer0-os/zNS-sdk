@@ -4,8 +4,6 @@ import { Config } from "..";
 
 type GetDomainNameFromIdFunction = (domainId: string) => Promise<string>;
 
-// const zAuctionRouteUriToInstance: RouteUriToInstance = {};
-
 export const getZAuctionInstanceForDomain = async (
   domainId: string,
   zAuctionRoutes: zAuctionRoute[],

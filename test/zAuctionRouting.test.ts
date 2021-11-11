@@ -15,11 +15,6 @@ describe("zAuctionRouting", () => {
     return idToName[id];
   };
 
-    // apiUri: "",
-    // subgraphUri: "",
-    // zAuctionAddress: "",
-    // tokenContract: "",
-    // web3Provider: ethers.providers.getDefaultProvider(),
   const dummyZAuctionConfig = {
     apiUri: "http",
     subgraphUri: "http",
@@ -73,8 +68,17 @@ describe("zAuctionRouting", () => {
       zAuctionRouteUriToInstance,
       idToNameStub
     );
-    // const instance = zAuction.createInstance();
-    expect(JSON.stringify(instance)).to.eq(JSON.stringify(dummyInstance))
+
+    expect(instance).to.have.deep.property(dummyInstance.listSales.name);
+    expect(instance).to.have.deep.property(dummyInstance.listBids.name);
+    expect(instance).to.have.deep.property(dummyInstance.listBidsByAccount.name);
+    expect(instance).to.have.deep.property(dummyInstance.placeBid.name);
+    expect(instance).to.have.deep.property(dummyInstance.isZAuctionApprovedToTransferNft.name);
+    expect(instance).to.have.deep.property(dummyInstance.getZAuctionSpendAllowance.name);
+    expect(instance).to.have.deep.property(dummyInstance.getTradeTokenAddress.name);
+    expect(instance).to.have.deep.property(dummyInstance.approveZAuctionSpendTradeTokens.name);
+    expect(instance).to.have.deep.property(dummyInstance.approveZAuctionTransferNft.name);
+    expect(instance).to.have.deep.property(dummyInstance.acceptBid.name);
   });
 
   it("Returns default route", async () => {
