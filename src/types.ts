@@ -206,7 +206,7 @@ export interface Instance {
     buyNow(
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction>; 
+    ): Promise<ethers.ContractTransaction>;
     setBuyNowPrice(
       params: zAuction.SetBuyNowParams,
       signer: ethers.Signer
