@@ -275,7 +275,7 @@ export const createInstance = (config: Config): Instance => {
         return tx;
       },
       setBuyNowPrice: async (
-        params: zAuction.SetBuyNowParams,
+        params: zAuction.BuyNowParams,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
