@@ -12,7 +12,7 @@ export interface Config {
 }
 
 export interface RouteUriToInstance {
-  [key: string]: zAuction.Instance
+  [key: string]: zAuction.Instance;
 }
 
 /**
@@ -130,10 +130,11 @@ export interface Instance {
     amount: ethers.BigNumber,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+
   /**
    * These methods are for bidding/auctions
    */
-  bidding: {
+  auctions: {
     /**
      * Checks whether a user account has approved zAuction to spend tokens on their
      * behalf. They need to approve zAuction to spend their tokens for their bid to
@@ -199,6 +200,19 @@ export interface Instance {
      */
     acceptBid(
       bid: Bid,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction>;
+
+    buyNow(
+      params: zAuction.BuyNowParams,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction>; 
+    setBuyNowPrice(
+      params: zAuction.SetBuyNowParams,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction>;
+    cancelBuyNow(
+      tokenId: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
   };
