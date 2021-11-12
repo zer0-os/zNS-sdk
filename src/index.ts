@@ -158,7 +158,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setDomainRoyalty(domainId, amount, registrar);
       return tx;
     },
-    auctions: {
+    zauction: {
       needsToApproveZAuctionToSpendTokens: async (
         domainId: string,
         account: string,

@@ -132,9 +132,9 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   /**
-   * These methods are for bidding/auctions
+   * These methods are for bidding or sales of domains
    */
-  auctions: {
+  zauction: {
     /**
      * Checks whether a user account has approved zAuction to spend tokens on their
      * behalf. They need to approve zAuction to spend their tokens for their bid to
