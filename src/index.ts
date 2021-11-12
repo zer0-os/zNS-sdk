@@ -158,8 +158,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setDomainRoyalty(domainId, amount, registrar);
       return tx;
     },
-
-    bidding: {
+    zauction: {
       needsToApproveZAuctionToSpendTokens: async (
         domainId: string,
         account: string,
@@ -258,6 +257,49 @@ export const createInstance = (config: Config): Instance => {
 
         const tx = await zAuctionInstance.acceptBid(bid, signer);
 
+        return tx;
+      },
+      // Awaiting zAuction-SDK PR to be merged, npm package to upgrade, then can uncomment
+      buyNow: async (
+        params: zAuction.BuyNowParams,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          params.tokenId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
+
+        const tx = await zAuctionInstance.buyNow(params, signer);
+        return tx;
+      },
+      setBuyNowPrice: async (
+        params: zAuction.BuyNowParams,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          params.tokenId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
+
+        const tx = await zAuctionInstance.setBuyNowPrice(params, signer);
+        return tx;
+      },
+      cancelBuyNow: async (
+        tokenId: string,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          tokenId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
+
+        const tx = await zAuctionInstance.cancelBuyNow(tokenId, signer);
         return tx;
       },
     },
