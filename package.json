@@ -42,11 +42,11 @@
     "@ethersproject/abi": "5.4.1",
     "@ethersproject/bytes": "5.4.0",
     "@ethersproject/providers": "5.4.5",
-    "@zero-tech/zauction-sdk": "0.0.26",
     "cross-fetch": "3.1.4",
     "graphql": "15.5.3"
   },
   "peerDependencies": {
-    "ethers": "^5.4.6"
+    "ethers": "^5.4.6",
+    "@zero-tech/zauction-sdk": ">=0.0.26"
   }
 }
