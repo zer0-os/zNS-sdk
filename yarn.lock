@@ -889,7 +889,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@zero-tech/zauction-sdk@^0.0.26":
+"@zero-tech/zauction-sdk@0.0.26":
   version "0.0.26"
   resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.0.26.tgz#3219326585b77a1218dd8bdd3f3f53290969bc9b"
   integrity sha512-Akb4KvJCfDDCr8fdHASbxX6IPt+Ko9nuc6sC7ns6VuI/UeOceAZz+LmPtou4YLTR7hX3v4SSqi/YPCFR3BmAxw==
