@@ -213,6 +213,23 @@ export const createInstance = (config: Config): Instance => {
           signer
         );
       },
+
+      cancelBid: async (
+        auctionId: string,
+        domainId: string,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          domainId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
+
+        const tx = await zAuctionInstance.cancelBid(auctionId, signer);
+        return tx;
+      },
+
       needsToApproveZAuctionToTransferNfts: async (
         domainId: string,
         account: string

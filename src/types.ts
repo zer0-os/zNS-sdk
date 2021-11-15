@@ -172,6 +172,17 @@ export interface Instance {
     ): Promise<void>;
 
     /**
+     * Cancel a bid for a domain, only callable by the creator of that bid
+     * @param auctionId The id used to identify the bid
+     * @param signer The user account signer (connected wallet)
+     */
+    cancelBid(
+      domainId: string,
+      auctionId: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction>;
+
+    /**
      * Checks whether a user has approved zAuction to transfer NFT's on their behalf.
      * zAuction must be approved before a user can accept a bid for a domain they own.
      * @param domainId The domain ID that is going to be sold
