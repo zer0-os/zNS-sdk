@@ -15,7 +15,8 @@ export const getZAuctionInstanceForDomain = async (
   for (const route of zAuctionRoutes) {
     const match = RegExp(`^${route.uriPattern}`).exec(domainName);
     if (match) {
-      return routeUriToInstance[route.uriPattern];
+      const instance = routeUriToInstance[route.uriPattern];
+      return instance;
     }
   }
 
