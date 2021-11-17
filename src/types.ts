@@ -311,6 +311,7 @@ export interface DomainMetrics {
   lastSale: string;
   lastBid: string;
   highestBid: string;
+  numberOfBids: number;
   volume: {
     all: string;
     day: string;
