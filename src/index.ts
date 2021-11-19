@@ -5,9 +5,12 @@ import * as zAuction from "./zAuction";
 import {
   Config,
   Instance,
+  InvalidInputMessage,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
+  UploadJobStatus,
+  UrlToJobId,
 } from "./types";
 import {
   getZAuctionInstanceForDomain,
@@ -26,6 +29,10 @@ import { getDomainMetrics } from "./actions/getDomainMetrics";
 
 export { Config, RouteUriToInstance } from "./types";
 export { configuration };
+
+const invalidInputMessage:InvalidInputMessage = {
+  errorMessage: 'Please only make requests of 100 URLs at a time.'
+};
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
@@ -327,6 +334,21 @@ export const createInstance = (config: Config): Instance => {
       uploadObjectAsJson: async (
         object: Record<string, unknown>
       ): Promise<string> => apiClient.uploadObject(object),
+
+      startUrlUploadJob: (urls: string[]): Promise<UrlToJobId[]> | InvalidInputMessage => {
+        if(urls.length>100){
+          return invalidInputMessage;
+        }
+        
+        return apiClient.startBulkUpload(urls);
+      },
+
+      checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus[]> | InvalidInputMessage => {
+        if(jobIds.length>100){
+            return invalidInputMessage;
+        }
+        return apiClient.checkBulkUploadJob(jobIds);
+      }
     },
   };
 

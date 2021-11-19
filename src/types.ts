@@ -240,6 +240,10 @@ export interface Instance {
      */
     uploadMedia(media: Buffer): Promise<string>;
 
+    startUrlUploadJob(urls: string[]): Promise<UrlToJobId[]> | InvalidInputMessage; // returns job ids
+
+    checkBulkUploadJob(jobIds: string[]): Promise<UploadJobStatus[]> | InvalidInputMessage; // return status of the jobs
+
     /**
      * Uploads an object to IPFS as JSON
      * @param object Some object
@@ -247,6 +251,25 @@ export interface Instance {
      */
     uploadObjectAsJson(object: Record<string, unknown>): Promise<string>;
   };
+}
+
+export interface UploadJobStatus {
+  [jobId: string]: {
+    isCompleted: boolean,
+    result: {
+      url: string,
+      hash: string
+    }
+    failed: boolean
+  }
+}
+
+export interface UrlToJobId {
+    [url:string]: string
+}
+
+export interface InvalidInputMessage {
+    errorMessage: string
 }
 
 export interface zAuctionRoute {
