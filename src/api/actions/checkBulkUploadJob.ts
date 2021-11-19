@@ -4,14 +4,14 @@ import { makeApiCall } from "./helpers";
 
 export const checkBulkUploadJob = async (
   apiUri: string,
-  urls: string[]
+  jobIds: string[]
 ): Promise<UploadJobStatus[]> => {
   let response: Maybe<UploadJobStatus[]>;
   try {
     response = await makeApiCall<UploadJobStatus[]>(
-      `${apiUri}/checkBulk`,
+      `${apiUri}/background/checkBulk`,
       "POST",
-      {urls: urls}
+      { jobIds: jobIds }
     );
   } catch (e) {
     throw Error(`Check Job status failed: ${e}`);

@@ -9,9 +9,9 @@ export const startBulkUpload = async (
   let response: Maybe<UrlToJobId[]>;
   try {
     response = await makeApiCall<UrlToJobId[]>(
-      `${apiUri}/startBulk`,
+      `${apiUri}/background/startBulk`,
       "POST",
-      {urls: urls}
+      { urls: urls }
     );
   } catch (e) {
     throw Error(`Bulk upload failed: ${e}`);

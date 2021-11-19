@@ -5,7 +5,6 @@ import * as zAuction from "./zAuction";
 import {
   Config,
   Instance,
-  InvalidInputMessage,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
@@ -30,9 +29,7 @@ import { getDomainMetrics } from "./actions/getDomainMetrics";
 export { Config, RouteUriToInstance } from "./types";
 export { configuration };
 
-const invalidInputMessage:InvalidInputMessage = {
-  errorMessage: 'Please only make requests of 100 URLs at a time.'
-};
+const invalidInputMessage = "Please only make requests of 100 URLs at a time.";
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
@@ -335,20 +332,24 @@ export const createInstance = (config: Config): Instance => {
         object: Record<string, unknown>
       ): Promise<string> => apiClient.uploadObject(object),
 
-      startUrlUploadJob: (urls: string[]): Promise<UrlToJobId[]> | InvalidInputMessage => {
-        if(urls.length>100){
-          return invalidInputMessage;
+      startUrlUploadJob: (urls: string[]): Promise<UrlToJobId[]> => {
+        if (urls.length > 100) {
+          throw new Error(invalidInputMessage);
         }
-        
+
         return apiClient.startBulkUpload(urls);
       },
 
-      checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus[]> | InvalidInputMessage => {
-        if(jobIds.length>100){
-            return invalidInputMessage;
+      checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus[]> => {
+        if (jobIds.length > 100) {
+          throw new Error(invalidInputMessage);
         }
         return apiClient.checkBulkUploadJob(jobIds);
-      }
+      },
+
+      checkUploadJob: (jobId: string): Promise<UploadJobStatus> => {
+        return apiClient.checkBulkUploadJob([jobId]).then((value) => value[0]);
+      },
     },
   };
 
