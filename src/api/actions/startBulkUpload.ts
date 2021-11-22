@@ -1,14 +1,13 @@
 import { Maybe } from "../../utilities";
-import { UrlToJobId } from "../../types";
 import { makeApiCall } from "./helpers";
 
 export const startBulkUpload = async (
   apiUri: string,
   urls: string[]
-): Promise<UrlToJobId[]> => {
-  let response: Maybe<UrlToJobId[]>;
+): Promise<any> => {
+  let response: Maybe<any>;
   try {
-    response = await makeApiCall<UrlToJobId[]>(
+    response = await makeApiCall<any>(
       `${apiUri}/background/startBulk`,
       "POST",
       { urls: urls }

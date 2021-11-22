@@ -240,9 +240,9 @@ export interface Instance {
      */
     uploadMedia(media: Buffer): Promise<string>;
 
-    startUrlUploadJob(urls: string[]): Promise<UrlToJobId[]>; // returns job ids
+    startUrlUploadJob(urls: string[]): Promise<any>; // returns job ids
 
-    checkBulkUploadJob(jobIds: string[]): Promise<UploadJobStatus[]>; // return status of the jobs
+    checkBulkUploadJob(jobIds: string[]): Promise<UploadJobStatus>; // return status of the jobs
 
     checkUploadJob(jobId: string): Promise<UploadJobStatus>;
 
@@ -264,10 +264,6 @@ export interface UploadJobStatus {
     };
     failed: boolean;
   };
-}
-
-export interface UrlToJobId {
-  [url: string]: string;
 }
 
 export interface InvalidInputMessage {

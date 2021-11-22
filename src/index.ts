@@ -9,7 +9,6 @@ import {
   PlaceBidParams,
   SubdomainParams,
   UploadJobStatus,
-  UrlToJobId,
 } from "./types";
 import {
   getZAuctionInstanceForDomain,
@@ -332,15 +331,14 @@ export const createInstance = (config: Config): Instance => {
         object: Record<string, unknown>
       ): Promise<string> => apiClient.uploadObject(object),
 
-      startUrlUploadJob: (urls: string[]): Promise<UrlToJobId[]> => {
+      startUrlUploadJob: (urls: string[]): Promise<any> => {
         if (urls.length > 100) {
           throw new Error(invalidInputMessage);
         }
-
         return apiClient.startBulkUpload(urls);
       },
 
-      checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus[]> => {
+      checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus> => {
         if (jobIds.length > 100) {
           throw new Error(invalidInputMessage);
         }
@@ -348,7 +346,7 @@ export const createInstance = (config: Config): Instance => {
       },
 
       checkUploadJob: (jobId: string): Promise<UploadJobStatus> => {
-        return apiClient.checkBulkUploadJob([jobId]).then((value) => value[0]);
+        return apiClient.checkBulkUploadJob([jobId]);
       },
     },
   };

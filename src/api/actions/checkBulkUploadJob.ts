@@ -5,10 +5,10 @@ import { makeApiCall } from "./helpers";
 export const checkBulkUploadJob = async (
   apiUri: string,
   jobIds: string[]
-): Promise<UploadJobStatus[]> => {
-  let response: Maybe<UploadJobStatus[]>;
+): Promise<UploadJobStatus> => {
+  let response: Maybe<UploadJobStatus>;
   try {
-    response = await makeApiCall<UploadJobStatus[]>(
+    response = await makeApiCall<UploadJobStatus>(
       `${apiUri}/background/checkBulk`,
       "POST",
       { jobIds: jobIds }
