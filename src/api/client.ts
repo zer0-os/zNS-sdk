@@ -17,8 +17,8 @@ export const createClient = (apiUri: string): ApiClient => {
     uploadObject: (object: Record<string, unknown>) =>
       actions.uploadObject(apiUri, object),
     startBulkUpload: (urls: string[]) => actions.startBulkUpload(apiUri, urls),
-    checkBulkUploadJob: (urls: string[]) =>
-      actions.checkBulkUploadJob(apiUri, urls),
+    checkBulkUploadJob: (jobIds: string[]) =>
+      actions.checkBulkUploadJob(apiUri, jobIds),
   };
 
   return apiClient;

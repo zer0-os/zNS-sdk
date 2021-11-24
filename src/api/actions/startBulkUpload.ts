@@ -1,5 +1,5 @@
-import { Maybe } from "../../utilities";
 import { UrlToJobId } from "../../types";
+import { Maybe } from "../../utilities";
 import { makeApiCall } from "./helpers";
 
 export const startBulkUpload = async (
