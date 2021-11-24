@@ -5,8 +5,8 @@ export interface ApiClient {
   uploadMetadata: (metadata: DomainMetadata) => Promise<string>;
   uploadMedia: (media: Buffer) => Promise<string>;
   uploadObject: (object: Record<string, unknown>) => Promise<string>;
-  startBulkUpload: (urls: string[]) => Promise<UrlToJobId[]>;
-  checkBulkUploadJob: (urls: string[]) => Promise<UploadJobStatus[]>;
+  startBulkUpload: (urls: string[]) => Promise<UrlToJobId>;
+  checkBulkUploadJob: (urls: string[]) => Promise<UploadJobStatus>;
 }
 
 export const createClient = (apiUri: string): ApiClient => {

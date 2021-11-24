@@ -29,7 +29,8 @@ import { getDomainMetrics } from "./actions/getDomainMetrics";
 export { Config, RouteUriToInstance } from "./types";
 export { configuration };
 
-const invalidInputMessage = "Please only make requests of 100 URLs at a time.";
+const invalidInputMessage =
+  "Please only make requests of up to 100 URLs at a time.";
 
 export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
@@ -332,23 +333,28 @@ export const createInstance = (config: Config): Instance => {
         object: Record<string, unknown>
       ): Promise<string> => apiClient.uploadObject(object),
 
-      startUrlUploadJob: (urls: string[]): Promise<UrlToJobId[]> => {
+      startUrlUploadJob: (urls: string[]): Promise<UrlToJobId> => {
         if (urls.length > 100) {
           throw new Error(invalidInputMessage);
         }
-
+        if (urls.length == 0) {
+          return new Promise<UrlToJobId>(() => {});
+        }
         return apiClient.startBulkUpload(urls);
       },
 
-      checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus[]> => {
+      checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus> => {
         if (jobIds.length > 100) {
           throw new Error(invalidInputMessage);
+        }
+        if (jobIds.length == 0) {
+          return new Promise<UploadJobStatus>(() => {});
         }
         return apiClient.checkBulkUploadJob(jobIds);
       },
 
       checkUploadJob: (jobId: string): Promise<UploadJobStatus> => {
-        return apiClient.checkBulkUploadJob([jobId]).then((value) => value[0]);
+        return apiClient.checkBulkUploadJob([jobId]);
       },
     },
   };
