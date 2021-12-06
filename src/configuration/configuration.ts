@@ -13,7 +13,10 @@ export const zAuctionConfiguration = (
   let defaultZAuctionAddress;
   let defaultTokenContract;
 
-  if (web3Provider.network.name == "mainnet") {
+  if (
+    web3Provider.network.name == "mainnet" ||
+    web3Provider.network.name == "homestead"
+  ) {
     defaultApiUri = "https://mainnet.zauction.api.zero.tech/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction";
