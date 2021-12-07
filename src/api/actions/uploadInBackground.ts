@@ -5,6 +5,7 @@ import * as fs from "fs";
 
 const URLS_PER_CHUNK = 100;
 const ERROR_FILEPATH = "error.json";
+const FAILURE_FILEPATH = "failed.json";
 let errorJobs: {
   start: [{ url: string; error: unknown }];
   check: [{ url: string; jobId: string; error: unknown }];
@@ -63,6 +64,7 @@ export const uploadInBackground = async (
       });
 
   fs.writeFileSync(ERROR_FILEPATH, JSON.stringify(errorJobs));
+  fs.writeFileSync(FAILURE_FILEPATH, JSON.stringify(failedJobs));
 
   return completedJobs;
 };
