@@ -270,6 +270,10 @@ export interface UrlToJobId {
   [url: string]: string;
 }
 
+export interface UrlToIPFS {
+  [url: string]: string;
+}
+
 export interface InvalidInputMessage {
   errorMessage: string;
 }
