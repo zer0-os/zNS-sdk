@@ -13,6 +13,9 @@ export const zAuctionConfiguration = (
   let defaultZAuctionAddress;
   let defaultTokenContract;
 
+  if (!web3Provider)
+    throw Error("Invalid provider given");
+
   if (
     web3Provider.network.name == "mainnet" ||
     web3Provider.network.name == "homestead"
