@@ -26,7 +26,7 @@ export { domains };
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 
-export { Config, RouteUriToInstance } from "./types";
+export * from "./types";
 export { configuration };
 
 const invalidInputMessage =
