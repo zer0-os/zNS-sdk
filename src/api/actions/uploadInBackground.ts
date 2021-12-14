@@ -1,22 +1,28 @@
-import { checkBulkUploadJob } from ".";
-import { UploadJobStatus, UrlToIPFS, UrlToJobId } from "../../types";
+import { checkBulkUploadJob } from "./checkBulkUploadJob";
 import { startBulkUpload } from "./startBulkUpload";
+import {
+  JobIdToUrl,
+  UploadJobStatus,
+  UrlToIPFS,
+  UrlToJobId,
+} from "../../types";
 import * as fs from "fs";
 
-const URLS_PER_CHUNK = 100;
+const URLS_PER_CHUNK_START = 100;
+const URLS_PER_CHUNK_CHECK = 1000;
 const ERROR_FILEPATH = "error.json";
 const FAILURE_FILEPATH = "failed.json";
 let errorJobs: {
-  start: [{ url: string; error: unknown }];
-  check: [{ url: string; jobId: string; error: unknown }];
+  start: { url: string; error: unknown }[];
+  check: { url: string; jobId: string; error: unknown }[];
+} = {
+  start: [],
+  check: [],
 };
 
-let failedJobs: {
-  start: [{ url: string; reason: string }];
-  check: [{ url: string; jobId: string }];
-};
+let failedCheckJobs: UploadJobStatus;
 
-let incompleteJobs: UrlToJobId = {};
+let incompleteJobs: JobIdToUrl = {};
 
 export const uploadInBackground = async (
   apiUri: string,
@@ -24,52 +30,60 @@ export const uploadInBackground = async (
   uploadedCallback?: (url: string, ipfsUrl: string) => void
 ): Promise<UrlToIPFS> => {
   let completedJobs: UrlToIPFS = {};
-  const urlBatches: string[][] = chunkArray(urls, URLS_PER_CHUNK);
+  const urlBatches: string[][] = chunkArray(urls, URLS_PER_CHUNK_START);
   const startBulkResponses: UrlToJobId = (
     await Promise.all(
-      urlBatches.map(async (urls) => await tryStartBulkUpload(apiUri, urls))
+      // .map, .foreach cannot be async
+      // to get around, you have to make it return a promise
+      urlBatches.map(async (urls): Promise<UrlToJobId> => {
+        return await tryStartBulkUpload(apiUri, urls);
+      })
     )
   ).reduce((accumulator, currentResponse) => {
-    Object.entries(currentResponse).map(
-      (urlToJobId) => (accumulator[urlToJobId[0]] = urlToJobId[1])
+    Object.entries(currentResponse).forEach(
+      ([key, value]) => (accumulator[key] = value)
     );
     return accumulator;
   });
-  incompleteJobs = startBulkResponses;
+  for (const key of Object.keys(startBulkResponses)) {
+    incompleteJobs[startBulkResponses[key]] = key;
+  }
+  // same idea as above, map into promise and then await all promises
+  while (Object.keys(incompleteJobs).length != 0) {
+    let jobIdChunks: string[][] = chunkArray(
+      Object.keys(incompleteJobs),
+      URLS_PER_CHUNK_CHECK
+    );
 
-  let jobIdChunks: string[][] = chunkArray(
-    Object.values(incompleteJobs),
-    URLS_PER_CHUNK
-  );
-  while (Object.keys(incompleteJobs).length != 0)
-    jobIdChunks
-      .map((jobIds) => tryCheckBulkUploadJob(apiUri, jobIds))
-      .map(async (promise) => {
-        const uploadJobStatus: UploadJobStatus = await promise;
-        Object.entries(uploadJobStatus).map((jobStatus) =>
-          jobStatus[1].isCompleted
-            ? () => {
-                const jobId = jobStatus[0];
-                const jobInfo = jobStatus[1];
-                if (jobInfo.failed) {
-                  failedJobs.check.push({ url: incompleteJobs[jobId], jobId });
-                } else {
-                  completedJobs[jobId] = jobInfo.result.hash;
-                  uploadedCallback?.(jobId, jobInfo.result.hash);
-                }
-                delete incompleteJobs[jobId];
-              }
-            : () => {}
-        );
-      });
+    for (const jobIds of jobIdChunks) {
+      const statuses = await tryCheckBulkUploadJob(apiUri, jobIds);
+      for (const jobId of jobIds) {
+        const status = statuses[jobId];
+        if (status?.isCompleted ?? false) {
+          if (status.failed) {
+            failedCheckJobs[jobId] = status;
+          } else {
+            completedJobs[jobId] = status.result.hash;
+            uploadedCallback?.(jobId, status.result.hash);
+          }
+          delete incompleteJobs[jobId];
+        }
+      }
+    }
+    await delay(10);
+  }
 
-  fs.writeFileSync(ERROR_FILEPATH, JSON.stringify(errorJobs));
-  fs.writeFileSync(FAILURE_FILEPATH, JSON.stringify(failedJobs));
+  fs.writeFileSync(ERROR_FILEPATH, JSON.stringify(errorJobs ?? ""));
+  fs.writeFileSync(FAILURE_FILEPATH, JSON.stringify(failedCheckJobs ?? ""));
 
   return completedJobs;
 };
 
-const tryStartBulkUpload = async (
+const delay = (milliseconds: number) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
+export const tryStartBulkUpload = async (
   apiUri: string,
   urls: string[]
 ): Promise<UrlToJobId> => {
@@ -77,12 +91,15 @@ const tryStartBulkUpload = async (
   try {
     uploadResponse = await startBulkUpload(apiUri, urls);
   } catch (e) {
-    urls.forEach((url) => errorJobs.start.push({ url: url, error: e }));
+    urls.forEach((url) => {
+      delete incompleteJobs[uploadResponse[url]];
+      errorJobs.start.push({ url: url, error: e });
+    });
   }
   return uploadResponse;
 };
 
-const tryCheckBulkUploadJob = async (
+export const tryCheckBulkUploadJob = async (
   apiUri: string,
   jobIds: string[]
 ): Promise<UploadJobStatus> => {
@@ -90,25 +107,26 @@ const tryCheckBulkUploadJob = async (
   try {
     checkResponse = await checkBulkUploadJob(apiUri, jobIds);
   } catch (e) {
-    jobIds.forEach((jobId) =>
+    jobIds.forEach((jobId) => {
+      delete incompleteJobs[jobId];
       errorJobs.check.push({
         url: incompleteJobs[jobId] ?? "unknown",
         jobId,
         error: e,
-      })
-    );
+      });
+    });
   }
 
   return checkResponse;
 };
 
-const chunkArray = (array: any[], numChunks: number): any[][] => {
+const chunkArray = (array: any[], chunkSize: number): any[][] => {
   let batches: any[][] = [];
   let numBatches: number = 0;
   let i: number = 0;
   while (i < array.length) {
-    batches[numBatches] = array.slice(i, i + numChunks);
-    i += URLS_PER_CHUNK;
+    batches[numBatches] = array.slice(i, i + chunkSize);
+    i += chunkSize;
     numBatches++;
   }
 
