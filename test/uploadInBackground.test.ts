@@ -192,4 +192,42 @@ describe("uploadInBackground", async () => {
     mockCheckJob.restore();
     mockUpload.restore();
   });
+
+  it("Calls a callback function", async () => {
+    let calledCallback = false;
+    let i = 0;
+    fakeUrlList[i] = fakeUrl + i;
+    fakeStartJobResponse[fakeUrlList[i]] = i.toString();
+    fakeCheckJobResponse = {
+      [i]: {
+        isCompleted: true,
+        result: { url: fakeUrl + i, hash: "test" },
+        failed: false,
+      },
+    };
+    const mockUpload = ImportMock.mockFunction(
+      uploadInBackgroundFunctions,
+      "tryStartBulkUpload",
+      fakeStartJobResponse
+    ).resolves(fakeStartJobResponse);
+
+    const mockCheckJob = ImportMock.mockFunction(
+      uploadInBackgroundFunctions,
+      "tryCheckBulkUploadJob",
+      fakeCheckJobResponse
+    ).resolves(fakeCheckJobResponse);
+
+    await uploadInBackgroundFunctions.uploadInBackground(
+      fakeApiUri,
+      fakeUrlList,
+      (_, __) => {
+        calledCallback = true;
+      }
+    );
+
+    assert(calledCallback);
+
+    mockUpload.restore();
+    mockCheckJob.restore();
+  });
 });
