@@ -12,9 +12,21 @@ const URLS_PER_CHUNK_START = 100;
 const URLS_PER_CHUNK_CHECK = 1000;
 const ERROR_FILEPATH = "error.json";
 const FAILURE_FILEPATH = "failed.json";
+
+export interface StartErrorJob {
+  url: string;
+  error?: unknown;
+}
+
+export interface CheckErrorJob {
+  url: string;
+  jobId: string;
+  error?: unknown;
+}
+
 let errorJobs: {
-  start: { url: string; error: unknown }[];
-  check: { url: string; jobId: string; error: unknown }[];
+  start: StartErrorJob[];
+  check: CheckErrorJob[];
 } = {
   start: [],
   check: [],
@@ -59,6 +71,7 @@ export const uploadInBackground = async (
       const statuses = await tryCheckBulkUploadJob(apiUri, jobIds);
       for (const jobId of jobIds) {
         const status = statuses[jobId];
+        if (!status) continue;
         if (status?.isCompleted ?? false) {
           if (status.failed) {
             failedCheckJobs[jobId] = status;
@@ -108,12 +121,12 @@ export const tryCheckBulkUploadJob = async (
     checkResponse = await checkBulkUploadJob(apiUri, jobIds);
   } catch (e) {
     jobIds.forEach((jobId) => {
-      delete incompleteJobs[jobId];
       errorJobs.check.push({
         url: incompleteJobs[jobId] ?? "unknown",
         jobId,
         error: e,
       });
+      delete incompleteJobs[jobId];
     });
   }
 
