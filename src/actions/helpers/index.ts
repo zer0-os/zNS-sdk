@@ -13,8 +13,9 @@ export const validateUserOwnsDomain = async (
 export const validateStatus = async (
   domainId: string,
   registrar: Registrar,
+  lockStatus: boolean,
   message: string
 ) => {
   const record = await registrar.records(domainId);
-  if (record.metadataLocked === true) throw Error(message);
+  if (record.metadataLocked === lockStatus) throw Error(message);
 };
