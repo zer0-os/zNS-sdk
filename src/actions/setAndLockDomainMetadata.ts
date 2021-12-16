@@ -14,7 +14,8 @@ export const setAndLockDomainMetadata = async (
     registrar,
     "Must own domain to lock metadata"
   );
-  validateStatus(domainId, registrar, "Metadata must be unlocked to be modified");
+  // For set and lock, we always will be locking
+  validateStatus(domainId, registrar, true, "Metadata must be unlocked to be modified");
 
   // Always will call with lockStatus: true, so can ignore
   const tx = await registrar.setAndLockDomainMetadata(domainId, metadataUri);
