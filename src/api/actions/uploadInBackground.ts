@@ -10,8 +10,6 @@ import * as fs from "fs";
 
 const URLS_PER_CHUNK_START = 100;
 const URLS_PER_CHUNK_CHECK = 1000;
-const ERROR_FILEPATH = "error.json";
-const FAILURE_FILEPATH = "failed.json";
 
 export interface StartErrorJob {
   url: string;
@@ -24,31 +22,36 @@ export interface CheckErrorJob {
   error?: unknown;
 }
 
-let errorJobs: {
+export interface ErrorJobs {
   start: StartErrorJob[];
   check: CheckErrorJob[];
-} = {
-  start: [],
-  check: [],
-};
-
-let failedCheckJobs: UploadJobStatus;
-
-let incompleteJobs: JobIdToUrl = {};
+}
 
 export const uploadInBackground = async (
   apiUri: string,
   urls: string[],
-  uploadedCallback?: (url: string, ipfsUrl: string) => void
+  uploadedCallback?: (url: string, ipfsUrl: string) => void,
+  errorCallback?: (erroredJobs: ErrorJobs) => void
 ): Promise<UrlToIPFS> => {
-  let completedJobs: UrlToIPFS = {};
+  const failedCheckJobs: UploadJobStatus = {};
+  const incompleteJobs: JobIdToUrl = {};
+  const errorJobs: ErrorJobs = {
+    start: [],
+    check: [],
+  };
+  const completedJobs: UrlToIPFS = {};
   const urlBatches: string[][] = chunkArray(urls, URLS_PER_CHUNK_START);
   const startBulkResponses: UrlToJobId = (
     await Promise.all(
       // .map, .foreach cannot be async
       // to get around, you have to make it return a promise
       urlBatches.map(async (urls): Promise<UrlToJobId> => {
-        return await tryStartBulkUpload(apiUri, urls);
+        return await tryStartBulkUpload(
+          apiUri,
+          urls,
+          errorJobs,
+          incompleteJobs
+        );
       })
     )
   ).reduce((accumulator, currentResponse) => {
@@ -68,7 +71,12 @@ export const uploadInBackground = async (
     );
 
     for (const jobIds of jobIdChunks) {
-      const statuses = await tryCheckBulkUploadJob(apiUri, jobIds);
+      const statuses = await tryCheckBulkUploadJob(
+        apiUri,
+        jobIds,
+        errorJobs,
+        incompleteJobs
+      );
       for (const jobId of jobIds) {
         const status = statuses[jobId];
         if (!status) continue;
@@ -86,8 +94,7 @@ export const uploadInBackground = async (
     await delay(10);
   }
 
-  fs.writeFileSync(ERROR_FILEPATH, JSON.stringify(errorJobs ?? ""));
-  fs.writeFileSync(FAILURE_FILEPATH, JSON.stringify(failedCheckJobs ?? ""));
+  errorCallback?.(errorJobs);
 
   return completedJobs;
 };
@@ -98,7 +105,9 @@ const delay = (milliseconds: number) => {
 
 export const tryStartBulkUpload = async (
   apiUri: string,
-  urls: string[]
+  urls: string[],
+  errorJobs: ErrorJobs,
+  incompleteJobs: JobIdToUrl
 ): Promise<UrlToJobId> => {
   let uploadResponse: UrlToJobId = {};
   try {
@@ -114,7 +123,9 @@ export const tryStartBulkUpload = async (
 
 export const tryCheckBulkUploadJob = async (
   apiUri: string,
-  jobIds: string[]
+  jobIds: string[],
+  errorJobs: ErrorJobs,
+  incompleteJobs: JobIdToUrl
 ): Promise<UploadJobStatus> => {
   let checkResponse: UploadJobStatus = {};
   try {

@@ -31,8 +31,9 @@ describe("uploadInBackground", async () => {
 
     uploadInBackgroundFunctions.uploadInBackground(fakeApiUri, fakeUrlList);
 
-    assert(mockUpload.firstCall.lastArg.length == 100);
-    assert(mockUpload.secondCall.lastArg.length == 1);
+    console.log(mockUpload.firstCall.args.length);
+    assert(mockUpload.firstCall.args[1].length == 100);
+    assert(mockUpload.secondCall.args[1].length == 1);
 
     mockUpload.restore();
   });
@@ -64,8 +65,8 @@ describe("uploadInBackground", async () => {
       fakeUrlList
     );
 
-    assert(mockCheckJob.firstCall.lastArg.length == 1000);
-    assert(mockCheckJob.secondCall.lastArg.length == 1);
+    assert(mockCheckJob.firstCall.args[1].length == 1000);
+    assert(mockCheckJob.secondCall.args[1].length == 1);
 
     mockUpload.restore();
     mockCheckJob.restore();
@@ -110,9 +111,9 @@ describe("uploadInBackground", async () => {
       fakeUrlList
     );
 
-    assert(mockCheckJob.firstCall.lastArg.length == 1000);
-    assert(mockCheckJob.secondCall.lastArg.length == 1000);
-    assert(mockCheckJob.thirdCall.lastArg.length == 1000);
+    assert(mockCheckJob.firstCall.args[1].length == 1000);
+    assert(mockCheckJob.secondCall.args[1].length == 1000);
+    assert(mockCheckJob.thirdCall.args[1].length == 1000);
     assert(mockCheckJob.callCount == 3);
 
     mockUpload.restore();
@@ -146,7 +147,7 @@ describe("uploadInBackground", async () => {
 
     assert(mockUpload.called);
 
-    assert(mockUpload.firstCall.lastArg.length == 100);
+    assert(mockUpload.firstCall.args[1].length == 100);
     assert(mockUpload.callCount == 1);
 
     mockUpload.restore();
@@ -186,14 +187,14 @@ describe("uploadInBackground", async () => {
 
     assert(mockCheckJob.called);
 
-    assert(mockCheckJob.firstCall.lastArg.length == 100);
+    assert(mockCheckJob.firstCall.args[1].length == 100);
     assert(mockCheckJob.callCount == 1);
 
     mockCheckJob.restore();
     mockUpload.restore();
   });
 
-  it("Calls a callback function", async () => {
+  it("Calls a callback function when a job is uploaded", async () => {
     let calledCallback = false;
     let i = 0;
     fakeUrlList[i] = fakeUrl + i;
@@ -223,6 +224,41 @@ describe("uploadInBackground", async () => {
       (_, __) => {
         calledCallback = true;
       }
+    );
+
+    assert(calledCallback);
+
+    mockUpload.restore();
+    mockCheckJob.restore();
+  });
+
+  it("Calls a callback function for erroredJobs", async () => {
+    let calledCallback = false;
+    for (let i = 0; i < 100; i++) {
+      fakeUrlList[i] = fakeUrl + i;
+      fakeStartJobResponse[fakeUrlList[i]] = i.toString();
+      fakeCheckJobResponse[i] = {
+        isCompleted: true,
+        result: { url: fakeUrl + i, hash: "test" },
+        failed: false,
+      };
+    }
+    const mockUpload = ImportMock.mockFunction(
+      uploadInBackgroundFunctions,
+      "tryStartBulkUpload",
+      fakeStartJobResponse
+    ).resolves(fakeStartJobResponse);
+
+    const mockCheckJob = ImportMock.mockFunction(
+      checkBulkUploadJob,
+      "checkBulkUploadJob"
+    ).throws("fakeError");
+
+    await uploadInBackgroundFunctions.uploadInBackground(
+      fakeApiUri,
+      fakeUrlList,
+      (_, __) => {},
+      (_) => (calledCallback = true)
     );
 
     assert(calledCallback);
