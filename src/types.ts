@@ -11,6 +11,10 @@ export interface Config {
   registrar: string;
 }
 
+export interface Listing {
+  price: number;
+  holder: string;
+}
 export interface RouteUriToInstance {
   [key: string]: zAuction.Instance;
 }

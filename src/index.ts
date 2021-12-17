@@ -5,6 +5,7 @@ import * as zAuction from "./zAuction";
 import {
   Config,
   Instance,
+  Listing,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
@@ -316,8 +317,8 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
         const domain = await subgraphClient.getDomainById(tokenId);
-        const listing = await zAuctionInstance.getBuyNowPrice(tokenId, signer);
-        if (listing.holder !== domain.owner)
+        const listing: Listing = await zAuctionInstance.getBuyNowPrice(tokenId, signer);
+        if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())
           return 0;
         return listing.price
       },
