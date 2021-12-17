@@ -177,10 +177,12 @@ export interface Instance {
      * @param signer The user account signer (connected wallet)
      */
     cancelBid(
-      domainId: string,
       auctionId: string,
+      signedBidMessage: string,
+      domainId: string,
+      cancelOnChain: boolean,
       signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction>;
+    ): Promise<ethers.ContractTransaction | void>;
 
     /**
      * Checks whether a user has approved zAuction to transfer NFT's on their behalf.
@@ -218,6 +220,10 @@ export interface Instance {
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
+    getBuyNowPrice(
+      tokenId: string,
+      signer: ethers.Signer
+    ): Promise<number>;
     setBuyNowPrice(
       params: zAuction.BuyNowParams,
       signer: ethers.Signer

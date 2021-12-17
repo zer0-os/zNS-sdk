@@ -221,9 +221,11 @@ export const createInstance = (config: Config): Instance => {
 
       cancelBid: async (
         auctionId: string,
+        signedBidMessage: string,
         domainId: string,
+        cancelOnChain: boolean,
         signer: ethers.Signer
-      ): Promise<ethers.ContractTransaction> => {
+      ): Promise<ethers.ContractTransaction | void> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
@@ -231,8 +233,14 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
 
-        const tx = await zAuctionInstance.cancelBid(auctionId, signer);
-        return tx;
+        const tx = await zAuctionInstance.cancelBid(
+          auctionId,
+          signedBidMessage,
+          cancelOnChain,
+          signer
+        );
+        if (tx)
+          return tx;
       },
 
       needsToApproveZAuctionToTransferNfts: async (
@@ -295,6 +303,24 @@ export const createInstance = (config: Config): Instance => {
 
         const tx = await zAuctionInstance.buyNow(params, signer);
         return tx;
+      },
+      getBuyNowPrice: async (
+        tokenId: string,
+        signer: ethers.Signer
+      ): Promise<number> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          tokenId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
+        const listing = await zAuctionInstance.getBuyNowPrice(tokenId, signer);
+        if (!listing)
+          throw Error(
+            "Price couldn't be found because the domain doesn't exist or is not on sale"
+          );
+
+        return listing.price
       },
       setBuyNowPrice: async (
         params: zAuction.BuyNowParams,
