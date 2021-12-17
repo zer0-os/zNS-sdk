@@ -25,6 +25,7 @@ export { domains };
 
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
+import { getDomainById } from "./subgraph/queries";
 
 export * from "./types";
 export { configuration };
@@ -314,12 +315,10 @@ export const createInstance = (config: Config): Instance => {
           zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
+        const domain = await subgraphClient.getDomainById(tokenId);
         const listing = await zAuctionInstance.getBuyNowPrice(tokenId, signer);
-        if (!listing)
-          throw Error(
-            "Price couldn't be found because the domain doesn't exist or is not on sale"
-          );
-
+        if (listing.holder !== domain.owner)
+          return 0;
         return listing.price
       },
       setBuyNowPrice: async (
