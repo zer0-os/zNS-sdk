@@ -14,7 +14,7 @@ export const setDomainMetadata = async (
     registrar,
     "Must own domain to lock metadata"
   );
-  validateStatus(domainId, registrar, "Metadata must be unlocked to be modified");
+  validateStatus(domainId, registrar, true, "Metadata must be unlocked to be modified");
 
   const tx = await registrar.setDomainMetadataUri(domainId, metadataUri);
   return tx;

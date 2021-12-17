@@ -1,7 +1,9 @@
 import { ethers } from "ethers";
 import { Registrar } from "../contracts/types";
-import { validateUserOwnsDomain, validateStatus as validateDomainUnlocked } from "./helpers";
+import { validateUserOwnsDomain, validateStatus } from "./helpers";
 
+// Call to set domain metadata lock status to `lockStatus`
+// e.g. set to `true` to lock, and `false` to unlock
 export const lockDomainMetadata = async (
   domainId: string,
   lockStatus: boolean,
@@ -14,7 +16,14 @@ export const lockDomainMetadata = async (
     registrar,
     "Must own domain to lock metadata"
   );
-  validateDomainUnlocked(domainId, registrar, "Metadata is already locked");
+  // Will throw an error if the lock status from the registrar is the same as the given lock.
+  // e.g. You cannot lock already locked domain metadata, and you cannot unlock already unlocked domain metadata.
+  validateStatus(
+    domainId,
+    registrar,
+    lockStatus,
+    "Metadata lock is already set to given lock status"
+  );
 
   const tx = await registrar.lockDomainMetadata(domainId, lockStatus);
   return tx;

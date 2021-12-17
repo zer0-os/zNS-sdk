@@ -5,6 +5,7 @@ import * as zAuction from "./zAuction";
 import {
   Config,
   Instance,
+  Listing,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
@@ -25,6 +26,7 @@ export { domains };
 
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
+import { getDomainById } from "./subgraph/queries";
 
 export * from "./types";
 export { configuration };
@@ -221,9 +223,11 @@ export const createInstance = (config: Config): Instance => {
 
       cancelBid: async (
         auctionId: string,
+        signedBidMessage: string,
         domainId: string,
+        cancelOnChain: boolean,
         signer: ethers.Signer
-      ): Promise<ethers.ContractTransaction> => {
+      ): Promise<ethers.ContractTransaction | void> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
@@ -231,8 +235,14 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
 
-        const tx = await zAuctionInstance.cancelBid(auctionId, signer);
-        return tx;
+        const tx = await zAuctionInstance.cancelBid(
+          auctionId,
+          signedBidMessage,
+          cancelOnChain,
+          signer
+        );
+        if (tx)
+          return tx;
       },
 
       needsToApproveZAuctionToTransferNfts: async (
@@ -295,6 +305,22 @@ export const createInstance = (config: Config): Instance => {
 
         const tx = await zAuctionInstance.buyNow(params, signer);
         return tx;
+      },
+      getBuyNowPrice: async (
+        tokenId: string,
+        signer: ethers.Signer
+      ): Promise<number> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          tokenId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
+        const domain = await subgraphClient.getDomainById(tokenId);
+        const listing: Listing = await zAuctionInstance.getBuyNowPrice(tokenId, signer);
+        if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())
+          return 0;
+        return listing.price
       },
       setBuyNowPrice: async (
         params: zAuction.BuyNowParams,
