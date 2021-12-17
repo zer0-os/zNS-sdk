@@ -1,6 +1,6 @@
 {
   "name": "@zero-tech/zns-sdk",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:zer0-os/zNS-sdk.git",
