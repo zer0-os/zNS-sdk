@@ -4,6 +4,7 @@ import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
   Config,
+  DomainMetadata,
   Instance,
   Listing,
   MintSubdomainStatusCallback,
@@ -26,7 +27,6 @@ export { domains };
 
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
-import { getDomainById } from "./subgraph/queries";
 
 export * from "./types";
 export { configuration };
@@ -126,14 +126,49 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
-    setDomainMetadata: async (
+    getDomainMetadata: async (
+      domainId: string,
+      signer: ethers.Signer
+    ): Promise<DomainMetadata> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const metadata = await actions.getDomainMetadata(domainId, registrar);
+
+      return metadata;
+    },
+    // setDomainMetadata: async (
+    //   domainId: string,
+    //   metadata: DomainMetadata,
+    //   signer: ethers.Signer
+    // ): Promise<ethers.ContractTransaction> => {
+    //   // metadata must be unlocked
+    //   // metadata can only be set by the owner of the domain
+
+    //   const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      
+      
+    // },
+    // create getter and setter for token URI
+    // biddable, stakeable,
+    // getters and setters for each easily
+    // should have a standard for zNS metadata, but where is it?
+    // might have to message Zach for this
+    getDomainMetadataUri: async (
+      domainId: string,
+      signer: ethers.Signer
+    ): Promise<string> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const metadataUri = await registrar.tokenURI(domainId);
+      return metadataUri;
+    },
+    setDomainMetadataUri: async (
       domainId: string,
       metadataUri: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
 
-      const tx = await actions.setDomainMetadata(
+      const tx = await actions.setDomainMetadataUri(
         domainId,
         metadataUri,
         registrar
@@ -141,14 +176,14 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
-    setAndLockMetadata: async (
+    setAndLockMetadataUri: async (
       domainId: string,
       metadataUri: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
 
-      const tx = await actions.setAndLockDomainMetadata(
+      const tx = await actions.setAndLockDomainMetadataUri(
         domainId,
         metadataUri,
         registrar

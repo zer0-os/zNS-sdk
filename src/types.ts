@@ -96,12 +96,37 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   /**
+   * Get the metadata for a given domain
+   * 
+   * @param domainId The domain to get metadata for
+   * @param signer The account used in instantiating the registrar
+   */
+  getDomainMetadata: (
+    domainId: string,
+    signer: ethers.Signer
+  ) => Promise<DomainMetadata>;
+  // TODO comments
+  // setDomainMetadata: (
+  //   domainId: string,
+  //   metadata: DomainMetadata,
+  //   signer: ethers.Signer
+  // ) => Promise<ethers.ContractTransaction>;
+  /**
+   * Get the current metadata for a given domain
+   * @param domainId The id of the domain
+   * @param signer The account used in instantiating the registrar
+   */
+  getDomainMetadataUri(
+    domainId: string,
+    signer: ethers.Signer
+    ): Promise<string>;
+  /**
    * Update the metadata of a given domain
    * @param domainId The domain with metadata to be locked/unlocked
    * @param metadataUri The link that the metadata should be updated to
    * @param signer The account that signs and sends the transaction
    */
-  setDomainMetadata(
+  setDomainMetadataUri(
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
@@ -116,7 +141,7 @@ export interface Instance {
    * @param metadataUri The link that the metadata should be updated to
    * @param signer The account that signs and sends the transaction
    */
-  setAndLockMetadata(
+  setAndLockMetadataUri(
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
@@ -265,6 +290,9 @@ export interface Instance {
   };
 }
 
+export interface Metadata {
+  [key: string]: string;
+}
 export interface UploadJobStatus {
   [jobId: string]: {
     isCompleted: boolean;
