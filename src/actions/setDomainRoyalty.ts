@@ -1,6 +1,6 @@
 import * as ethers from "ethers";
 import { Registrar } from "../contracts/types";
-import { validateUserOwnsDomain, validateStatus } from "./helpers";
+import { validateUserOwnsDomain } from "./helpers";
 
 export const setDomainRoyalty = async (
   domainId: string,

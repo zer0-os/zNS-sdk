@@ -1,13 +1,10 @@
 import { Registrar } from "../contracts/types";
 import { validateOwnerAndStatus } from "./helpers";
 import { ethers } from "ethers";
-import { ApiClient } from "../api";
-import { DomainMetadata } from "..";
 
-export const setDomainMetadata = async (
+export const setDomainMetadataUri = async (
   domainId: string,
-  metadata: DomainMetadata,
-  client: ApiClient,
+  metadataUri: string,
   registrar: Registrar
 ): Promise<ethers.ContractTransaction> => {
   const potentialOwner = await registrar.signer.getAddress();
@@ -22,9 +19,7 @@ export const setDomainMetadata = async (
     isLocked,
     ownerMessage,
     statusMessage
-  );
-
-  const metadataUri = await client.uploadMetadata(metadata);
+  )
 
   const tx = await registrar.setDomainMetadataUri(domainId, metadataUri);
   return tx;

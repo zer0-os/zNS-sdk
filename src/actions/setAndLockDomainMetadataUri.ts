@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { Registrar } from "../contracts/types";
-import { validateUserOwnsDomain, validateStatus } from "./helpers";
+import { validateOwnerAndStatus } from "./helpers";
 
 export const setAndLockDomainMetadataUri = async (
   domainId: string,
@@ -8,16 +8,18 @@ export const setAndLockDomainMetadataUri = async (
   registrar: Registrar
 ): Promise<ethers.ContractTransaction> => {
   const potentialOwner = await registrar.signer.getAddress();
-  validateUserOwnsDomain(
-    domainId,
-    potentialOwner,
-    registrar,
-    "Must own domain to lock metadata"
-  );
-  // For set and lock, we always will be locking
-  validateStatus(domainId, registrar, true, "Metadata must be unlocked to be modified");
+  const isLocked = true;
+  const ownerMessage = "Must own domain to update metadata";
+  const statusMessage = "Metadata must be unlocked to be modified"
 
-  // Always will call with lockStatus: true, so can ignore
+  validateOwnerAndStatus(
+    domainId,
+    registrar,
+    potentialOwner,
+    isLocked,
+    ownerMessage,
+    statusMessage
+  );
   const tx = await registrar.setAndLockDomainMetadata(domainId, metadataUri);
   return tx;
 };

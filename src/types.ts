@@ -118,6 +118,16 @@ export interface Instance {
     signer: ethers.Signer
   ) => Promise<ethers.ContractTransaction>;
   /**
+   * Set the domain metadata to a given metadata uri
+   * 
+   * @param domain
+   */
+  setDomainMetadataUri: (
+    domainId: string,
+    metadataUri: string,
+    signer: ethers.Signer
+  ) => Promise<ethers.ContractTransaction>
+  /**
    * Get the current metadata for a given domain
    * @param domainId The id of the domain
    * @param signer The account used in instantiating the registrar
@@ -136,7 +146,21 @@ export interface Instance {
    * @param metadataUri The link that the metadata should be updated to
    * @param signer The account that signs and sends the transaction
    */
-  setAndLockMetadataUri(
+  setAndLockDomainMetadata(
+    domainId: string,
+    metadata: DomainMetadata,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+  /**
+   * Update the metadata of a given domain and then lock the domain
+   * metadata from changing in the future. Note we do not accept a
+   * `lockStatus` param because we can always assume that a call to
+   * `setAndLockMetadata` intends to lock the metadata after modifying it
+   * @param domainId The domain with metadata to be locked/unlocked
+   * @param metadataUri The link that the metadata should be updated to
+   * @param signer The account that signs and sends the transaction
+   */
+  setAndLockDomainMetadataUri(
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
@@ -326,11 +350,16 @@ export interface DomainMetadata {
   name: string;
   description: string;
   stakingRequests: "disabled" | "enabled" | undefined;
-  isBiddable: boolean | undefined;
-  gridViewByDefault: boolean;
-  customDomainHeader: boolean;
+  isBiddable?: boolean;
+  gridViewByDefault?: boolean;
+  customDomainHeader?: boolean;
   previewImage?: string;
   customDomainHeaderValue?: string;
+}
+
+export enum IPFSGatewayUri {
+  ipfs = "ipfs.io",
+  fleek = "ipfs.fleek.co"
 }
 
 export enum DomainEventType {

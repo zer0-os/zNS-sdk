@@ -1,17 +1,20 @@
 import { Registrar } from "../contracts/types";
-import { DomainMetadata } from "../types"
+import { DomainMetadata, IPFSGatewayUri } from "../types"
 import { makeApiCall } from "../api/actions/helpers";
 
-export const getDomainMetadata = async (domainId: string, registrar: Registrar) => {
+export const getDomainMetadata = async (
+  domainId: string,
+  registrar: Registrar,
+  ipfsGatewayUri: IPFSGatewayUri
+): Promise<DomainMetadata> => {
   const metadataUri = await registrar.tokenURI(domainId);
 
-  // DomainURI is always one of the two below
-  // https://ipfs.fleek.co/ipfs/Qm...
-  // ipfs://Qm...
   let metadata: DomainMetadata;
-  if (!metadataUri.includes("fleek")) {
+  if (!metadataUri.includes("https")) {
+    // If domain uri is ipfs uri we must format it for https
+    // e.g. ipfs://Qm...
     const qmHash = metadataUri.split("//")[1];
-    const formattedUri = `https://ipfs.io/ipfs/${qmHash}`;
+    const formattedUri = `https://${ipfsGatewayUri}/ipfs/${qmHash}`;
 
     metadata = await makeApiCall<DomainMetadata>(formattedUri, "GET");
   } else {

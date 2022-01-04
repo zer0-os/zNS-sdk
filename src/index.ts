@@ -6,6 +6,7 @@ import {
   Config,
   DomainMetadata,
   Instance,
+  IPFSGatewayUri,
   Listing,
   MintSubdomainStatusCallback,
   PlaceBidParams,
@@ -131,7 +132,7 @@ export const createInstance = (config: Config): Instance => {
       signer: ethers.Signer
     ): Promise<DomainMetadata> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-      const metadata = await actions.getDomainMetadata(domainId, registrar);
+      const metadata = await actions.getDomainMetadata(domainId, registrar, IPFSGatewayUri.fleek);
       return metadata;
     },
     getDomainMetadataUri: async (
@@ -156,7 +157,35 @@ export const createInstance = (config: Config): Instance => {
       );
       return tx;
     },
-    setAndLockMetadataUri: async (
+    setDomainMetadataUri: async (
+      domainId: string,
+      metadataUri: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const tx = await actions.setDomainMetadataUri(
+        domainId,
+        metadataUri,
+        registrar
+      );
+      return tx;
+    },
+    setAndLockDomainMetadata: async (
+      domainId: string,
+      metadata: DomainMetadata,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.setAndLockDomainMetadata(
+        domainId,
+        metadata,
+        apiClient,
+        registrar
+      );
+      return tx;
+    },
+    setAndLockDomainMetadataUri: async (
       domainId: string,
       metadataUri: string,
       signer: ethers.Signer
