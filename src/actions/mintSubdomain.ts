@@ -51,6 +51,10 @@ export const mintSubdomain = async (
     animation_url: animationUri,
     description: params.description,
     name: params.name,
+    isBiddable: false,
+    stakingRequests: "disabled",
+    gridViewByDefault: false,
+    customDomainHeader: false,
     ...params.additionalMetadata,
   };
 

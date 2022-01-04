@@ -131,28 +131,9 @@ export const createInstance = (config: Config): Instance => {
       signer: ethers.Signer
     ): Promise<DomainMetadata> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-
       const metadata = await actions.getDomainMetadata(domainId, registrar);
-
       return metadata;
     },
-    // setDomainMetadata: async (
-    //   domainId: string,
-    //   metadata: DomainMetadata,
-    //   signer: ethers.Signer
-    // ): Promise<ethers.ContractTransaction> => {
-    //   // metadata must be unlocked
-    //   // metadata can only be set by the owner of the domain
-
-    //   const registrar: Registrar = await getRegistrar(signer, config.registrar);
-      
-      
-    // },
-    // create getter and setter for token URI
-    // biddable, stakeable,
-    // getters and setters for each easily
-    // should have a standard for zNS metadata, but where is it?
-    // might have to message Zach for this
     getDomainMetadataUri: async (
       domainId: string,
       signer: ethers.Signer
@@ -161,19 +142,18 @@ export const createInstance = (config: Config): Instance => {
       const metadataUri = await registrar.tokenURI(domainId);
       return metadataUri;
     },
-    setDomainMetadataUri: async (
+    setDomainMetadata: async (
       domainId: string,
-      metadataUri: string,
+      metadata: DomainMetadata,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-
-      const tx = await actions.setDomainMetadataUri(
+      const tx = await actions.setDomainMetadata(
         domainId,
-        metadataUri,
+        metadata,
+        apiClient,
         registrar
       );
-
       return tx;
     },
     setAndLockMetadataUri: async (
@@ -399,7 +379,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (urls.length == 0) {
-          return new Promise<UrlToJobId>(() => {});
+          return new Promise<UrlToJobId>(() => { });
         }
         return apiClient.startBulkUpload(urls);
       },
@@ -409,7 +389,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (jobIds.length == 0) {
-          return new Promise<UploadJobStatus>(() => {});
+          return new Promise<UploadJobStatus>(() => { });
         }
         return apiClient.checkBulkUploadJob(jobIds);
       },
