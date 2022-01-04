@@ -11,7 +11,7 @@ export const getDomainMetadata = async (domainId: string, registrar: Registrar) 
   let metadata: DomainMetadata;
   if (!metadataUri.includes("fleek")) {
     const qmHash = metadataUri.split("//")[1];
-    const formattedUri = `https://ipfs.fleek.co/ipfs/${qmHash}`;
+    const formattedUri = `https://ipfs.io/ipfs/${qmHash}`;
 
     metadata = await makeApiCall<DomainMetadata>(formattedUri, "GET");
   } else {

@@ -96,7 +96,7 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   /**
-   * Get the metadata for a given domain
+   * Get the metadata uri for a given domain
    * 
    * @param domainId The domain to get metadata for
    * @param signer The account used in instantiating the registrar
@@ -285,9 +285,6 @@ export interface Instance {
   };
 }
 
-export interface Metadata {
-  [key: string]: string;
-}
 export interface UploadJobStatus {
   [jobId: string]: {
     isCompleted: boolean;
