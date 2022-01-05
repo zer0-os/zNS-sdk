@@ -1,21 +1,31 @@
-import * as ethers from "ethers";
 import { Registrar } from "../contracts/types";
-import { validateUserOwnsDomain, validateStatus } from "./helpers";
+import { validateOwnerAndStatus } from "./helpers";
+import { ethers } from "ethers";
+import { ApiClient } from "../api";
+import { DomainMetadata } from "..";
 
 export const setDomainMetadata = async (
   domainId: string,
-  metadataUri: string,
+  metadata: DomainMetadata,
+  client: ApiClient,
   registrar: Registrar
 ): Promise<ethers.ContractTransaction> => {
   const potentialOwner = await registrar.signer.getAddress();
-  validateUserOwnsDomain(
+  const isLocked = true;
+  const ownerMessage = "Must own domain to update metadata";
+  const statusMessage = "Metadata must be unlocked to be modified"
+
+  validateOwnerAndStatus(
     domainId,
-    potentialOwner,
     registrar,
-    "Must own domain to lock metadata"
+    potentialOwner,
+    isLocked,
+    ownerMessage,
+    statusMessage
   );
-  validateStatus(domainId, registrar, true, "Metadata must be unlocked to be modified");
+
+  const metadataUri = await client.uploadMetadata(metadata);
 
   const tx = await registrar.setDomainMetadataUri(domainId, metadataUri);
   return tx;
-};
+}

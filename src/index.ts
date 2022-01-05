@@ -4,7 +4,9 @@ import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
   Config,
+  DomainMetadata,
   Instance,
+  IPFSGatewayUri,
   Listing,
   MintSubdomainStatusCallback,
   PlaceBidParams,
@@ -26,7 +28,6 @@ export { domains };
 
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
-import { getDomainById } from "./subgraph/queries";
 
 export * from "./types";
 export { configuration };
@@ -126,29 +127,72 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
+    getDomainMetadata: async (
+      domainId: string,
+      signer: ethers.Signer
+    ): Promise<DomainMetadata> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const metadata = await actions.getDomainMetadata(domainId, registrar, IPFSGatewayUri.fleek);
+      return metadata;
+    },
+    getDomainMetadataUri: async (
+      domainId: string,
+      signer: ethers.Signer
+    ): Promise<string> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const metadataUri = await registrar.tokenURI(domainId);
+      return metadataUri;
+    },
     setDomainMetadata: async (
+      domainId: string,
+      metadata: DomainMetadata,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const tx = await actions.setDomainMetadata(
+        domainId,
+        metadata,
+        apiClient,
+        registrar
+      );
+      return tx;
+    },
+    setDomainMetadataUri: async (
       domainId: string,
       metadataUri: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-
-      const tx = await actions.setDomainMetadata(
+      const tx = await actions.setDomainMetadataUri(
         domainId,
         metadataUri,
         registrar
       );
-
       return tx;
     },
-    setAndLockMetadata: async (
+    setAndLockDomainMetadata: async (
       domainId: string,
-      metadataUri: string,
+      metadata: DomainMetadata,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
 
       const tx = await actions.setAndLockDomainMetadata(
+        domainId,
+        metadata,
+        apiClient,
+        registrar
+      );
+      return tx;
+    },
+    setAndLockDomainMetadataUri: async (
+      domainId: string,
+      metadataUri: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.setAndLockDomainMetadataUri(
         domainId,
         metadataUri,
         registrar
@@ -364,7 +408,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (urls.length == 0) {
-          return new Promise<UrlToJobId>(() => {});
+          return new Promise<UrlToJobId>(() => { });
         }
         return apiClient.startBulkUpload(urls);
       },
@@ -374,7 +418,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (jobIds.length == 0) {
-          return new Promise<UploadJobStatus>(() => {});
+          return new Promise<UploadJobStatus>(() => { });
         }
         return apiClient.checkBulkUploadJob(jobIds);
       },
