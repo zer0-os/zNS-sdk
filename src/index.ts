@@ -167,6 +167,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setDomainMetadataUri(
         domainId,
         metadataUri,
+        signer,
         registrar
       );
       return tx;
@@ -182,6 +183,7 @@ export const createInstance = (config: Config): Instance => {
         domainId,
         metadata,
         apiClient,
+        signer,
         registrar
       );
       return tx;
@@ -196,6 +198,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setAndLockDomainMetadataUri(
         domainId,
         metadataUri,
+        signer,
         registrar
       );
       return tx;
