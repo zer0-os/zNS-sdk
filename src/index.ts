@@ -153,6 +153,7 @@ export const createInstance = (config: Config): Instance => {
         domainId,
         metadata,
         apiClient,
+        signer,
         registrar
       );
       return tx;
