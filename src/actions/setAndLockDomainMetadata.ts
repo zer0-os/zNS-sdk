@@ -8,25 +8,17 @@ export const setAndLockDomainMetadata = async (
   domainId: string,
   metadata: DomainMetadata,
   client: ApiClient,
-  potentialOwner: ethers.Signer,
+  signer: ethers.Signer,
   registrar: Registrar
 ): Promise<ethers.ContractTransaction> => {
   const isLocked = true;
-  const ownerMessage = "Must own domain to update metadata";
-  const statusMessage = "Metadata must be unlocked to be modified"
-  const potentialOwnerAddress = await potentialOwner.getAddress();
+  const signerAddress = await signer.getAddress();
 
-  validateOwnerAndStatus(
-    domainId,
-    registrar,
-    potentialOwnerAddress,
-    isLocked,
-    ownerMessage,
-    statusMessage
-  );
+  validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
   const metadataUri = await client.uploadMetadata(metadata);
 
-  const tx = await registrar.connect(potentialOwner)
+  const tx = await registrar
+    .connect(signer)
     .setAndLockDomainMetadata(domainId, metadataUri);
   return tx;
 };

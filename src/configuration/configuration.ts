@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 
 export const zAuctionConfiguration = (
-  web3Provider: ethers.providers.Web3Provider,
+  web3Provider: ethers.providers.Provider,
   network: string,
   apiUri?: string,
   subgraphUri?: string,
@@ -24,7 +24,7 @@ export const zAuctionConfiguration = (
     defaultApiUri = "https://zauction-kovan-api.herokuapp.com/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-kovan";
-    defaultZAuctionAddress = "0x18A804a028aAf1F30082E91d2947734961Dd7f89";
+    defaultZAuctionAddress = "0x646757a5F3C9eEB4C6Bd136fCefE655B4A8107e4";
     defaultTokenContract = "0xC613fCc3f81cC2888C5Cccc1620212420FFe4931";
   } else {
     throw Error(`Network ${network} is not supported`);
