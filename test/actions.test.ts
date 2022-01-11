@@ -7,7 +7,13 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 import * as subgraph from "../src/subgraph";
 
 import * as actions from "../src/actions";
-import { Config, DomainMetadata, IPFSGatewayUri, Listing, zAuctionRoute } from "../src/types";
+import {
+  Config,
+  DomainMetadata,
+  IPFSGatewayUri,
+  Listing,
+  zAuctionRoute,
+} from "../src/types";
 import { Registrar } from "../src/contracts/types";
 import { getRegistrar } from "../src/contracts";
 import { createClient } from "../src/api";
@@ -35,7 +41,6 @@ describe("Test Custom SDK Logic", () => {
   const legacyZAuctionAddress = "0x18A804a028aAf1F30082E91d2947734961Dd7f89";
   const newZAuctionAddress = "0x646757a5F3C9eEB4C6Bd136fCefE655B4A8107e4";
   const registrarAddress = "0xC613fCc3f81cC2888C5Cccc1620212420FFe4931";
-
 
   // Kovan config
   const config: Config = {

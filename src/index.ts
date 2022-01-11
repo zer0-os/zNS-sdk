@@ -122,6 +122,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.lockDomainMetadata(
         domainId,
         lockStatus,
+        signer,
         registrar
       );
 
@@ -132,7 +133,11 @@ export const createInstance = (config: Config): Instance => {
       signer: ethers.Signer
     ): Promise<DomainMetadata> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-      const metadata = await actions.getDomainMetadata(domainId, registrar, IPFSGatewayUri.fleek);
+      const metadata = await actions.getDomainMetadata(
+        domainId,
+        registrar,
+        IPFSGatewayUri.fleek
+      );
       return metadata;
     },
     getDomainMetadataUri: async (
@@ -210,7 +215,12 @@ export const createInstance = (config: Config): Instance => {
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
 
-      const tx = await actions.setDomainRoyalty(domainId, amount, registrar);
+      const tx = await actions.setDomainRoyalty(
+        domainId,
+        amount,
+        signer,
+        registrar
+      );
       return tx;
     },
     zauction: {
@@ -289,8 +299,7 @@ export const createInstance = (config: Config): Instance => {
           cancelOnChain,
           signer
         );
-        if (tx)
-          return tx;
+        if (tx) return tx;
       },
 
       needsToApproveZAuctionToTransferNfts: async (
@@ -365,10 +374,13 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
         const domain = await subgraphClient.getDomainById(tokenId);
-        const listing: Listing = await zAuctionInstance.getBuyNowPrice(tokenId, signer);
+        const listing: Listing = await zAuctionInstance.getBuyNowPrice(
+          tokenId,
+          signer
+        );
         if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())
           return 0;
-        return listing.price
+        return listing.price;
       },
       setBuyNowPrice: async (
         params: zAuction.BuyNowParams,
@@ -412,7 +424,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (urls.length == 0) {
-          return new Promise<UrlToJobId>(() => { });
+          return new Promise<UrlToJobId>(() => {});
         }
         return apiClient.startBulkUpload(urls);
       },
@@ -422,7 +434,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (jobIds.length == 0) {
-          return new Promise<UploadJobStatus>(() => { });
+          return new Promise<UploadJobStatus>(() => {});
         }
         return apiClient.checkBulkUploadJob(jobIds);
       },
