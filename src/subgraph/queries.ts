@@ -110,8 +110,12 @@ export const getDomainMintEvent = gql`
 `;
 
 export const getAllDomains = gql`
-  query Domains($count: Int!, $skipAmount: Int!) {
-    domains(first: $count, skip: $skipAmount) {
+  query Domains($count: Int!, $startIndex: Int!) {
+    domains(
+      first: $count
+      where: { indexId_gt: $startIndex }
+      orderBy: indexId
+    ) {
       id
       name
       parent {

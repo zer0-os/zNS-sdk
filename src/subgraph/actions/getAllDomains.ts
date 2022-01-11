@@ -16,7 +16,7 @@ export const getAllDomains = async <T>(
     const queryResult = await performQuery<DomainsQueryDto>(
       apolloClient,
       queries.getAllDomains,
-      { count: queryCount, skipAmount: skip }
+      { count: queryCount, startIndex: skip }
     );
 
     const queriedDomains = queryResult.data.domains;
