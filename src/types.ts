@@ -97,36 +97,36 @@ export interface Instance {
 
   /**
    * Get the metadata uri for a given domain
-   * 
+   *
    * @param domainId The domain to get metadata for
    * @param signer The account used in instantiating the registrar
    */
-  getDomainMetadata: (
+  getDomainMetadata(
     domainId: string,
     signer: ethers.Signer
-  ) => Promise<DomainMetadata>;
+  ): Promise<DomainMetadata>;
   /**
    * Set the domain metadata to a given metadata object
-   * 
+   *
    * @param domainId The id of the domain to set
    * @param metadata An object containing any desired properties of the updated metadata
-   * @param signer: The account used in the transaction, which must be the owner of the domain 
+   * @param signer: The account used in the transaction, which must be the owner of the domain
    */
-  setDomainMetadata: (
+  setDomainMetadata(
     domainId: string,
     metadata: DomainMetadata,
     signer: ethers.Signer
-  ) => Promise<ethers.ContractTransaction>;
+  ): Promise<ethers.ContractTransaction>;
   /**
    * Set the domain metadata to a given metadata uri
-   * 
+   *
    * @param domain
    */
-  setDomainMetadataUri: (
+  setDomainMetadataUri(
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
-  ) => Promise<ethers.ContractTransaction>
+  ): Promise<ethers.ContractTransaction>;
   /**
    * Get the current metadata for a given domain
    * @param domainId The id of the domain
@@ -268,10 +268,7 @@ export interface Instance {
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
-    getBuyNowPrice(
-      tokenId: string,
-      signer: ethers.Signer
-    ): Promise<number>;
+    getBuyNowPrice(tokenId: string, signer: ethers.Signer): Promise<number>;
     setBuyNowPrice(
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
@@ -306,6 +303,12 @@ export interface Instance {
      * @returns A string which is the URL that the content is uploaded to
      */
     uploadObjectAsJson(object: Record<string, unknown>): Promise<string>;
+
+    /**
+     * Helper to download domain metadata.
+     * @param metadataUri Metadata Uri. Can be http(s):// or ipfs://
+     */
+    downloadMetadataFromUri(metadataUri: string): Promise<DomainMetadata>;
   };
 }
 
@@ -359,7 +362,7 @@ export interface DomainMetadata {
 
 export enum IPFSGatewayUri {
   ipfs = "ipfs.io",
-  fleek = "ipfs.fleek.co"
+  fleek = "ipfs.fleek.co",
 }
 
 export enum DomainEventType {
