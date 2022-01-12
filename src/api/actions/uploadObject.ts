@@ -17,6 +17,6 @@ export const uploadObject = async (
     throw Error(`Failed to upload object: ${e}`);
   }
 
-  const url = ipfsHashToUrl(response.ipfsHash);
+  const url = response.url;
   return url;
 };

@@ -5,21 +5,14 @@ import { validateOwnerAndStatus } from "./helpers";
 export const setAndLockDomainMetadataUri = async (
   domainId: string,
   metadataUri: string,
+  signer: ethers.Signer,
   registrar: Registrar
 ): Promise<ethers.ContractTransaction> => {
-  const potentialOwner = await registrar.signer.getAddress();
   const isLocked = true;
-  const ownerMessage = "Must own domain to update metadata";
-  const statusMessage = "Metadata must be unlocked to be modified"
+  const signerAddress = await signer.getAddress();
 
-  validateOwnerAndStatus(
-    domainId,
-    registrar,
-    potentialOwner,
-    isLocked,
-    ownerMessage,
-    statusMessage
-  );
+  validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
+
   const tx = await registrar.setAndLockDomainMetadata(domainId, metadataUri);
   return tx;
 };
