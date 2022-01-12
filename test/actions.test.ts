@@ -177,4 +177,24 @@ describe("Test Custom SDK Logic", () => {
       console.log("done");
     });
   });
+  describe("lockDomainMetadata", () => {
+    it("runs", async () => {
+      const registrar: Registrar = await getRegistrar(
+        provider,
+        registrarAddress
+      );
+
+      const isLocked = await registrar.isDomainMetadataLocked(kovanDomainId);
+
+      const toSet = !isLocked;
+
+      const tx = await actions.lockDomainMetadata(
+        kovanDomainId,
+        toSet,
+        signer,
+        registrar
+      );
+      console.log(tx);
+    });
+  });
 });

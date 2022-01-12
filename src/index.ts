@@ -392,7 +392,6 @@ export const createInstance = (config: Config): Instance => {
           zAuctionRouteUriToInstance,
           domainIdToDomainName
         );
-
         const tx = await zAuctionInstance.setBuyNowPrice(params, signer);
         return tx;
       },
