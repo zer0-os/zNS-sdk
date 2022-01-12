@@ -22,6 +22,7 @@ import {
   getZAuctionInstanceForDomain,
 } from "../src/utilities";
 import { zAuctionConfiguration } from "../src/configuration/configuration";
+import { BuyNowParams } from "@zero-tech/zauction-sdk";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -151,11 +152,29 @@ describe("Test Custom SDK Logic", () => {
         zAuctionRouteUriToInstance,
         domainIdToDomainName
       );
+      const params: BuyNowParams = {
+        amount: ethers.utils.parseEther("1.0").toString(),
+        tokenId: kovanDomainId,
+      };
+
+      const address = await signer.getAddress();
+      const isApproved = await zAuctionInstance.isZAuctionApprovedToTransferNft(
+        address
+      );
+
+      if (!isApproved)
+        await zAuctionInstance.approveZAuctionTransferNft(signer);
+
+      const tx = await zAuctionInstance.setBuyNowPrice(params, signer);
+      console.log(tx);
+
       const listing: Listing = await zAuctionInstance.getBuyNowPrice(
         kovanDomainId,
         signer
       );
       console.log(listing);
+      console.log(listing.price);
+      console.log("done");
     });
   });
 });
