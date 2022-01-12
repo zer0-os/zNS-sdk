@@ -11,6 +11,10 @@ export interface Config {
   registrar: string;
 }
 
+export interface Listing {
+  price: number;
+  holder: string;
+}
 export interface RouteUriToInstance {
   [key: string]: zAuction.Instance;
 }
@@ -92,16 +96,46 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   /**
-   * Update the metadata of a given domain
-   * @param domainId The domain with metadata to be locked/unlocked
-   * @param metadataUri The link that the metadata should be updated to
-   * @param signer The account that signs and sends the transaction
+   * Get the metadata uri for a given domain
+   * 
+   * @param domainId The domain to get metadata for
+   * @param signer The account used in instantiating the registrar
    */
-  setDomainMetadata(
+  getDomainMetadata: (
+    domainId: string,
+    signer: ethers.Signer
+  ) => Promise<DomainMetadata>;
+  /**
+   * Set the domain metadata to a given metadata object
+   * 
+   * @param domainId The id of the domain to set
+   * @param metadata An object containing any desired properties of the updated metadata
+   * @param signer: The account used in the transaction, which must be the owner of the domain 
+   */
+  setDomainMetadata: (
+    domainId: string,
+    metadata: DomainMetadata,
+    signer: ethers.Signer
+  ) => Promise<ethers.ContractTransaction>;
+  /**
+   * Set the domain metadata to a given metadata uri
+   * 
+   * @param domain
+   */
+  setDomainMetadataUri: (
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
-  ): Promise<ethers.ContractTransaction>;
+  ) => Promise<ethers.ContractTransaction>
+  /**
+   * Get the current metadata for a given domain
+   * @param domainId The id of the domain
+   * @param signer The account used in instantiating the registrar
+   */
+  getDomainMetadataUri(
+    domainId: string,
+    signer: ethers.Signer
+  ): Promise<string>;
 
   /**
    * Update the metadata of a given domain and then lock the domain
@@ -112,7 +146,21 @@ export interface Instance {
    * @param metadataUri The link that the metadata should be updated to
    * @param signer The account that signs and sends the transaction
    */
-  setAndLockMetadata(
+  setAndLockDomainMetadata(
+    domainId: string,
+    metadata: DomainMetadata,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+  /**
+   * Update the metadata of a given domain and then lock the domain
+   * metadata from changing in the future. Note we do not accept a
+   * `lockStatus` param because we can always assume that a call to
+   * `setAndLockMetadata` intends to lock the metadata after modifying it
+   * @param domainId The domain with metadata to be locked/unlocked
+   * @param metadataUri The link that the metadata should be updated to
+   * @param signer The account that signs and sends the transaction
+   */
+  setAndLockDomainMetadataUri(
     domainId: string,
     metadataUri: string,
     signer: ethers.Signer
@@ -177,10 +225,12 @@ export interface Instance {
      * @param signer The user account signer (connected wallet)
      */
     cancelBid(
-      domainId: string,
       auctionId: string,
+      signedBidMessage: string,
+      domainId: string,
+      cancelOnChain: boolean,
       signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction>;
+    ): Promise<ethers.ContractTransaction | void>;
 
     /**
      * Checks whether a user has approved zAuction to transfer NFT's on their behalf.
@@ -218,6 +268,10 @@ export interface Instance {
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
+    getBuyNowPrice(
+      tokenId: string,
+      signer: ethers.Signer
+    ): Promise<number>;
     setBuyNowPrice(
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
@@ -304,7 +358,17 @@ export interface DomainMetadata {
   animation_url: string | undefined;
   name: string;
   description: string;
+  stakingRequests: "disabled" | "enabled" | undefined;
+  isBiddable?: boolean;
+  gridViewByDefault?: boolean;
+  customDomainHeader?: boolean;
   previewImage?: string;
+  customDomainHeaderValue?: string;
+}
+
+export enum IPFSGatewayUri {
+  ipfs = "ipfs.io",
+  fleek = "ipfs.fleek.co"
 }
 
 export enum DomainEventType {
