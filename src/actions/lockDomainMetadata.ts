@@ -14,8 +14,7 @@ export const lockDomainMetadata = async (
 
   // Will throw an error if the lock status from the registrar is the same as the given `setToLock`
   // e.g. You cannot lock already locked domain metadata, and you cannot unlock already unlocked domain metadata.
-  validateOwnerAndStatus(domainId, registrar, signerAddress, desiredLock);
-  // const lockedState = await registrar.isDomainMetadataLocked(domainId);
+  await validateOwnerAndStatus(domainId, registrar, signerAddress, desiredLock);
 
   const tx = await registrar
     .connect(signer)

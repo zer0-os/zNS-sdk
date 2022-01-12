@@ -11,8 +11,10 @@ export const setDomainMetadataUri = async (
   const isLocked = true;
   const signerAddress = await signer.getAddress();
 
-  validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
+  await validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
 
-  const tx = await registrar.setDomainMetadataUri(domainId, metadataUri);
+  const tx = await registrar
+    .connect(signer)
+    .setDomainMetadataUri(domainId, metadataUri);
   return tx;
 };

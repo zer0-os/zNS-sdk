@@ -14,7 +14,7 @@ export const setAndLockDomainMetadata = async (
   const isLocked = true;
   const signerAddress = await signer.getAddress();
 
-  validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
+  await validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
   const metadataUri = await client.uploadMetadata(metadata);
 
   const tx = await registrar
