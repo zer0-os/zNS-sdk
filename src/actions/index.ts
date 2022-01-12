@@ -7,4 +7,4 @@ export * from "./setDomainMetadataUri";
 export * from "./setAndLockDomainMetadata";
 export * from "./setAndLockDomainMetadataUri";
 export * from "./setDomainRoyalty";
-export * from "./downloadMetadataFromUri";
+export * from "./getMetadataFromUri";

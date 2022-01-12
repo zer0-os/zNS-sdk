@@ -1,6 +1,6 @@
 import { Registrar } from "../contracts/types";
 import { DomainMetadata, IPFSGatewayUri } from "../types";
-import { downloadMetadataFromUri } from "./downloadMetadataFromUri";
+import { getMetadataFromUri } from "./getMetadataFromUri";
 
 export const getDomainMetadata = async (
   domainId: string,
@@ -8,6 +8,6 @@ export const getDomainMetadata = async (
   ipfsGatewayUri: IPFSGatewayUri
 ): Promise<DomainMetadata> => {
   const metadataUri = await registrar.tokenURI(domainId);
-  const metadata = await downloadMetadataFromUri(metadataUri, ipfsGatewayUri);
+  const metadata = await getMetadataFromUri(metadataUri, ipfsGatewayUri);
   return metadata;
 };

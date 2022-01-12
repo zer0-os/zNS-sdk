@@ -1,7 +1,7 @@
 import { DomainMetadata, IPFSGatewayUri } from "../types";
 import { makeApiCall } from "../api/actions/helpers";
 
-export const downloadMetadataFromUri = async (
+export const getMetadataFromUri = async (
   metadataUri: string,
   ipfsGatewayUri: IPFSGatewayUri
 ): Promise<DomainMetadata> => {
