@@ -40,7 +40,10 @@ export const uploadInBackground = async (
     check: [],
   };
   const completedJobs: UrlToIPFS = {};
-  const urlBatches: string[][] = chunkArray(urls, URLS_PER_CHUNK_START);
+  const urlBatches: string[][] = chunkArray(
+    urls,
+    URLS_PER_CHUNK_START
+  ) as string[][];
   const startBulkResponses: UrlToJobId = (
     await Promise.all(
       // .map, .foreach cannot be async
@@ -68,7 +71,7 @@ export const uploadInBackground = async (
     let jobIdChunks: string[][] = chunkArray(
       Object.keys(incompleteJobs),
       URLS_PER_CHUNK_CHECK
-    );
+    ) as string[][];
 
     for (const jobIds of jobIdChunks) {
       const statuses = await tryCheckBulkUploadJob(
@@ -144,8 +147,8 @@ export const tryCheckBulkUploadJob = async (
   return checkResponse;
 };
 
-const chunkArray = (array: any[], chunkSize: number): any[][] => {
-  let batches: any[][] = [];
+const chunkArray = (array: unknown[], chunkSize: number): unknown[][] => {
+  let batches: unknown[][] = [];
   let numBatches: number = 0;
   let i: number = 0;
   while (i < array.length) {
