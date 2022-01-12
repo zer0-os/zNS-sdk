@@ -18,6 +18,6 @@ export const uploadMetadata = async (
     throw Error(`Failed to upload metadata: ${e}`);
   }
 
-  const url = ipfsHashToUrl(response.ipfsHash);
+  const url = ipfsHashToUrl(response.hash);
   return url;
 };

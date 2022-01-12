@@ -4,7 +4,10 @@ import * as actions from "./actions";
 import * as zAuction from "./zAuction";
 import {
   Config,
+  DomainMetadata,
   Instance,
+  IPFSGatewayUri,
+  Listing,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
@@ -26,7 +29,7 @@ export { domains };
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 
-export { Config, RouteUriToInstance } from "./types";
+export * from "./types";
 export { configuration };
 
 const invalidInputMessage =
@@ -119,36 +122,88 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.lockDomainMetadata(
         domainId,
         lockStatus,
+        signer,
         registrar
       );
 
       return tx;
     },
+    getDomainMetadata: async (
+      domainId: string,
+      signer: ethers.Signer
+    ): Promise<DomainMetadata> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const metadata = await actions.getDomainMetadata(
+        domainId,
+        registrar,
+        IPFSGatewayUri.fleek
+      );
+      return metadata;
+    },
+    getDomainMetadataUri: async (
+      domainId: string,
+      signer: ethers.Signer
+    ): Promise<string> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const metadataUri = await registrar.tokenURI(domainId);
+      return metadataUri;
+    },
     setDomainMetadata: async (
+      domainId: string,
+      metadata: DomainMetadata,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const tx = await actions.setDomainMetadata(
+        domainId,
+        metadata,
+        apiClient,
+        signer,
+        registrar
+      );
+      return tx;
+    },
+    setDomainMetadataUri: async (
       domainId: string,
       metadataUri: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
-
-      const tx = await actions.setDomainMetadata(
+      const tx = await actions.setDomainMetadataUri(
         domainId,
         metadataUri,
+        signer,
         registrar
       );
-
       return tx;
     },
-    setAndLockMetadata: async (
+    setAndLockDomainMetadata: async (
       domainId: string,
-      metadataUri: string,
+      metadata: DomainMetadata,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
 
       const tx = await actions.setAndLockDomainMetadata(
         domainId,
+        metadata,
+        apiClient,
+        signer,
+        registrar
+      );
+      return tx;
+    },
+    setAndLockDomainMetadataUri: async (
+      domainId: string,
+      metadataUri: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.setAndLockDomainMetadataUri(
+        domainId,
         metadataUri,
+        signer,
         registrar
       );
       return tx;
@@ -160,7 +215,12 @@ export const createInstance = (config: Config): Instance => {
     ): Promise<ethers.ContractTransaction> => {
       const registrar: Registrar = await getRegistrar(signer, config.registrar);
 
-      const tx = await actions.setDomainRoyalty(domainId, amount, registrar);
+      const tx = await actions.setDomainRoyalty(
+        domainId,
+        amount,
+        signer,
+        registrar
+      );
       return tx;
     },
     zauction: {
@@ -221,9 +281,11 @@ export const createInstance = (config: Config): Instance => {
 
       cancelBid: async (
         auctionId: string,
+        signedBidMessage: string,
         domainId: string,
+        cancelOnChain: boolean,
         signer: ethers.Signer
-      ): Promise<ethers.ContractTransaction> => {
+      ): Promise<ethers.ContractTransaction | void> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
@@ -231,8 +293,13 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
 
-        const tx = await zAuctionInstance.cancelBid(auctionId, signer);
-        return tx;
+        const tx = await zAuctionInstance.cancelBid(
+          auctionId,
+          signedBidMessage,
+          cancelOnChain,
+          signer
+        );
+        if (tx) return tx;
       },
 
       needsToApproveZAuctionToTransferNfts: async (
@@ -295,6 +362,25 @@ export const createInstance = (config: Config): Instance => {
 
         const tx = await zAuctionInstance.buyNow(params, signer);
         return tx;
+      },
+      getBuyNowPrice: async (
+        tokenId: string,
+        signer: ethers.Signer
+      ): Promise<number> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          tokenId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
+        const domain = await subgraphClient.getDomainById(tokenId);
+        const listing: Listing = await zAuctionInstance.getBuyNowPrice(
+          tokenId,
+          signer
+        );
+        if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())
+          return 0;
+        return listing.price;
       },
       setBuyNowPrice: async (
         params: zAuction.BuyNowParams,

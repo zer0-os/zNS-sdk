@@ -1,6 +1,6 @@
 {
   "name": "@zero-tech/zns-sdk",
-  "version": "0.0.33",
+  "version": "0.0.41",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:zer0-os/zNS-sdk.git",
@@ -13,20 +13,23 @@
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --timeout 20000",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\"",
     "prepublish": "yarn build"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "7.0.1",
     "@types/chai": "4.2.21",
+    "@types/chai-as-promised": "7.1.4",
     "@types/mocha": "9.0.0",
     "@types/node": "16.7.13",
     "@types/sinon": "10.0.2",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
-    "@zero-tech/zauction-sdk": "0.0.28",
+    "@zero-tech/zauction-sdk": "0.0.33",
     "chai": "4.3.4",
+    "chai-as-promised": "7.1.1",
+    "dotenv": "10.0.0",
     "eslint": "7.32.0",
     "eslint-plugin-prettier": "4.0.0",
     "ethers": "5.4.7",
@@ -48,7 +51,7 @@
     "lolex": "6.0.0"
   },
   "peerDependencies": {
-    "@zero-tech/zauction-sdk": ">=0.0.28",
-    "ethers": "5.4.6"
+    "@zero-tech/zauction-sdk": ">=0.0.33",
+    "ethers": "^5.4.6"
   }
 }
