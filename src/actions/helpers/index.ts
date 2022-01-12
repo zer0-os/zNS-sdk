@@ -16,7 +16,7 @@ export const validateStatus = async (
   desiredLock: boolean
 ) => {
   const currentLock = await registrar.isDomainMetadataLocked(domainId);
-  if(currentLock === desiredLock)
+  if (currentLock === desiredLock)
     throw Error("Metadata must be unlocked to be modified");
 };
 
@@ -26,6 +26,6 @@ export const validateOwnerAndStatus = async (
   potentialOwner: string,
   desiredLock: boolean,
 ) => {
-  validateUserOwnsDomain(domainId, potentialOwner, registrar);
-  validateStatus(domainId, registrar, desiredLock);
+  await validateUserOwnsDomain(domainId, potentialOwner, registrar);
+  await validateStatus(domainId, registrar, desiredLock);
 };
