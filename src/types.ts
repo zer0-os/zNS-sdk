@@ -317,10 +317,19 @@ export interface UploadJobStatus {
       hash: string;
     };
     failed: boolean;
+    error?: string;
   };
 }
 
 export interface UrlToJobId {
+  [url: string]: string;
+}
+
+export interface JobIdToUrl {
+  [jobId: string]: string;
+}
+
+export interface UrlToIPFS {
   [url: string]: string;
 }
 
