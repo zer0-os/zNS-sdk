@@ -13,10 +13,10 @@ export const validateUserOwnsDomain = async (
 export const validateStatus = async (
   domainId: string,
   registrar: Registrar,
-  lockStatus: boolean
+  desiredLock: boolean
 ) => {
-  const record = await registrar.records(domainId);
-  if (record.metadataLocked === lockStatus)
+  const currentLock = await registrar.isDomainMetadataLocked(domainId);
+  if (currentLock === desiredLock)
     throw Error("Metadata must be unlocked to be modified");
 };
 
@@ -24,8 +24,8 @@ export const validateOwnerAndStatus = async (
   domainId: string,
   registrar: Registrar,
   potentialOwner: string,
-  lockStatus: boolean,
+  desiredLock: boolean,
 ) => {
-  validateUserOwnsDomain(domainId, potentialOwner, registrar);
-  validateStatus(domainId, registrar, lockStatus);
+  await validateUserOwnsDomain(domainId, potentialOwner, registrar);
+  await validateStatus(domainId, registrar, desiredLock);
 };

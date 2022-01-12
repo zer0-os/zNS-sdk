@@ -10,8 +10,10 @@ export const setDomainRoyalty = async (
 ): Promise<ethers.ContractTransaction> => {
   const signerAddress = await signer.getAddress();
 
-  validateUserOwnsDomain(domainId, signerAddress, registrar);
+  await validateUserOwnsDomain(domainId, signerAddress, registrar);
 
-  const tx = await registrar.setDomainRoyaltyAmount(domainId, amount);
+  const tx = await registrar
+    .connect(signer)
+    .setDomainRoyaltyAmount(domainId, amount);
   return tx;
 };
