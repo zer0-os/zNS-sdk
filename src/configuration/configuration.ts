@@ -26,6 +26,11 @@ export const zAuctionConfiguration = (
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-kovan";
     defaultZAuctionAddress = "0x646757a5F3C9eEB4C6Bd136fCefE655B4A8107e4";
     defaultTokenContract = "0xC613fCc3f81cC2888C5Cccc1620212420FFe4931";
+  } else if (network == "rinkeby") {
+    defaultApiUri = "https://zauction-api-rinkeby.herokuapp.com/api";
+    defaultSubgraphUri = ""; // not setup yet
+    defaultZAuctionAddress = "0xe94a5456Db55af2D6a37FaDd7cEd363EDBcA65CF";
+    defaultTokenContract = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
   } else {
     throw Error(`Network ${network} is not supported`);
   }
