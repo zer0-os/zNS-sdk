@@ -233,6 +233,12 @@ export interface Instance {
     ): Promise<ethers.ContractTransaction | void>;
 
     /**
+     * View all the bids for a given domain ID
+     * @param domainId The id of the domain
+     */
+    listBids(domainId: string): Promise<any>;
+
+    /**
      * Checks whether a user has approved zAuction to transfer NFT's on their behalf.
      * zAuction must be approved before a user can accept a bid for a domain they own.
      * @param domainId The domain ID that is going to be sold
@@ -441,12 +447,13 @@ export interface SubdomainParams {
   parentId: string;
   label: string;
   image: Buffer;
-  animation?: Buffer;
   name: string;
   description: string;
   additionalMetadata: Record<string, unknown>;
   royaltyAmount: string;
   lockOnCreate: boolean;
+  animation?: Buffer;
+  owner?: string;
 }
 
 export interface PlaceBidParams {

@@ -28,9 +28,10 @@ export const zAuctionConfiguration = (
     defaultTokenContract = "0xC613fCc3f81cC2888C5Cccc1620212420FFe4931";
   } else if (network == "rinkeby") {
     defaultApiUri = "https://zauction-api-rinkeby.herokuapp.com/api";
-    defaultSubgraphUri = "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby";
+    defaultSubgraphUri =
+      "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-rinkeby";
     defaultZAuctionAddress = "0xe94a5456Db55af2D6a37FaDd7cEd363EDBcA65CF";
-    defaultTokenContract = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
+    defaultTokenContract = "0xa4F6C921f914ff7972D7C55c15f015419326e0Ca"; // not ERC20 token, technically 721 token
   } else {
     throw Error(`Network ${network} is not supported`);
   }

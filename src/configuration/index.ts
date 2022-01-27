@@ -47,3 +47,22 @@ export const kovanConfiguration = (
     registrar: kovanRegistrar,
   };
 };
+
+export const rinkebyConfiguration = (
+  provider: ethers.providers.Web3Provider
+): Config => {
+  return {
+    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
+    apiUri: "https://zns.api.zero.tech/api",
+    metricsUri: "https://zns-metrics-kovan.herokuapp.com", // todo
+    zAuctionRoutes: [
+      {
+        uriPattern: "wilder",
+        // Use default values
+        config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
+      } as zAuctionRoute,
+    ],
+    basicController: "0x1188dD1a0F42BA4a117EF1c09D884f5183D40B28",
+    registrar: kovanRegistrar,
+  };
+};
