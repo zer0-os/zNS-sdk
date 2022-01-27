@@ -4,71 +4,66 @@ import * as ethers from "ethers";
 import * as dotenv from "dotenv";
 import * as zAuction from "@zero-tech/zauction-sdk";
 
+import * as zNSSDK from "../src/index";
 import * as subgraph from "../src/subgraph";
-
 import * as actions from "../src/actions";
 import {
   Config,
-  DomainMetadata,
   IPFSGatewayUri,
   Listing,
   zAuctionRoute,
 } from "../src/types";
 import { Registrar } from "../src/contracts/types";
 import { getRegistrar } from "../src/contracts";
-import { createClient } from "../src/api";
 import {
   createZAuctionInstances,
   getZAuctionInstanceForDomain,
 } from "../src/utilities";
 import { zAuctionConfiguration } from "../src/configuration/configuration";
-import { BuyNowParams } from "@zero-tech/zauction-sdk";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
 dotenv.config();
 
+const enum ChainId {
+  mainnet = 1,
+  rinkeby = 4,
+  kovan = 42
+}
+
 describe("Test Custom SDK Logic", () => {
   const provider = new ethers.providers.JsonRpcProvider(
     process.env["INFURA_URL"],
-    42
+    ChainId.rinkeby
   );
 
   const pk = process.env["PRIVATE_KEY"];
   if (!pk) throw Error("No private key");
   const signer = new ethers.Wallet(pk, provider);
 
-  // Kovan zAuction
-  const legacyZAuctionAddress = "0x18A804a028aAf1F30082E91d2947734961Dd7f89";
-  const newZAuctionAddress = "0x646757a5F3C9eEB4C6Bd136fCefE655B4A8107e4";
-  const registrarAddress = "0xC613fCc3f81cC2888C5Cccc1620212420FFe4931";
+  // Rinkeby
+  const registrarAddress = "0xa4F6C921f914ff7972D7C55c15f015419326e0Ca";
+  const basicControllerAddress = "0x1188dD1a0F42BA4a117EF1c09D884f5183D40B28";
 
-  // Kovan config
+  // Rinkeby config
   const config: Config = {
-    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
+    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
+    metricsUri: "https://zns-metrics-kovan.herokuapp.com", // todo metrics on rinkeby
     apiUri: "https://zns.api.zero.tech/api",
-    metricsUri: "https://zns-metrics-kovan.herokuapp.com",
     zAuctionRoutes: [
       {
         uriPattern: "wilder",
-        // Use default values
-        config: zAuctionConfiguration(
-          provider,
-          "kovan",
-          undefined,
-          undefined,
-          newZAuctionAddress // override existing zAuction address
-        ) as zAuction.Config,
+        // Use default values specified in config
+        config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
       } as zAuctionRoute,
     ],
-    basicController: "0x2EF34C52138781C901Fe9e50B64d80aA9903f730",
-    registrar: "0xC613fCc3f81cC2888C5Cccc1620212420FFe4931",
+    basicController: basicControllerAddress,
+    registrar: registrarAddress,
   };
 
-  // Random wheels metadata qm hash
-  const qmHash = "QmYTYkmSPGh4NLDMVtKcDTADnVD8HiCTVQKHMKNKQXD67n";
-  const kovanDomainId =
-    "0x7080e65e58e5fa0e2bacb7c947a817ef6d96832680d2c54e1373109380c121e1";
+  const qmHash = "Qmc2cMdNMo6isDTjk8gej8ay9dZxGQNS3ftsDpct1RNV2H";
+  const domainId =
+    "0x6e35a7ecbf6b6368bb8d42ee9b3dcfc8404857635036e60196931d4458c07622";
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
 
@@ -77,84 +72,116 @@ describe("Test Custom SDK Logic", () => {
     return domainData.name;
   };
 
+  describe("E2E with Rinkeby", () => {
+    it("mints a domain", async () => {
+      // private key must point to owner of parent domain, in this case wilder
+      // const wilderId = "0x196c0a1e30004b9998c97b363e44f1f4e97497e59d52ad151208e9393d70bb3b"
+      // const sdkInstance = await zNSSDK.createInstance(config);
+      // const res = await fetch("https://www.rebeccas.com/mm5/graphics/00000001/cn134.jpg", {method: "GET"});
+      // const ab = await res.arrayBuffer();
+      // const buffer = Buffer.from(ab)
+      // const params: zNSSDK.SubdomainParams = {
+      //   parentId: wilderId,
+      //   label: "candy",
+      //   image: buffer,
+      //   name: "So Sweet", // can be freeform
+      //   description: "A treat",
+      //   additionalMetadata: {},
+      //   royaltyAmount: "5",
+      //   lockOnCreate: false,
+      //   owner: "0xbB6a3A7ea2bC5cf840016843FA01D799Be975320",
+      // }
+      // const tx = await sdkInstance.mintSubdomain(params, signer);
+      // console.log(tx);
+    });
+    it("gets all domains", async () => {
+      const sdkInstance = await zNSSDK.createInstance(config);
+      const allDomains = await sdkInstance.getAllDomains();
+      expect(allDomains);
+    });
+    it("gets a domain by an ID", async () => {
+      const sdkInstance = await zNSSDK.createInstance(config);
+      const domain = await sdkInstance.getDomainById(domainId);
+      expect(domain);
+    });
+  });
   describe("getDomainMetadata", () => {
     it("runs as ipfs url", async () => {
-      const mockRegistrar = {
-        tokenURI: () => {
-          return `ipfs://${qmHash}`;
-        },
-      } as unknown as Registrar;
+      const registrarInstance = await getRegistrar(provider, registrarAddress);
       const metadata = await actions.getDomainMetadata(
-        "0x1",
-        mockRegistrar,
+        domainId,
+        registrarInstance,
         IPFSGatewayUri.fleek
       );
       expect(metadata);
     });
     it("runs as well formed ipfs.fleek.co url", async () => {
-      const mockRegistrar = {
-        tokenURI: () => {
-          return `https://ipfs.fleek.co/ipfs/${qmHash}`;
-        },
-      } as unknown as Registrar;
+      const registrarInstance = await getRegistrar(provider, registrarAddress);
       const metadata = await actions.getDomainMetadata(
-        "0x1",
-        mockRegistrar,
+        domainId,
+        registrarInstance,
         IPFSGatewayUri.fleek
       );
       expect(metadata);
     });
   });
   describe("setDomainMetadata", () => {
-    it("runs setdomainMetadata", async () => {
-      const metadata: DomainMetadata = {
-        image: "image",
-        animation_url: "animation_url",
-        name: "My Domain",
-        domain: "mydomain",
-        description: "This is an example domain",
-        stakingRequests: "disabled",
-        isBiddable: false,
-        gridViewByDefault: false,
-        customDomainHeader: false,
-        previewImage: "preview_image",
-        customDomainHeaderValue: "custom_domain",
-      };
-      const registrar: Registrar = await getRegistrar(
-        provider,
-        registrarAddress
-      );
-      const apiUri = "https://zns.api.zero.tech/api";
-      const client = createClient(apiUri);
-      const tx = await actions.setDomainMetadata(
-        kovanDomainId,
-        metadata,
-        client,
-        signer,
-        registrar
-      );
-      console.log(tx);
-      const retrievedMetadata = await actions.getDomainMetadata(
-        kovanDomainId,
-        registrar,
-        IPFSGatewayUri.fleek
-      );
-      expect(metadata).deep.equal(retrievedMetadata);
-    });
+    // Keep as an example call, but comment it
+    // it("runs setDomainMetadata", async () => {
+    //   const registrar: Registrar = await getRegistrar(
+    //     provider,
+    //     registrarAddress
+    //   );
+    //   const lockedStatus = await registrar.isDomainMetadataLocked(domainId);
+    //   // If locked, call to unlock before calling to set
+    //   if(lockedStatus) {
+    //     const tx = await registrar.connect(signer).lockDomainMetadata(domainId, false);
+    //     await tx.wait(5); // Wait for unlock confirmation before trying to set metadata
+    //   }
+    //   const metadata = await actions.getDomainMetadata(
+    //     domainId,
+    //     registrar,
+    //     IPFSGatewayUri.fleek);
+    //   // Set to a new value every time it's run,
+    //   // still 1/100 chance it's the same metadata and that will fail
+    //   const rand = Math.round(Math.random() * 100);
+    //   metadata.description = `A random number is: ${rand}`
+    //   const client = createClient(config.apiUri);
+    //   const tx = await actions.setDomainMetadata(
+    //     domainId,
+    //     metadata,
+    //     client,
+    //     signer,
+    //     registrar
+    //   );
+    //   console.log(tx.v);
+    //   const retrievedMetadata = await actions.getDomainMetadata(
+    //     domainId,
+    //     registrar,
+    //     IPFSGatewayUri.fleek
+    //   );
+    //   expect(metadata).deep.equal(retrievedMetadata);
+    // });
   });
-  describe("getBuyNowPrice", () => {
+  describe("(get|set)buyNowPrice", () => {
     it("runs as expected", async () => {
       const zAuctionRouteUriToInstance = createZAuctionInstances(config);
 
       const zAuctionInstance = await getZAuctionInstanceForDomain(
-        kovanDomainId,
+        domainId,
         config.zAuctionRoutes,
         zAuctionRouteUriToInstance,
         domainIdToDomainName
       );
-      const params: BuyNowParams = {
-        amount: ethers.utils.parseEther("1.0").toString(),
-        tokenId: kovanDomainId,
+      // Set to a new value every time it's run, loop is same as current price
+      const currentBuyNowPrice = await zAuctionInstance.getBuyNowPrice(domainId, signer);
+      let newBuyNowPrice = ethers.utils.parseEther(Math.round(Math.random() * 100).toString());
+      while (currentBuyNowPrice.eq(newBuyNowPrice)) {
+        newBuyNowPrice = ethers.utils.parseEther(Math.round(Math.random() * 100).toString());
+      }
+      const params: zAuction.BuyNowParams = {
+        amount: ethers.utils.parseEther(`${newBuyNowPrice}`).toString(),
+        tokenId: domainId,
       };
 
       const address = await signer.getAddress();
@@ -166,15 +193,12 @@ describe("Test Custom SDK Logic", () => {
         await zAuctionInstance.approveZAuctionTransferNft(signer);
 
       const tx = await zAuctionInstance.setBuyNowPrice(params, signer);
-      console.log(tx);
 
       const listing: Listing = await zAuctionInstance.getBuyNowPrice(
-        kovanDomainId,
+        domainId,
         signer
       );
-      console.log(listing);
-      console.log(listing.price);
-      console.log("done");
+      expect(listing);
     });
   });
   describe("lockDomainMetadata", () => {
@@ -184,17 +208,16 @@ describe("Test Custom SDK Logic", () => {
         registrarAddress
       );
 
-      const isLocked = await registrar.isDomainMetadataLocked(kovanDomainId);
+      const isLocked = await registrar.isDomainMetadataLocked(domainId);
 
       const toSet = !isLocked;
 
       const tx = await actions.lockDomainMetadata(
-        kovanDomainId,
+        domainId,
         toSet,
         signer,
         registrar
       );
-      console.log(tx);
     });
   });
 });

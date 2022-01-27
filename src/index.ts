@@ -46,20 +46,6 @@ export const createInstance = (config: Config): Instance => {
     return domainData.name;
   };
 
-  const listBids = async (domainId: string) => {
-    const zAuctionInstance = await getZAuctionInstanceForDomain(
-      domainId,
-      config.zAuctionRoutes,
-      zAuctionRouteUriToInstance,
-      domainIdToDomainName
-    );
-
-    const bidCollection = await zAuctionInstance.listBids([domainId]);
-    const domainBids = bidCollection[domainId];
-
-    return domainBids;
-  };
-
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
     getDomainsByName: subgraphClient.getDomainsByName,
@@ -99,7 +85,7 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.basicController
       );
-      const owner = await signer.getAddress();
+      const owner = params.owner ?? (await signer.getAddress());
 
       const tx = await actions.mintSubdomain(
         params,
@@ -301,7 +287,19 @@ export const createInstance = (config: Config): Instance => {
         );
         if (tx) return tx;
       },
+      listBids: async (domainId: string) => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          domainId,
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName
+        );
 
+        const bidCollection = await zAuctionInstance.listBids([domainId]);
+        const domainBids = bidCollection[domainId];
+
+        return domainBids;
+      },
       needsToApproveZAuctionToTransferNfts: async (
         domainId: string,
         account: string
