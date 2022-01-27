@@ -25,10 +25,16 @@ chai.use(chaiAsPromised.default);
 const expect = chai.expect;
 dotenv.config();
 
+const enum ChainId {
+  mainnet = 1,
+  rinkeby = 4,
+  kovan = 42
+}
+
 describe("Test Custom SDK Logic", () => {
   const provider = new ethers.providers.JsonRpcProvider(
     process.env["INFURA_URL"],
-    4
+    ChainId.rinkeby
   );
 
   const pk = process.env["PRIVATE_KEY"];
@@ -167,11 +173,14 @@ describe("Test Custom SDK Logic", () => {
         zAuctionRouteUriToInstance,
         domainIdToDomainName
       );
-      // Set to a new value every time it's run,
-      // still 1/100 chance it's the same price and that will fail
-      const rand = Math.round(Math.random() * 100);
+      // Set to a new value every time it's run, loop is same as current price
+      const currentBuyNowPrice = await zAuctionInstance.getBuyNowPrice(domainId, signer);
+      let newBuyNowPrice = ethers.utils.parseEther(Math.round(Math.random() * 100).toString());
+      while (currentBuyNowPrice.eq(newBuyNowPrice)) {
+        newBuyNowPrice = ethers.utils.parseEther(Math.round(Math.random() * 100).toString());
+      }
       const params: zAuction.BuyNowParams = {
-        amount: ethers.utils.parseEther(`${rand}`).toString(),
+        amount: ethers.utils.parseEther(`${newBuyNowPrice}`).toString(),
         tokenId: domainId,
       };
 
