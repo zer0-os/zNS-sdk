@@ -908,10 +908,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@zero-tech/zauction-sdk@0.0.33":
-  version "0.0.33"
-  resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.0.33.tgz#883a02b4519218d2c1a20428c0de828a11cbf2c1"
-  integrity sha512-UmTXybVSLEhonVqdPYfwhPh+EK9eumK2xUviFPmQmFGavQaA6q9PZm+oy4I/ii2doY516QgNolIbAm0OYu7P1A==
+"@zero-tech/zauction-sdk@0.0.35":
+  version "0.0.35"
+  resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.0.35.tgz#fb8daa92dec6f7a9864b10e8ceec8dcf23c8fc0f"
+  integrity sha512-8IULMIlPD1kCkld/Zrrvxxr/5ZLQmO27+m7TVOhckOUjHIfLusHcbL/pinOusOpJXEq74tTs0qyOzLrsrjCHIQ==
   dependencies:
     "@apollo/client" "3.4.10"
     "@ethersproject/abi" "5.4.1"
