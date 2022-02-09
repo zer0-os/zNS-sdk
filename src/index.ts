@@ -364,7 +364,7 @@ export const createInstance = (config: Config): Instance => {
       getBuyNowPrice: async (
         tokenId: string,
         signer: ethers.Signer
-      ): Promise<number> => {
+      ): Promise<string> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           tokenId,
           config.zAuctionRoutes,
@@ -372,13 +372,13 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
         const domain = await subgraphClient.getDomainById(tokenId);
-        const listing: Listing = await zAuctionInstance.getBuyNowPrice(
+        const listing: zAuction.Listing = await zAuctionInstance.getBuyNowPrice(
           tokenId,
           signer
         );
         if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())
-          return 0;
-        return listing.price;
+          return "0";
+        return ethers.utils.formatEther(listing.price);
       },
       setBuyNowPrice: async (
         params: zAuction.BuyNowParams,
