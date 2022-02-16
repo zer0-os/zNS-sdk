@@ -60,7 +60,7 @@ export const rinkebyConfiguration = (
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
     apiUri: "https://zns.api.zero.tech/api",
-    metricsUri: "https://zns-metrics-kovan.herokuapp.com", // todo change from kovan to rinkeby when available
+    metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
     zAuctionRoutes: [
       {
         uriPattern: "wilder",
