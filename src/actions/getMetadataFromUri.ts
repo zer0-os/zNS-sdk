@@ -3,18 +3,32 @@ import { makeApiCall } from "../api/actions/helpers";
 
 export const getMetadataFromUri = async (
   metadataUri: string,
-  ipfsGatewayUri: IPFSGatewayUri
+  ipfsGatewayUri: IPFSGatewayUri,
+  ipfsGatewayOverride?: string
 ): Promise<DomainMetadata> => {
-  let metadata: DomainMetadata;
-  if (!metadataUri.includes("https")) {
-    // If domain uri is ipfs uri we must format it for https
-    // e.g. ipfs://Qm...
-    const qmHash = metadataUri.split("//")[1];
-    const formattedUri = `https://${ipfsGatewayUri}/ipfs/${qmHash}`;
+  const ipfsHashMatcher = /(Qm[a-zA-Z0-9]{44}(\/.+)?)$/;
+  const matches = ipfsHashMatcher.exec(metadataUri);
 
-    metadata = await makeApiCall<DomainMetadata>(formattedUri, "GET");
-  } else {
-    metadata = await makeApiCall<DomainMetadata>(metadataUri, "GET");
+  let metadata: DomainMetadata;
+
+  if (!matches) {
+    if (metadataUri.includes("https")) {
+      metadata = await makeApiCall<DomainMetadata>(metadataUri, "GET");
+      return metadata;
+    }
+    throw Error(`Unable to parse ${metadataUri} to an IPFS uri`);
   }
+
+  const ipfsHash = matches[1];
+  let gateway = ipfsGatewayOverride ?? `https://${ipfsGatewayUri}/ipfs`;
+
+  // Remove trailing / if there is one
+  if (gateway[gateway.length - 1] == "/") {
+    gateway = gateway.slice(0, gateway.length - 2);
+  }
+
+  const formattedUri = `${gateway}/${ipfsHash}`;
+
+  metadata = await makeApiCall<DomainMetadata>(formattedUri, "GET");
   return metadata;
 };
