@@ -47,7 +47,7 @@ export const convertDomainDtoToDomain = (e: DomainDto): Domain => {
     minter: e.minter?.id ?? ethers.constants.AddressZero,
     metadataUri: e.metadata,
     isRoot: e.id === ethers.constants.HashZero,
-    lockedBy: e.lockedBy.id,
+    lockedBy: e.lockedBy?.id ?? ethers.constants.AddressZero,
     isLocked: e.isLocked,
   };
 
