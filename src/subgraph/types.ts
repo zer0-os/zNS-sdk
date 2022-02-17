@@ -12,11 +12,11 @@ export interface DomainIdDto {
 
 export interface DomainDto extends DomainIdDto {
   name: string;
-  parent: ParentDomainDto;
+  parent?: ParentDomainDto;
   owner: AccountDto;
-  minter: AccountDto;
+  minter?: AccountDto;
   metadata: string;
-  lockedBy: AccountDto;
+  lockedBy?: AccountDto;
   isLocked: boolean;
 }
 
