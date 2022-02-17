@@ -14,7 +14,9 @@ export const getDomainById = gql`
       minter {
         id
       }
-      lockedBy
+      lockedBy {
+        id
+      }
       isLocked
       metadata
     }
@@ -35,7 +37,9 @@ export const getDomainsByName = gql`
       minter {
         id
       }
-      lockedBy
+      lockedBy {
+        id
+      }
       isLocked
       metadata
     }
@@ -56,7 +60,9 @@ export const getSubdomainsById = gql`
       minter {
         id
       }
-      lockedBy
+      lockedBy {
+        id
+      }
       isLocked
       metadata
     }
@@ -77,7 +83,9 @@ export const getDomainsByOwner = gql`
       minter {
         id
       }
-      lockedBy
+      lockedBy {
+        id
+      }
       isLocked
       metadata
     }
@@ -127,7 +135,9 @@ export const getAllDomains = gql`
       minter {
         id
       }
-      lockedBy
+      lockedBy {
+        id
+      }
       isLocked
       metadata
     }

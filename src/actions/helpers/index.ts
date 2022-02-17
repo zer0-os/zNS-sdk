@@ -6,26 +6,32 @@ export const validateUserOwnsDomain = async (
   registrar: Registrar
 ) => {
   const owner = await registrar.ownerOf(domainId);
-  if (potentialOwner !== owner)
-    throw Error("Must own domain to modify");
+  if (potentialOwner !== owner) throw Error("Must own domain to modify");
 };
 
 export const validateStatus = async (
   domainId: string,
   registrar: Registrar,
-  desiredLock: boolean
+  desiredLock: boolean,
+  potentialOwner: string
 ) => {
-  const currentLock = await registrar.isDomainMetadataLocked(domainId);
-  if (currentLock === desiredLock)
+  const isCurrentlyLocked = await registrar.isDomainMetadataLocked(domainId);
+  if (isCurrentlyLocked === desiredLock)
     throw Error("Metadata must be unlocked to be modified");
+  if (isCurrentlyLocked) {
+    const currentLocker = await registrar.domainMetadataLockedBy(domainId);
+    if (currentLocker.toLowerCase() != potentialOwner.toLowerCase()) {
+      throw Error(`Only the account that locked the metadata can unlock.`);
+    }
+  }
 };
 
 export const validateOwnerAndStatus = async (
   domainId: string,
   registrar: Registrar,
   potentialOwner: string,
-  desiredLock: boolean,
+  desiredLock: boolean
 ) => {
   await validateUserOwnsDomain(domainId, potentialOwner, registrar);
-  await validateStatus(domainId, registrar, desiredLock);
+  await validateStatus(domainId, registrar, desiredLock, potentialOwner);
 };

@@ -16,6 +16,8 @@ export interface DomainDto extends DomainIdDto {
   owner: AccountDto;
   minter: AccountDto;
   metadata: string;
+  lockedBy: AccountDto;
+  isLocked: boolean;
 }
 
 export interface DomainQueryDto {

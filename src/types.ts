@@ -358,6 +358,8 @@ export interface Domain {
   owner: string;
   minter: string;
   metadataUri: string;
+  isLocked: boolean;
+  lockedBy: string;
   isRoot?: boolean;
 }
 
