@@ -314,7 +314,10 @@ export interface Instance {
      * Helper to download domain metadata.
      * @param metadataUri Metadata Uri. Can be http(s):// or ipfs://
      */
-    getMetadataFromUri(metadataUri: string): Promise<DomainMetadata>;
+    getMetadataFromUri(
+      metadataUri: string,
+      ipfsGatewayOverride?: string
+    ): Promise<DomainMetadata>;
   };
 }
 
