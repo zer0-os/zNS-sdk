@@ -440,8 +440,15 @@ export const createInstance = (config: Config): Instance => {
         return apiClient.checkBulkUploadJob([jobId]);
       },
 
-      getMetadataFromUri: (metadataUri: string): Promise<DomainMetadata> => {
-        return actions.getMetadataFromUri(metadataUri, IPFSGatewayUri.fleek);
+      getMetadataFromUri: (
+        metadataUri: string,
+        gatewayOverride?: string
+      ): Promise<DomainMetadata> => {
+        return actions.getMetadataFromUri(
+          metadataUri,
+          IPFSGatewayUri.fleek,
+          gatewayOverride
+        );
       },
     },
   };
