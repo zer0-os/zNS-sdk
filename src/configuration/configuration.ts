@@ -18,7 +18,7 @@ export const zAuctionConfiguration = (
     defaultApiUri = "https://mainnet.zauction.api.zero.tech/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction";
-    defaultZAuctionAddress = "0x05cBD37cA528B7ea50800aA80ddD0F9F30C952F0";
+    defaultZAuctionAddress = "0x1ee3F16aa8081891CfcfAB59d0DBFe03f2B77ff6";
     defaultTokenContract = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
   } else if (network === "kovan") {
     defaultApiUri = "https://zauction-kovan-api.herokuapp.com/api";
