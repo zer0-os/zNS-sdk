@@ -9,25 +9,25 @@ export const getMostRecentDomains = async <T>(
   count: number = 100
 ): Promise<Domain[]> => {
   const domains: Domain[] = [];
+  let skip = 0;
+  let yetUnreceived = count;
 
   while (true) {
     const queryResult = await performQuery<DomainsQueryDto>(
       apolloClient,
       queries.getPastNDomains,
-      { count: count }
+      { count: yetUnreceived, startIndex: skip }
     );
 
-    const queriedDomains = queryResult.data.domains;
-    for (const domain of queriedDomains) {
+    const queryResults = queryResult.data.domains;
+    for (const domain of queryResults) {
       domains.push(convertDomainDtoToDomain(domain));
     }
 
-    /**
-     * We will only get back up to `count` # of domains
-     * So if we get that many there's probably more domains we need
-     * to fetch. If we got back less, we can stop querying
-     */
-    if (queriedDomains.length < count) {
+    skip += queryResults.length;
+    yetUnreceived -= queryResults.length;
+
+    if (yetUnreceived <= 0) {
       break;
     }
   }
