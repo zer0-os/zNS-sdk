@@ -143,3 +143,26 @@ export const getAllDomains = gql`
     }
   }
 `;
+
+export const getPastNDomains = gql`
+  query Domains($count: Int!) {
+    domains(first: $count, orderBy: { desc: indexId }) {
+      id
+      name
+      parent {
+        id
+      }
+      owner {
+        id
+      }
+      minter {
+        id
+      }
+      lockedBy {
+        id
+      }
+      isLocked
+      metadata
+    }
+  }
+`;
