@@ -27,7 +27,7 @@ export const getMostRecentDomains = async <T>(
     skip += queryResults.length;
     yetUnreceived -= queryResults.length;
 
-    if (yetUnreceived <= 0) {
+    if (yetUnreceived <= 0 || queryResults.length == 0) {
       break;
     }
   }

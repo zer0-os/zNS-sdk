@@ -148,8 +148,8 @@ export const getPastNDomains = gql`
   query Domains($count: Int!, $startIndex: Int!) {
     domains(
       first: $count
-      where: { indexId_gt: $startIndex }
       orderBy: indexId
+      skip: $startIndex
       orderDirection: desc
     ) {
       id
