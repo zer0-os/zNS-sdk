@@ -11,6 +11,7 @@ export interface SubgraphClient {
   getDomainTransferEvents(domainId: string): Promise<DomainTransferEvent[]>;
   getDomainMintedEvent(domainId: string): Promise<DomainMintEvent>;
   getAllDomains(): Promise<Domain[]>;
+  getMostRecentDomains(count: number | undefined): Promise<Domain[]>;
 }
 
 const createApolloClient = (
@@ -61,6 +62,12 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
     },
     getAllDomains: async (): Promise<Domain[]> => {
       const domains = await actions.getAllDomains(apolloClient);
+      return domains;
+    },
+    getMostRecentDomains: async (
+      count: number | undefined
+    ): Promise<Domain[]> => {
+      const domains = await actions.getMostRecentDomains(apolloClient, count);
       return domains;
     },
   };
