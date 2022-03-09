@@ -8,6 +8,8 @@ import {
   Registrar__factory,
   StakingController,
   StakingController__factory,
+  ZNSHub,
+  ZNSHub__factory,
 } from "./types";
 
 export const getRegistrar = async (
@@ -39,5 +41,13 @@ export const getERC20Contract = async (
   address: string
 ): Promise<IERC20> => {
   const contract = IERC20__factory.connect(address, web3Provider);
+  return contract;
+};
+
+export const getHubContract = async (
+  web3Provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<ZNSHub> => {
+  const contract = ZNSHub__factory.connect(address, web3Provider);
   return contract;
 };

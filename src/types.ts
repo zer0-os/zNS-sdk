@@ -9,6 +9,7 @@ export interface Config {
   zAuctionRoutes: zAuctionRoute[];
   basicController: string;
   registrar: string;
+  hub: string;
 }
 
 export interface Listing {
