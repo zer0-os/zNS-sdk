@@ -10,6 +10,10 @@ export interface DomainIdDto {
   id: string;
 }
 
+export interface RegistrarContractDto {
+  id: string;
+}
+
 export interface DomainDto extends DomainIdDto {
   name: string;
   parent?: ParentDomainDto;
@@ -17,6 +21,7 @@ export interface DomainDto extends DomainIdDto {
   minter?: AccountDto;
   metadata: string;
   lockedBy?: AccountDto;
+  contract?: RegistrarContractDto;
   isLocked: boolean;
 }
 

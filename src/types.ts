@@ -363,6 +363,7 @@ export interface Domain {
   metadataUri: string;
   isLocked: boolean;
   lockedBy: string;
+  contract: string;
   isRoot?: boolean;
 }
 
