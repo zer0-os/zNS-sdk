@@ -18,8 +18,8 @@ import {
   getZAuctionInstanceForDomain,
   createZAuctionInstances,
 } from "./utilities";
-import { ethers } from "ethers";
-import { Registrar } from "./contracts/types";
+import { ContractTransaction, ethers } from "ethers";
+import { Registrar, Registrar__factory } from "./contracts/types";
 import { getBasicController, getRegistrar } from "./contracts";
 
 import * as domains from "./utilities/domains";
@@ -204,6 +204,21 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setDomainRoyalty(
         domainId,
         amount,
+        signer,
+        registrar
+      );
+      return tx;
+    },
+    transferOwner: async (
+      to: string,
+      tokenId: string,
+      signer: ethers.Signer
+    ): Promise<ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.transferOwnership(
+        to,
+        tokenId,
         signer,
         registrar
       );
