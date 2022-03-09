@@ -1,8 +1,11 @@
 import { ethers } from "ethers";
 import { getRegistrar } from "../contracts";
-import { ZNSHub } from "../contracts/types";
+import { Registrar, ZNSHub } from "../contracts/types";
 
-export const getContractForDomain = async (hub: ZNSHub, domainId: string) => {
+export const getRegistrarForDomain = async (
+  hub: ZNSHub,
+  domainId: string
+): Promise<Registrar> => {
   try {
     let registrarAddress;
     try {

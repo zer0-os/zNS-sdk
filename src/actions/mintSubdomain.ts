@@ -28,69 +28,71 @@ export const mintSubdomain = async (
   uploadMetadata: UploadMetadataFunction,
   statusCallback?: MintSubdomainStatusCallback
 ): Promise<ethers.ContractTransaction> => {
-  statusCallback ? statusCallback(MintSubdomainStep.UploadingImage) : null;
+  throw Error(`Currently broken from zNS v1.1`);
 
-  let imageUri: Maybe<string>;
-  try {
-    imageUri = await uploadMedia(params.image);
-  } catch (e) {
-    throw Error(`Failed to upload image: ${e}`);
-  }
+  // statusCallback ? statusCallback(MintSubdomainStep.UploadingImage) : null;
 
-  let animationUri: Maybe<string>;
-  try {
-    if (params.animation) {
-      animationUri = await uploadMedia(params.animation);
-    }
-  } catch (e) {
-    throw Error(`Failed to upload preview image: ${e}`);
-  }
+  // let imageUri: Maybe<string>;
+  // try {
+  //   imageUri = await uploadMedia(params.image);
+  // } catch (e) {
+  //   throw Error(`Failed to upload image: ${e}`);
+  // }
 
-  const metadata: DomainMetadata = {
-    image: imageUri,
-    animation_url: animationUri,
-    description: params.description,
-    name: params.name,
-    isBiddable: false,
-    stakingRequests: "disabled",
-    gridViewByDefault: false,
-    customDomainHeader: false,
-    ...params.additionalMetadata,
-  };
+  // let animationUri: Maybe<string>;
+  // try {
+  //   if (params.animation) {
+  //     animationUri = await uploadMedia(params.animation);
+  //   }
+  // } catch (e) {
+  //   throw Error(`Failed to upload preview image: ${e}`);
+  // }
 
-  statusCallback ? statusCallback(MintSubdomainStep.UploadingMetadata) : null;
+  // const metadata: DomainMetadata = {
+  //   image: imageUri,
+  //   animation_url: animationUri,
+  //   description: params.description,
+  //   name: params.name,
+  //   isBiddable: false,
+  //   stakingRequests: "disabled",
+  //   gridViewByDefault: false,
+  //   customDomainHeader: false,
+  //   ...params.additionalMetadata,
+  // };
 
-  let metadataUri: Maybe<string>;
-  try {
-    metadataUri = await uploadMetadata(metadata);
-  } catch (e) {
-    throw Error(`Failed to upload metadata: ${e}`);
-  }
+  // statusCallback ? statusCallback(MintSubdomainStep.UploadingMetadata) : null;
 
-  statusCallback
-    ? statusCallback(MintSubdomainStep.SubmittingTransaction)
-    : null;
+  // let metadataUri: Maybe<string>;
+  // try {
+  //   metadataUri = await uploadMetadata(metadata);
+  // } catch (e) {
+  //   throw Error(`Failed to upload metadata: ${e}`);
+  // }
 
-  let tx: Maybe<ethers.ContractTransaction>;
-  try {
-    tx = await registerSubdomain(
-      params.parentId,
-      params.label,
-      owner,
-      metadataUri,
-      params.royaltyAmount,
-      params.lockOnCreate
-    );
-  } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((e as any).code === 4001) {
-      throw Error(`User rejected transaction.`);
-    }
+  // statusCallback
+  //   ? statusCallback(MintSubdomainStep.SubmittingTransaction)
+  //   : null;
 
-    throw Error(`Failed to submit transaction: ${e}`);
-  }
+  // let tx: Maybe<ethers.ContractTransaction>;
+  // try {
+  //   tx = await registerSubdomain(
+  //     params.parentId,
+  //     params.label,
+  //     owner,
+  //     metadataUri,
+  //     params.royaltyAmount,
+  //     params.lockOnCreate
+  //   );
+  // } catch (e) {
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   if ((e as any).code === 4001) {
+  //     throw Error(`User rejected transaction.`);
+  //   }
 
-  statusCallback ? statusCallback(MintSubdomainStep.Completed) : null;
+  //   throw Error(`Failed to submit transaction: ${e}`);
+  // }
 
-  return tx;
+  // statusCallback ? statusCallback(MintSubdomainStep.Completed) : null;
+
+  // return tx;
 };

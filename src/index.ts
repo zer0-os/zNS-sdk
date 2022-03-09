@@ -19,8 +19,8 @@ import {
   createZAuctionInstances,
 } from "./utilities";
 import { ethers } from "ethers";
-import { Registrar } from "./contracts/types";
-import { getBasicController, getRegistrar } from "./contracts";
+import { Registrar, ZNSHub } from "./contracts/types";
+import { getBasicController, getHubContract, getRegistrar } from "./contracts";
 
 import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
@@ -28,6 +28,7 @@ export { domains };
 
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
+import { getRegistrarForDomain } from "./helpers";
 
 export * from "./types";
 export { configuration };
@@ -103,13 +104,13 @@ export const createInstance = (config: Config): Instance => {
       lockStatus: boolean,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
 
       const tx = await actions.lockDomainMetadata(
         domainId,
         lockStatus,
         signer,
-        registrar
+        hub
       );
 
       return tx;
@@ -118,10 +119,10 @@ export const createInstance = (config: Config): Instance => {
       domainId: string,
       signer: ethers.Signer
     ): Promise<DomainMetadata> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
       const metadata = await actions.getDomainMetadata(
         domainId,
-        registrar,
+        hub,
         IPFSGatewayUri.fleek
       );
       return metadata;
@@ -130,7 +131,8 @@ export const createInstance = (config: Config): Instance => {
       domainId: string,
       signer: ethers.Signer
     ): Promise<string> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
+      const registrar: Registrar = await getRegistrarForDomain(hub, domainId);
       const metadataUri = await registrar.tokenURI(domainId);
       return metadataUri;
     },
@@ -139,13 +141,13 @@ export const createInstance = (config: Config): Instance => {
       metadata: DomainMetadata,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
       const tx = await actions.setDomainMetadata(
         domainId,
         metadata,
         apiClient,
         signer,
-        registrar
+        hub
       );
       return tx;
     },
@@ -154,12 +156,12 @@ export const createInstance = (config: Config): Instance => {
       metadataUri: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
       const tx = await actions.setDomainMetadataUri(
         domainId,
         metadataUri,
         signer,
-        registrar
+        hub
       );
       return tx;
     },
@@ -168,14 +170,14 @@ export const createInstance = (config: Config): Instance => {
       metadata: DomainMetadata,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
 
       const tx = await actions.setAndLockDomainMetadata(
         domainId,
         metadata,
         apiClient,
         signer,
-        registrar
+        hub
       );
       return tx;
     },
@@ -184,13 +186,13 @@ export const createInstance = (config: Config): Instance => {
       metadataUri: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
 
       const tx = await actions.setAndLockDomainMetadataUri(
         domainId,
         metadataUri,
         signer,
-        registrar
+        hub
       );
       return tx;
     },
@@ -199,14 +201,9 @@ export const createInstance = (config: Config): Instance => {
       amount: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
 
-      const tx = await actions.setDomainRoyalty(
-        domainId,
-        amount,
-        signer,
-        registrar
-      );
+      const tx = await actions.setDomainRoyalty(domainId, amount, signer, hub);
       return tx;
     },
     zauction: {
