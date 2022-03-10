@@ -181,6 +181,18 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   /**
+   * 
+   * @param to The address to transfer ownership to
+   * @param tokenId The domain to be transferred
+   * @param signer 
+   */
+  transferOwner(
+    to: string,
+    tokenId: string,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+
+  /**
    * These methods are for bidding or sales of domains
    */
   zauction: {

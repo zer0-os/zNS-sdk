@@ -18,7 +18,7 @@ import {
   getZAuctionInstanceForDomain,
   createZAuctionInstances,
 } from "./utilities";
-import { ethers } from "ethers";
+import { ContractTransaction, ethers } from "ethers";
 import { Registrar, ZNSHub } from "./contracts/types";
 import { getBasicController, getHubContract, getRegistrar } from "./contracts";
 
@@ -204,6 +204,21 @@ export const createInstance = (config: Config): Instance => {
       const hub: ZNSHub = await getHubContract(signer, config.hub);
 
       const tx = await actions.setDomainRoyalty(domainId, amount, signer, hub);
+      return tx;
+    },
+    transferOwner: async (
+      to: string,
+      tokenId: string,
+      signer: ethers.Signer
+    ): Promise<ContractTransaction> => {
+      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+
+      const tx = await actions.transferOwnership(
+        to,
+        tokenId,
+        signer,
+        registrar
+      );
       return tx;
     },
     zauction: {
