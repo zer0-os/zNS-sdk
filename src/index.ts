@@ -211,7 +211,8 @@ export const createInstance = (config: Config): Instance => {
       tokenId: string,
       signer: ethers.Signer
     ): Promise<ContractTransaction> => {
-      const registrar: Registrar = await getRegistrar(signer, config.registrar);
+      const hub: ZNSHub = await getHubContract(signer, config.hub);
+      const registrar: Registrar = await getRegistrarForDomain(hub, tokenId);
 
       const tx = await actions.transferOwnership(
         to,
