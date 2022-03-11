@@ -9,6 +9,7 @@ export interface Config {
   zAuctionRoutes: zAuctionRoute[];
   basicController: string;
   registrar: string;
+  hub: string;
 }
 
 export interface Listing {
@@ -176,6 +177,19 @@ export interface Instance {
   setDomainRoyalty(
     domainId: string,
     amount: ethers.BigNumber,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+
+  /**
+   * Transfer the ownership of a domain
+   * Uses `safeTransferFrom`
+   * @param to The address to transfer ownership to
+   * @param domainId The domain to be transferred
+   * @param signer Signer to do the tx with (must be the owner of the domain)
+   */
+  transferDomainOwnership(
+    to: string,
+    domainId: string,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
 
@@ -363,6 +377,7 @@ export interface Domain {
   metadataUri: string;
   isLocked: boolean;
   lockedBy: string;
+  contract: string;
   isRoot?: boolean;
 }
 

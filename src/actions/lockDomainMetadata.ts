@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
-import { Registrar } from "../contracts/types";
+import { Registrar, ZNSHub } from "../contracts/types";
+import { getRegistrarForDomain } from "../helpers";
 import { validateOwnerAndStatus } from "./helpers";
 
 // Call to set domain metadata lock status to `lockStatus`
@@ -8,9 +9,10 @@ export const lockDomainMetadata = async (
   domainId: string,
   desiredLock: boolean,
   signer: ethers.Signer,
-  registrar: Registrar
+  hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
   const signerAddress = await signer.getAddress();
+  const registrar = await getRegistrarForDomain(hub, domainId);
 
   // Will throw an error if the lock status from the registrar is the same as the given `setToLock`
   // e.g. You cannot lock already locked domain metadata, and you cannot unlock already unlocked domain metadata.

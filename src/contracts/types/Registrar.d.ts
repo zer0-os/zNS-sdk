@@ -22,16 +22,19 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface RegistrarInterface extends ethers.utils.Interface {
   functions: {
     "addController(address)": FunctionFragment;
+    "adminBurnToken(uint256)": FunctionFragment;
+    "adminTransfer(address,address,uint256)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
+    "beacon()": FunctionFragment;
     "controllers(address)": FunctionFragment;
     "domainController(uint256)": FunctionFragment;
     "domainExists(uint256)": FunctionFragment;
     "domainMetadataLockedBy(uint256)": FunctionFragment;
     "domainRoyaltyAmount(uint256)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
-    "initialize()": FunctionFragment;
+    "initialize(address,uint256,string,string,address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "isController(address)": FunctionFragment;
     "isDomainMetadataLocked(uint256)": FunctionFragment;
@@ -41,12 +44,16 @@ interface RegistrarInterface extends ethers.utils.Interface {
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "parentOf(uint256)": FunctionFragment;
+    "parentRegistrar()": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "records(uint256)": FunctionFragment;
     "registerDomain(uint256,string,address,string,uint256,bool)": FunctionFragment;
+    "registerDomainAndSend(uint256,string,address,string,uint256,bool,address)": FunctionFragment;
+    "registerSubdomainContract(uint256,string,address,string,uint256,bool,address)": FunctionFragment;
     "removeController(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "rootDomainId()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setAndLockDomainMetadata(uint256,string)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
@@ -61,6 +68,8 @@ interface RegistrarInterface extends ethers.utils.Interface {
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unpause()": FunctionFragment;
+    "upgradeFromNormalRegistrar(address)": FunctionFragment;
+    "zNSHub()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -68,11 +77,20 @@ interface RegistrarInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "adminBurnToken",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "adminTransfer",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
+  encodeFunctionData(functionFragment: "beacon", values?: undefined): string;
   encodeFunctionData(functionFragment: "controllers", values: [string]): string;
   encodeFunctionData(
     functionFragment: "domainController",
@@ -96,7 +114,7 @@ interface RegistrarInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values?: undefined
+    values: [string, BigNumberish, string, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
@@ -128,6 +146,10 @@ interface RegistrarInterface extends ethers.utils.Interface {
     functionFragment: "parentOf",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "parentRegistrar",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
@@ -139,11 +161,39 @@ interface RegistrarInterface extends ethers.utils.Interface {
     values: [BigNumberish, string, string, string, BigNumberish, boolean]
   ): string;
   encodeFunctionData(
+    functionFragment: "registerDomainAndSend",
+    values: [
+      BigNumberish,
+      string,
+      string,
+      string,
+      BigNumberish,
+      boolean,
+      string
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "registerSubdomainContract",
+    values: [
+      BigNumberish,
+      string,
+      string,
+      string,
+      BigNumberish,
+      boolean,
+      string
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "removeController",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "rootDomainId",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -196,14 +246,28 @@ interface RegistrarInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "upgradeFromNormalRegistrar",
+    values: [string]
+  ): string;
+  encodeFunctionData(functionFragment: "zNSHub", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "addController",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "adminBurnToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "adminTransfer",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "beacon", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "controllers",
     data: BytesLike
@@ -250,6 +314,10 @@ interface RegistrarInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "parentOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "parentRegistrar",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "records", data: BytesLike): Result;
@@ -258,11 +326,23 @@ interface RegistrarInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "registerDomainAndSend",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "registerSubdomainContract",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "removeController",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "rootDomainId",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -312,6 +392,11 @@ interface RegistrarInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "upgradeFromNormalRegistrar",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "zNSHub", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
@@ -391,6 +476,18 @@ export class Registrar extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    adminBurnToken(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    adminTransfer(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -400,6 +497,8 @@ export class Registrar extends BaseContract {
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     baseURI(overrides?: CallOverrides): Promise<[string]>;
+
+    beacon(overrides?: CallOverrides): Promise<[string]>;
 
     controllers(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -429,6 +528,11 @@ export class Registrar extends BaseContract {
     ): Promise<[string]>;
 
     initialize(
+      parentRegistrar_: string,
+      rootDomainId_: BigNumberish,
+      collectionName: string,
+      collectionSymbol: string,
+      zNSHub_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -467,6 +571,8 @@ export class Registrar extends BaseContract {
 
     parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    parentRegistrar(overrides?: CallOverrides): Promise<[string]>;
+
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -477,23 +583,46 @@ export class Registrar extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, boolean, string, string, BigNumber, BigNumber] & {
+      [string, boolean, string, string, BigNumber, BigNumber, string] & {
         minter: string;
         metadataLocked: boolean;
         metadataLockedBy: string;
         controller: string;
         royaltyAmount: BigNumber;
         parentId: BigNumber;
+        subdomainContract: string;
       }
     >;
 
     registerDomain(
       parentId: BigNumberish,
-      name: string,
+      label: string,
       minter: string,
       metadataUri: string,
       royaltyAmount: BigNumberish,
       locked: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    registerDomainAndSend(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    registerSubdomainContract(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -505,6 +634,8 @@ export class Registrar extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    rootDomainId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -585,10 +716,29 @@ export class Registrar extends BaseContract {
     unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    upgradeFromNormalRegistrar(
+      zNSHub_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    zNSHub(overrides?: CallOverrides): Promise<[string]>;
   };
 
   addController(
     controller: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  adminBurnToken(
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  adminTransfer(
+    from: string,
+    to: string,
+    tokenId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -601,6 +751,8 @@ export class Registrar extends BaseContract {
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   baseURI(overrides?: CallOverrides): Promise<string>;
+
+  beacon(overrides?: CallOverrides): Promise<string>;
 
   controllers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -627,6 +779,11 @@ export class Registrar extends BaseContract {
   ): Promise<string>;
 
   initialize(
+    parentRegistrar_: string,
+    rootDomainId_: BigNumberish,
+    collectionName: string,
+    collectionSymbol: string,
+    zNSHub_: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -659,6 +816,8 @@ export class Registrar extends BaseContract {
 
   parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
+  parentRegistrar(overrides?: CallOverrides): Promise<string>;
+
   pause(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -669,23 +828,46 @@ export class Registrar extends BaseContract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [string, boolean, string, string, BigNumber, BigNumber] & {
+    [string, boolean, string, string, BigNumber, BigNumber, string] & {
       minter: string;
       metadataLocked: boolean;
       metadataLockedBy: string;
       controller: string;
       royaltyAmount: BigNumber;
       parentId: BigNumber;
+      subdomainContract: string;
     }
   >;
 
   registerDomain(
     parentId: BigNumberish,
-    name: string,
+    label: string,
     minter: string,
     metadataUri: string,
     royaltyAmount: BigNumberish,
     locked: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  registerDomainAndSend(
+    parentId: BigNumberish,
+    label: string,
+    minter: string,
+    metadataUri: string,
+    royaltyAmount: BigNumberish,
+    locked: boolean,
+    sendToUser: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  registerSubdomainContract(
+    parentId: BigNumberish,
+    label: string,
+    minter: string,
+    metadataUri: string,
+    royaltyAmount: BigNumberish,
+    locked: boolean,
+    sendToUser: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -697,6 +879,8 @@ export class Registrar extends BaseContract {
   renounceOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  rootDomainId(overrides?: CallOverrides): Promise<BigNumber>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: string,
@@ -775,8 +959,27 @@ export class Registrar extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  upgradeFromNormalRegistrar(
+    zNSHub_: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  zNSHub(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
     addController(controller: string, overrides?: CallOverrides): Promise<void>;
+
+    adminBurnToken(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    adminTransfer(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     approve(
       to: string,
@@ -787,6 +990,8 @@ export class Registrar extends BaseContract {
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     baseURI(overrides?: CallOverrides): Promise<string>;
+
+    beacon(overrides?: CallOverrides): Promise<string>;
 
     controllers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -812,7 +1017,14 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    initialize(overrides?: CallOverrides): Promise<void>;
+    initialize(
+      parentRegistrar_: string,
+      rootDomainId_: BigNumberish,
+      collectionName: string,
+      collectionSymbol: string,
+      zNSHub_: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     isApprovedForAll(
       owner: string,
@@ -843,6 +1055,8 @@ export class Registrar extends BaseContract {
 
     parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
+    parentRegistrar(overrides?: CallOverrides): Promise<string>;
+
     pause(overrides?: CallOverrides): Promise<void>;
 
     paused(overrides?: CallOverrides): Promise<boolean>;
@@ -851,23 +1065,46 @@ export class Registrar extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, boolean, string, string, BigNumber, BigNumber] & {
+      [string, boolean, string, string, BigNumber, BigNumber, string] & {
         minter: string;
         metadataLocked: boolean;
         metadataLockedBy: string;
         controller: string;
         royaltyAmount: BigNumber;
         parentId: BigNumber;
+        subdomainContract: string;
       }
     >;
 
     registerDomain(
       parentId: BigNumberish,
-      name: string,
+      label: string,
       minter: string,
       metadataUri: string,
       royaltyAmount: BigNumberish,
       locked: boolean,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    registerDomainAndSend(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    registerSubdomainContract(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -877,6 +1114,8 @@ export class Registrar extends BaseContract {
     ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    rootDomainId(overrides?: CallOverrides): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -952,6 +1191,13 @@ export class Registrar extends BaseContract {
     ): Promise<void>;
 
     unpause(overrides?: CallOverrides): Promise<void>;
+
+    upgradeFromNormalRegistrar(
+      zNSHub_: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    zNSHub(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -983,8 +1229,8 @@ export class Registrar extends BaseContract {
 
     DomainCreated(
       id?: BigNumberish | null,
-      name?: null,
-      nameHash?: BigNumberish | null,
+      label?: null,
+      labelHash?: BigNumberish | null,
       parent?: BigNumberish | null,
       minter?: null,
       controller?: null,
@@ -1003,8 +1249,8 @@ export class Registrar extends BaseContract {
       ],
       {
         id: BigNumber;
-        name: string;
-        nameHash: BigNumber;
+        label: string;
+        labelHash: BigNumber;
         parent: BigNumber;
         minter: string;
         controller: string;
@@ -1063,6 +1309,18 @@ export class Registrar extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    adminBurnToken(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    adminTransfer(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -1072,6 +1330,8 @@ export class Registrar extends BaseContract {
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     baseURI(overrides?: CallOverrides): Promise<BigNumber>;
+
+    beacon(overrides?: CallOverrides): Promise<BigNumber>;
 
     controllers(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1101,6 +1361,11 @@ export class Registrar extends BaseContract {
     ): Promise<BigNumber>;
 
     initialize(
+      parentRegistrar_: string,
+      rootDomainId_: BigNumberish,
+      collectionName: string,
+      collectionSymbol: string,
+      zNSHub_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1139,6 +1404,8 @@ export class Registrar extends BaseContract {
 
     parentOf(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
+    parentRegistrar(overrides?: CallOverrides): Promise<BigNumber>;
+
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1149,11 +1416,33 @@ export class Registrar extends BaseContract {
 
     registerDomain(
       parentId: BigNumberish,
-      name: string,
+      label: string,
       minter: string,
       metadataUri: string,
       royaltyAmount: BigNumberish,
       locked: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    registerDomainAndSend(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    registerSubdomainContract(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1165,6 +1454,8 @@ export class Registrar extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    rootDomainId(overrides?: CallOverrides): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1245,11 +1536,30 @@ export class Registrar extends BaseContract {
     unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    upgradeFromNormalRegistrar(
+      zNSHub_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    zNSHub(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     addController(
       controller: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    adminBurnToken(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    adminTransfer(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1265,6 +1575,8 @@ export class Registrar extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    beacon(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     controllers(
       arg0: string,
@@ -1297,6 +1609,11 @@ export class Registrar extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialize(
+      parentRegistrar_: string,
+      rootDomainId_: BigNumberish,
+      collectionName: string,
+      collectionSymbol: string,
+      zNSHub_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1341,6 +1658,8 @@ export class Registrar extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    parentRegistrar(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1354,11 +1673,33 @@ export class Registrar extends BaseContract {
 
     registerDomain(
       parentId: BigNumberish,
-      name: string,
+      label: string,
       minter: string,
       metadataUri: string,
       royaltyAmount: BigNumberish,
       locked: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    registerDomainAndSend(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    registerSubdomainContract(
+      parentId: BigNumberish,
+      label: string,
+      minter: string,
+      metadataUri: string,
+      royaltyAmount: BigNumberish,
+      locked: boolean,
+      sendToUser: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1370,6 +1711,8 @@ export class Registrar extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    rootDomainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1450,5 +1793,12 @@ export class Registrar extends BaseContract {
     unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    upgradeFromNormalRegistrar(
+      zNSHub_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    zNSHub(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

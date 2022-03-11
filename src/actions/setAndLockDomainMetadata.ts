@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import { DomainMetadata } from "..";
 import { ApiClient } from "../api";
-import { Registrar } from "../contracts/types";
+import { ZNSHub } from "../contracts/types";
+import { getRegistrarForDomain } from "../helpers";
 import { validateOwnerAndStatus } from "./helpers";
 
 export const setAndLockDomainMetadata = async (
@@ -9,10 +10,11 @@ export const setAndLockDomainMetadata = async (
   metadata: DomainMetadata,
   client: ApiClient,
   signer: ethers.Signer,
-  registrar: Registrar
+  hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
   const isLocked = true;
   const signerAddress = await signer.getAddress();
+  const registrar = await getRegistrarForDomain(hub, domainId);
 
   await validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
   const metadataUri = await client.uploadMetadata(metadata);
