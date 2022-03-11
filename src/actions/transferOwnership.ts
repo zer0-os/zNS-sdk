@@ -1,26 +1,25 @@
 import { ethers } from "ethers";
-import { Registrar } from "../contracts/types";
+import { ZNSHub } from "../contracts/types";
+import { getRegistrarForDomain } from "../helpers";
 
 export const transferOwnership = async (
   to: string,
-  tokenId: string,
+  domainId: string,
   signer: ethers.Signer,
-  registrar: Registrar
+  hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
   const signerAddress = await signer.getAddress();
-
-  const currentOwner = await registrar.ownerOf(tokenId);
+  const registrar = await getRegistrarForDomain(hub, domainId);
+  const currentOwner = await registrar.ownerOf(domainId);
 
   if (signerAddress !== currentOwner) {
-    throw new Error(
-      "Given address is not the owner, ownership of domain not transferred"
-    );
+    throw new Error(`Signer ${signerAddress} is not the owner of ${domainId}`);
   }
 
   const tx = await registrar["safeTransferFrom(address,address,uint256)"](
     signerAddress,
     to,
-    tokenId
+    domainId
   );
 
   return tx;

@@ -181,14 +181,15 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   /**
-   * 
+   * Transfer the ownership of a domain
+   * Uses `safeTransferFrom`
    * @param to The address to transfer ownership to
-   * @param tokenId The domain to be transferred
-   * @param signer 
+   * @param domainId The domain to be transferred
+   * @param signer Signer to do the tx with (must be the owner of the domain)
    */
-  transferOwner(
+  transferDomainOwnership(
     to: string,
-    tokenId: string,
+    domainId: string,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
 

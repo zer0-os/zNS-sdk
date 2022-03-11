@@ -206,20 +206,14 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setDomainRoyalty(domainId, amount, signer, hub);
       return tx;
     },
-    transferOwner: async (
+    transferDomainOwnership: async (
       to: string,
-      tokenId: string,
+      domainId: string,
       signer: ethers.Signer
     ): Promise<ContractTransaction> => {
       const hub: ZNSHub = await getHubContract(signer, config.hub);
-      const registrar: Registrar = await getRegistrarForDomain(hub, tokenId);
 
-      const tx = await actions.transferOwnership(
-        to,
-        tokenId,
-        signer,
-        registrar
-      );
+      const tx = await actions.transferOwnership(to, domainId, signer, hub);
       return tx;
     },
     zauction: {
