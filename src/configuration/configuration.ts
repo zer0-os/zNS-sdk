@@ -30,7 +30,7 @@ export const zAuctionConfiguration = (
     defaultApiUri = "https://zauction-api-rinkeby.herokuapp.com/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-rinkeby";
-    defaultZAuctionAddress = "0xe94a5456Db55af2D6a37FaDd7cEd363EDBcA65CF";
+    defaultZAuctionAddress = "0xb2416Aed6f5439Ffa0eCCAaa2b643f3D9828f86B";
     defaultTokenContract = "0xa4F6C921f914ff7972D7C55c15f015419326e0Ca"; // not ERC20 token, technically 721 token
   } else {
     throw Error(`Network ${network} is not supported`);
