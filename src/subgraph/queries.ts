@@ -17,6 +17,9 @@ export const getDomainById = gql`
       lockedBy {
         id
       }
+      contract {
+        id
+      }
       isLocked
       metadata
     }
@@ -38,6 +41,9 @@ export const getDomainsByName = gql`
         id
       }
       lockedBy {
+        id
+      }
+      contract {
         id
       }
       isLocked
@@ -63,6 +69,9 @@ export const getSubdomainsById = gql`
       lockedBy {
         id
       }
+      contract {
+        id
+      }
       isLocked
       metadata
     }
@@ -84,6 +93,9 @@ export const getDomainsByOwner = gql`
         id
       }
       lockedBy {
+        id
+      }
+      contract {
         id
       }
       isLocked
@@ -138,6 +150,9 @@ export const getAllDomains = gql`
       lockedBy {
         id
       }
+      contract {
+        id
+      }
       isLocked
       metadata
     }
@@ -164,6 +179,9 @@ export const getPastNDomains = gql`
         id
       }
       lockedBy {
+        id
+      }
+      contract {
         id
       }
       isLocked

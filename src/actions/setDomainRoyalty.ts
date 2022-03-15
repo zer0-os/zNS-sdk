@@ -1,14 +1,16 @@
 import * as ethers from "ethers";
-import { Registrar } from "../contracts/types";
+import { Registrar, ZNSHub } from "../contracts/types";
+import { getRegistrarForDomain } from "../helpers";
 import { validateUserOwnsDomain } from "./helpers";
 
 export const setDomainRoyalty = async (
   domainId: string,
   amount: ethers.BigNumber,
   signer: ethers.Signer,
-  registrar: Registrar
+  hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
   const signerAddress = await signer.getAddress();
+  const registrar = await getRegistrarForDomain(hub, domainId);
 
   await validateUserOwnsDomain(domainId, signerAddress, registrar);
 

@@ -7,19 +7,14 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 import * as zNSSDK from "../src/index";
 import * as subgraph from "../src/subgraph";
 import * as actions from "../src/actions";
-import {
-  Config,
-  IPFSGatewayUri,
-  Listing,
-  zAuctionRoute,
-} from "../src/types";
+import { Config, IPFSGatewayUri, Listing, zAuctionRoute } from "../src/types";
 import { Registrar } from "../src/contracts/types";
 import { getRegistrar } from "../src/contracts";
 import {
   createZAuctionInstances,
   getZAuctionInstanceForDomain,
 } from "../src/utilities";
-import { zAuctionConfiguration } from "../src/configuration/configuration";
+import { zAuctionConfiguration } from "../src/configuration/zAuction";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -28,7 +23,7 @@ dotenv.config();
 const enum ChainId {
   mainnet = 1,
   rinkeby = 4,
-  kovan = 42
+  kovan = 42,
 }
 
 describe("Test Custom SDK Logic", () => {
@@ -174,10 +169,17 @@ describe("Test Custom SDK Logic", () => {
         domainIdToDomainName
       );
       // Set to a new value every time it's run, loop is same as current price
-      const currentBuyNowPrice = await zAuctionInstance.getBuyNowPrice(domainId, signer);
-      let newBuyNowPrice = ethers.utils.parseEther(Math.round(Math.random() * 100).toString());
+      const currentBuyNowPrice = await zAuctionInstance.getBuyNowPrice(
+        domainId,
+        signer
+      );
+      let newBuyNowPrice = ethers.utils.parseEther(
+        Math.round(Math.random() * 100).toString()
+      );
       while (currentBuyNowPrice.eq(newBuyNowPrice)) {
-        newBuyNowPrice = ethers.utils.parseEther(Math.round(Math.random() * 100).toString());
+        newBuyNowPrice = ethers.utils.parseEther(
+          Math.round(Math.random() * 100).toString()
+        );
       }
       const params: zAuction.BuyNowParams = {
         amount: ethers.utils.parseEther(`${newBuyNowPrice}`).toString(),

@@ -1,22 +1,26 @@
 import { ethers } from "ethers";
 import { ZNSHub } from "../contracts/types";
 import { getRegistrarForDomain } from "../helpers";
-import { validateOwnerAndStatus } from "./helpers";
 
-export const setAndLockDomainMetadataUri = async (
+export const transferOwnership = async (
+  to: string,
   domainId: string,
-  metadataUri: string,
   signer: ethers.Signer,
   hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
-  const isLocked = true;
   const signerAddress = await signer.getAddress();
   const registrar = await getRegistrarForDomain(hub, domainId);
+  const currentOwner = await registrar.ownerOf(domainId);
 
-  await validateOwnerAndStatus(domainId, registrar, signerAddress, isLocked);
+  if (signerAddress !== currentOwner) {
+    throw new Error(`Signer ${signerAddress} is not the owner of ${domainId}`);
+  }
 
-  const tx = await registrar
-    .connect(signer)
-    .setAndLockDomainMetadata(domainId, metadataUri);
+  const tx = await registrar["safeTransferFrom(address,address,uint256)"](
+    signerAddress,
+    to,
+    domainId
+  );
+
   return tx;
 };
