@@ -53,7 +53,7 @@
     "lolex": "6.0.0"
   },
   "peerDependencies": {
-    "@zero-tech/zauction-sdk": ">=0.0.33",
+    "@zero-tech/zauction-sdk": ">=0.0.39",
     "ethers": "^5.4.6"
   }
 }
