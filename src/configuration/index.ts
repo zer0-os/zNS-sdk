@@ -60,7 +60,7 @@ const rinkebyStaking = "0x7FDd24f30fB8a3E0021e85Fdb737a3483D3C8135";
 const rinkebyBasicController = "0x1188dD1a0F42BA4a117EF1c09D884f5183D40B28";
 
 export const rinkebyConfiguration = (
-  provider: ethers.providers.Web3Provider
+  provider: ethers.providers.Provider
 ): Config => {
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
