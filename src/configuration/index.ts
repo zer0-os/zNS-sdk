@@ -10,7 +10,7 @@ const mainnetStaking = "0x45b13d8e6579d5C3FeC14bB9998A3640CD4F008D";
 const mainnetBasicController = "0xa05Ae774Da859943B7B859cd2A6aD9F5f1651d6a";
 
 export const mainnetConfiguration = (
-  provider: ethers.providers.Web3Provider
+  provider: ethers.providers.Provider
 ): Config => {
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
@@ -35,7 +35,7 @@ const kovanStaking = "0x1E3F8B31b24EC0E938BE45ecF6971584F90A1602";
 const kovanBasicController = "0x2EF34C52138781C901Fe9e50B64d80aA9903f730";
 
 export const kovanConfiguration = (
-  provider: ethers.providers.Web3Provider
+  provider: ethers.providers.Provider
 ): Config => {
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",

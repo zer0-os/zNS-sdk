@@ -368,10 +368,7 @@ export const createInstance = (config: Config): Instance => {
         const tx = await zAuctionInstance.buyNow(params, signer);
         return tx;
       },
-      getBuyNowPrice: async (
-        tokenId: string,
-        signer: ethers.Signer
-      ): Promise<string> => {
+      getBuyNowPrice: async (tokenId: string): Promise<string> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           tokenId,
           config.zAuctionRoutes,
@@ -380,8 +377,7 @@ export const createInstance = (config: Config): Instance => {
         );
         const domain = await subgraphClient.getDomainById(tokenId);
         const listing: zAuction.Listing = await zAuctionInstance.getBuyNowPrice(
-          tokenId,
-          signer
+          tokenId
         );
         if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())
           return "0";
@@ -428,7 +424,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (urls.length == 0) {
-          return new Promise<UrlToJobId>(() => {});
+          return Promise.resolve<UrlToJobId>({});
         }
         return apiClient.startBulkUpload(urls);
       },
