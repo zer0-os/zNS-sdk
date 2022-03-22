@@ -68,7 +68,7 @@ export const uploadInBackground = async (
   }
   // same idea as above, map into promise and then await all promises
   while (Object.keys(incompleteJobs).length != 0) {
-    let jobIdChunks: string[][] = chunkArray(
+    const jobIdChunks: string[][] = chunkArray(
       Object.keys(incompleteJobs),
       URLS_PER_CHUNK_CHECK
     ) as string[][];
@@ -148,9 +148,9 @@ export const tryCheckBulkUploadJob = async (
 };
 
 const chunkArray = (array: unknown[], chunkSize: number): unknown[][] => {
-  let batches: unknown[][] = [];
-  let numBatches: number = 0;
-  let i: number = 0;
+  const batches: unknown[][] = [];
+  let numBatches = 0;
+  let i = 0;
   while (i < array.length) {
     batches[numBatches] = array.slice(i, i + chunkSize);
     i += chunkSize;

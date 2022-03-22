@@ -16,11 +16,9 @@ export const transferOwnership = async (
     throw new Error(`Signer ${signerAddress} is not the owner of ${domainId}`);
   }
 
-  const tx = await registrar.connect(signer)["safeTransferFrom(address,address,uint256)"](
-    signerAddress,
-    to,
-    domainId
-  );
+  const tx = await registrar
+    .connect(signer)
+    ["safeTransferFrom(address,address,uint256)"](signerAddress, to, domainId);
 
   console.log(tx);
   return tx;

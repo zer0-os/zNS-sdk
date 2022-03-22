@@ -9,7 +9,7 @@ export const getRegistrarForDomain = async (
   let registrarAddress;
 
   try {
-    registrarAddress = await hub.getRegistrarForDomain(domainId)
+    registrarAddress = await hub.getRegistrarForDomain(domainId);
   } catch (e) {
     throw Error(`Failed to access hub: ${e}`);
   }
