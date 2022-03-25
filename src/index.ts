@@ -7,7 +7,6 @@ import {
   DomainMetadata,
   Instance,
   IPFSGatewayUri,
-  Listing,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
@@ -20,7 +19,7 @@ import {
 } from "./utilities";
 import { ContractTransaction, ethers } from "ethers";
 import { Registrar, ZNSHub } from "./contracts/types";
-import { getBasicController, getHubContract, getRegistrar } from "./contracts";
+import { getBasicController, getHubContract } from "./contracts";
 
 import * as domains from "./utilities/domains";
 import { Bid } from "./zAuction";
@@ -273,7 +272,7 @@ export const createInstance = (config: Config): Instance => {
       },
 
       cancelBid: async (
-        auctionId: string,
+        bidNonce: string,
         signedBidMessage: string,
         domainId: string,
         cancelOnChain: boolean,
@@ -287,7 +286,7 @@ export const createInstance = (config: Config): Instance => {
         );
 
         const tx = await zAuctionInstance.cancelBid(
-          auctionId,
+          bidNonce,
           signedBidMessage,
           cancelOnChain,
           signer

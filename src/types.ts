@@ -235,11 +235,11 @@ export interface Instance {
 
     /**
      * Cancel a bid for a domain, only callable by the creator of that bid
-     * @param auctionId The id used to identify the bid
+     * @param bidNonce The id used to identify the bid
      * @param signer The user account signer (connected wallet)
      */
     cancelBid(
-      auctionId: string,
+      bidNonce: string,
       signedBidMessage: string,
       domainId: string,
       cancelOnChain: boolean,
