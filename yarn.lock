@@ -908,10 +908,17 @@
   dependencies:
     tslib "^2.3.0"
 
+<<<<<<< Updated upstream
 "@zero-tech/zauction-sdk@0.0.41":
   version "0.0.41"
   resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.0.41.tgz#d834c01a84ac6c0e7ee7abd7c1ed86c680a865c0"
   integrity sha512-LhYp+ReR39ZBvk52GvT80pE7DHpkUk3oZ/q6i1VnkKIPS7nv/b6xJmozIUJhZ0qHUZoGmmWtF5J2HoHAGbtSFw==
+=======
+"@zero-tech/zauction-sdk@0.0.42":
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.0.42.tgz#a9a74126ba05a643b8e3bc85bd6a67b1cd7f3202"
+  integrity sha512-TM7x3j9cvlcHLaYpq1ZCrTCwgYhUjDr8P+NDpP+7RMEhTLRFNQNGkS+ZlKHsKf6ngxgItaKp5BCI34LYtBiUAg==
+>>>>>>> Stashed changes
   dependencies:
     "@apollo/client" "3.4.10"
     "@ethersproject/abi" "5.4.1"
