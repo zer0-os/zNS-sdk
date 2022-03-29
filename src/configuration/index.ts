@@ -3,6 +3,7 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 import { Config } from "..";
 import { zAuctionConfiguration } from "./zAuction";
 import { zAuctionRoute } from "../types";
+import { Web3Provider } from "@ethersproject/providers";
 
 const mainnetRegistrar = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
 const mainnetHub = ethers.constants.AddressZero;
@@ -31,6 +32,7 @@ export const mainnetConfiguration = (
     basicController: mainnetBasicController,
     registrar: mainnetRegistrar,
     hub: mainnetHub,
+    provider: provider
   };
 };
 
@@ -61,6 +63,7 @@ export const kovanConfiguration = (
     basicController: kovanBasicController,
     registrar: kovanRegistrar,
     hub: kovanHub,
+    provider: provider
   };
 };
 
@@ -91,5 +94,6 @@ export const rinkebyConfiguration = (
     basicController: rinkebyBasicController,
     registrar: rinkebyRegistrar,
     hub: rinkebyHub,
+    provider: provider
   };
 };

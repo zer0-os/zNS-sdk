@@ -9,7 +9,7 @@ export interface Config {
   basicController: string;
   registrar: string;
   hub: string;
-  provider: ethers.providers.Web3Provider
+  provider: ethers.providers.Provider
 }
 
 export interface Listing {
