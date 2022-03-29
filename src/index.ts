@@ -104,6 +104,16 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
+    isDomainMetadataLocked: async (
+      domainId: string,
+    ): Promise<boolean> => {
+      const hub: ZNSHub = await getHubContract(config.provider, config.hub);
+      const registrar = await getRegistrarForDomain(hub, domainId);
+
+      const isLocked = await registrar.isDomainMetadataLocked(domainId);
+
+      return isLocked;
+    },
     lockDomainMetadata: async (
       domainId: string,
       lockStatus: boolean,

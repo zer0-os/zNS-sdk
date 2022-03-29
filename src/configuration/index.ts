@@ -31,6 +31,7 @@ export const mainnetConfiguration = (
     basicController: mainnetBasicController,
     registrar: mainnetRegistrar,
     hub: mainnetHub,
+    provider: provider
   };
 };
 
@@ -61,6 +62,7 @@ export const kovanConfiguration = (
     basicController: kovanBasicController,
     registrar: kovanRegistrar,
     hub: kovanHub,
+    provider: provider
   };
 };
 
@@ -91,5 +93,6 @@ export const rinkebyConfiguration = (
     basicController: rinkebyBasicController,
     registrar: rinkebyRegistrar,
     hub: rinkebyHub,
+    provider: provider
   };
 };

@@ -9,6 +9,7 @@ export interface Config {
   basicController: string;
   registrar: string;
   hub: string;
+  provider: ethers.providers.Provider
 }
 
 export interface Listing {
@@ -86,6 +87,17 @@ export interface Instance {
     signer: ethers.Signer,
     statusCallback?: MintSubdomainStatusCallback
   ): Promise<ethers.ContractTransaction>;
+
+  /**
+   * Check the current lock status of a domain's metadata
+   * 
+   * @param domainId The domain whose metadata lock status is being checked
+   * @param signer The connected account
+   */
+  isDomainMetadataLocked(
+    domainId: string,
+    signer: ethers.Signer
+  ): Promise<boolean>;
 
   /**
    * Set the lock status of metadata to define whether it can
