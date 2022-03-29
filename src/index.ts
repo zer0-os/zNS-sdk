@@ -106,9 +106,8 @@ export const createInstance = (config: Config): Instance => {
     },
     isDomainMetadataLocked: async (
       domainId: string,
-      signer: ethers.Signer
     ): Promise<boolean> => {
-      const hub: ZNSHub = await getHubContract(signer, config.hub);
+      const hub: ZNSHub = await getHubContract(config.provider, config.hub);
       const registrar = await getRegistrarForDomain(hub, domainId);
 
       const isLocked = await registrar.isDomainMetadataLocked(domainId);
