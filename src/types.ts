@@ -208,6 +208,8 @@ export interface Instance {
     needsToApproveZAuctionToSpendTokens(
       domainId: string,
       account: string,
+      bid: Bid,
+      signer: ethers.Signer,
       bidAmount: ethers.BigNumber
     ): Promise<boolean>;
 
@@ -218,7 +220,33 @@ export interface Instance {
      */
     approveZAuctionToSpendTokens(
       domainId: string,
-      signer: ethers.Signer
+      signer: ethers.Signer,
+      bid: Bid
+    ): Promise<ethers.ContractTransaction>;
+
+    /**
+     * Checks whether a user has approved zAuction to transfer NFT's on their behalf.
+     * zAuction must be approved before a user can accept a bid for a domain they own.
+     * @param domainId The domain ID that is going to be sold
+     * @param account The user account which is selling the domain
+     */
+    needsToApproveZAuctionToTransferNfts(
+      domainId: string,
+      account: string,
+      signer: ethers.Signer,
+      bid: Bid
+    ): Promise<boolean>;
+
+    /**
+     * Approves zAuction to transfer NFT's on behalf of the user.
+     * Must be done before a bid can be accepted.
+     * @param domainId The domain Id that is going to be sold
+     * @param signer The user account which is selling the domain (connected wallet)
+     */
+    approveZAuctionToTransferNfts(
+      domainId: string,
+      signer: ethers.Signer,
+      bid: Bid
     ): Promise<ethers.ContractTransaction>;
 
     /**
@@ -251,28 +279,6 @@ export interface Instance {
      * @param domainId The id of the domain
      */
     listBids(domainId: string): Promise<any>;
-
-    /**
-     * Checks whether a user has approved zAuction to transfer NFT's on their behalf.
-     * zAuction must be approved before a user can accept a bid for a domain they own.
-     * @param domainId The domain ID that is going to be sold
-     * @param account The user account which is selling the domain
-     */
-    needsToApproveZAuctionToTransferNfts(
-      domainId: string,
-      account: string
-    ): Promise<boolean>;
-
-    /**
-     * Approves zAuction to transfer NFT's on behalf of the user.
-     * Must be done before a bid can be accepted.
-     * @param domainId The domain Id that is going to be sold
-     * @param signer The user account which is selling the domain (connected wallet)
-     */
-    approveZAuctionToTransferNfts(
-      domainId: string,
-      signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction>;
 
     /**
      * Accepts an existing bid to buy a domain.

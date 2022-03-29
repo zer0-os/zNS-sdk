@@ -219,6 +219,8 @@ export const createInstance = (config: Config): Instance => {
       needsToApproveZAuctionToSpendTokens: async (
         domainId: string,
         account: string,
+        bid: Bid,
+        signer: ethers.Signer,
         bidAmount: ethers.BigNumber
       ): Promise<boolean> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
@@ -228,15 +230,22 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
 
-        const allowance = await zAuctionInstance.getZAuctionSpendAllowance(
-          account
+        const hub: ZNSHub = await getHubContract(signer, config.hub);
+        const registrar: Registrar = await getRegistrarForDomain(hub, domainId);
+
+        const allowance = await zAuctionInstance.getZAuctionSpendAllowanceByBid(
+          account,
+          bid,
+          registrar
         );
         const isApproved = allowance.gte(bidAmount);
         return isApproved;
       },
+
       approveZAuctionToSpendTokens: async (
         domainId: string,
-        signer: ethers.Signer
+        signer: ethers.Signer,
+        bid: Bid
       ): Promise<ethers.ContractTransaction> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
@@ -245,8 +254,9 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
 
-        const tx = await zAuctionInstance.approveZAuctionSpendTradeTokens(
-          signer
+        const tx = await zAuctionInstance.approveZAuctionSpendTradeTokensByBid(
+          signer,
+          bid
         );
 
         return tx;
@@ -308,7 +318,9 @@ export const createInstance = (config: Config): Instance => {
       },
       needsToApproveZAuctionToTransferNfts: async (
         domainId: string,
-        account: string
+        account: string,
+        signer: ethers.Signer,
+        bid: Bid
       ): Promise<boolean> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
@@ -317,14 +329,23 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
 
+        const hub: ZNSHub = await getHubContract(signer, config.hub);
+        const registrar: Registrar = await getRegistrarForDomain(hub, domainId);
+
         const isApproved =
-          await zAuctionInstance.isZAuctionApprovedToTransferNft(account);
+          await zAuctionInstance.isZAuctionApprovedToTransferNftByBid(
+            account,
+            bid,
+            registrar
+          );
 
         return isApproved;
       },
+
       approveZAuctionToTransferNfts: async (
         domainId: string,
-        signer: ethers.Signer
+        signer: ethers.Signer,
+        bid: Bid
       ): Promise<ethers.ContractTransaction> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
@@ -333,7 +354,13 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName
         );
 
-        const tx = await zAuctionInstance.approveZAuctionTransferNft(signer);
+        const hub: ZNSHub = await getHubContract(signer, config.hub);
+        const registrar: Registrar = await getRegistrarForDomain(hub, domainId);
+
+        const tx = await zAuctionInstance.approveZAuctionTransferNftByBid(
+          bid,
+          registrar
+        );
 
         return tx;
       },
