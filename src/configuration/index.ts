@@ -3,7 +3,6 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 import { Config } from "..";
 import { zAuctionConfiguration } from "./zAuction";
 import { zAuctionRoute } from "../types";
-import { Web3Provider } from "@ethersproject/providers";
 
 const mainnetRegistrar = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
 const mainnetHub = ethers.constants.AddressZero;
