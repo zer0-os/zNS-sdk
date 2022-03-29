@@ -88,6 +88,17 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   /**
+   * Check the current lock status of a domain's metadata
+   * 
+   * @param domainId The domain whose metadata lock status is being checked
+   * @param signer The connected account
+   */
+  isDomainMetadataLocked(
+    domainId: string,
+    signer: ethers.Signer
+  ): Promise<boolean>;
+
+  /**
    * Set the lock status of metadata to define whether it can
    * or cannot be changed
    * @param domainId The domain with metadata to be locked/unlocked
