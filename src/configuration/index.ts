@@ -22,6 +22,11 @@ export const mainnetConfiguration = (
         // Use default values
         config: zAuctionConfiguration(provider, "mainnet") as zAuction.Config,
       } as zAuctionRoute,
+      {
+        uriPattern: ".+",
+        // Use default values
+        config: zAuctionConfiguration(provider, "mainnet") as zAuction.Config,
+      } as zAuctionRoute,
     ],
     basicController: mainnetBasicController,
     registrar: mainnetRegistrar,
@@ -47,6 +52,11 @@ export const kovanConfiguration = (
         // Use default values
         config: zAuctionConfiguration(provider, "kovan") as zAuction.Config,
       } as zAuctionRoute,
+      {
+        uriPattern: ".+",
+        // Use default values
+        config: zAuctionConfiguration(provider, "kovan") as zAuction.Config,
+      } as zAuctionRoute,
     ],
     basicController: kovanBasicController,
     registrar: kovanRegistrar,
@@ -69,6 +79,11 @@ export const rinkebyConfiguration = (
     zAuctionRoutes: [
       {
         uriPattern: "wilder",
+        // Use default values
+        config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
+      } as zAuctionRoute,
+      {
+        uriPattern: ".+",
         // Use default values
         config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
       } as zAuctionRoute,
