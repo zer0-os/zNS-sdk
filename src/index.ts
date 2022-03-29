@@ -341,7 +341,8 @@ export const createInstance = (config: Config): Instance => {
 
       placeBid: async (
         params: PlaceBidParams,
-        signer: ethers.Signer
+        signer: ethers.Signer,
+        statusCallback?: zAuction.PlaceBidStatusCallback
       ): Promise<void> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           params.domainId,
@@ -356,7 +357,8 @@ export const createInstance = (config: Config): Instance => {
             tokenId: params.domainId,
             bidAmount: params.bidAmount.toString(), // perhaps changes this to ethers.BigNumber
           } as zAuction.NewBidParameters,
-          signer
+          signer,
+          statusCallback
         );
       },
 
