@@ -401,7 +401,7 @@ export const createInstance = (config: Config): Instance => {
 
       listBidsByAccount: async (account: string): Promise<zAuction.Bid[]> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
-          "0x0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000", //Todo replace with cheese
           config.zAuctionRoutes,
           zAuctionRouteUriToInstance,
           domainIdToDomainName,
