@@ -1,5 +1,4 @@
-import * as zAuction from "@zero-tech/zauction-sdk";
-import { Bid } from "@zero-tech/zauction-sdk";
+import * as zAuction from "./zAuction";
 import { ethers } from "ethers";
 
 export interface Config {
@@ -236,7 +235,7 @@ export interface Instance {
     needsToApproveZAuctionToTransferNftsByBid(
       domainId: string,
       account: string,
-      bid: Bid
+      bid: zAuction.Bid
     ): Promise<boolean>;
 
     /**
@@ -258,7 +257,7 @@ export interface Instance {
      */
     approveZAuctionToTransferNftsByBid(
       domainId: string,
-      bid: Bid,
+      bid: zAuction.Bid,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
 
@@ -302,7 +301,13 @@ export interface Instance {
      * View all the bids for a given domain ID
      * @param domainId The id of the domain
      */
-    listBids(domainId: string): Promise<any>;
+    listBids(domainId: string): Promise<zAuction.Bid[]>;
+
+    /**
+     * View all the bids placed by an account
+     * @param account The account placing the bids
+     */
+    listBidsByAccount(account: string): Promise<zAuction.Bid[]>;
 
     /**
      * Accepts an existing bid to buy a domain.
@@ -310,7 +315,7 @@ export interface Instance {
      * @param signer The user which is selling the domain
      */
     acceptBid(
-      bid: Bid,
+      bid: zAuction.Bid,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
 

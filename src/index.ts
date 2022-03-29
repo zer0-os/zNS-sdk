@@ -22,7 +22,6 @@ import { Registrar, ZNSHub } from "./contracts/types";
 import { getBasicController, getHubContract } from "./contracts";
 
 import * as domains from "./utilities/domains";
-import { Bid } from "./zAuction";
 export { domains };
 
 import * as configuration from "./configuration";
@@ -283,7 +282,7 @@ export const createInstance = (config: Config): Instance => {
       needsToApproveZAuctionToTransferNftsByBid: async (
         domainId: string,
         account: string,
-        bid: Bid
+        bid: zAuction.Bid
       ): Promise<boolean> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
@@ -321,7 +320,7 @@ export const createInstance = (config: Config): Instance => {
 
       approveZAuctionToTransferNftsByBid: async (
         domainId: string,
-        bid: Bid,
+        bid: zAuction.Bid,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
@@ -385,7 +384,7 @@ export const createInstance = (config: Config): Instance => {
         if (tx) return tx;
       },
 
-      listBids: async (domainId: string) => {
+      listBids: async (domainId: string): Promise<zAuction.Bid[]> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
           domainId,
           config.zAuctionRoutes,
@@ -400,8 +399,21 @@ export const createInstance = (config: Config): Instance => {
         return domainBids;
       },
 
+      listBidsByAccount: async (account: string): Promise<zAuction.Bid[]> => {
+        const zAuctionInstance = await getZAuctionInstanceForDomain(
+          "0x0",
+          config.zAuctionRoutes,
+          zAuctionRouteUriToInstance,
+          domainIdToDomainName,
+          getDomainContractForDomain
+        );
+
+        const bids = await zAuctionInstance.listBidsByAccount(account);
+        return bids;
+      },
+
       acceptBid: async (
-        bid: Bid,
+        bid: zAuction.Bid,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
