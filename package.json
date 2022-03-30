@@ -13,7 +13,7 @@
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --timeout 150000",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\"",
     "prepublish": "yarn build"
   },
@@ -27,7 +27,7 @@
     "@types/sinon": "10.0.2",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
-    "@zero-tech/zauction-sdk": "0.0.57",
+    "@zero-tech/zauction-sdk": "0.0.58",
     "chai": "4.3.4",
     "chai-as-promised": "7.1.1",
     "dotenv": "10.0.0",
