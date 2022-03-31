@@ -5,7 +5,7 @@ import { zAuctionConfiguration } from "./zAuction";
 import { zAuctionRoute } from "../types";
 
 const mainnetRegistrar = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
-const mainnetHub = ethers.constants.AddressZero;
+const mainnetHub = "0x6141d5Cb3517215A03519A464bF9C39814df7479";
 const mainnetStaking = "0x45b13d8e6579d5C3FeC14bB9998A3640CD4F008D";
 const mainnetBasicController = "0xa05Ae774Da859943B7B859cd2A6aD9F5f1651d6a";
 
