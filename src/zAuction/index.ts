@@ -1,9 +1,17 @@
 import * as zAuction from "@zero-tech/zauction-sdk";
-import { DomainBidEvent, DomainEventType, DomainSaleEvent } from "../types";
+import {
+  DomainBidEvent,
+  DomainEventType,
+  DomainSaleEvent,
+  DomainBuyNowSaleEvent,
+} from "../types";
 export * from "@zero-tech/zauction-sdk";
 
 type GetBidEventsFunction = (domainId: string) => Promise<DomainBidEvent[]>;
 type GetSaleEventsFunction = (domainId: string) => Promise<DomainSaleEvent[]>;
+type GetBuyNowSaleEventsFunction = (
+  DomainId: string
+) => Promise<DomainBuyNowSaleEvent[]>;
 
 export const getBidEventsFunction = (
   instance: zAuction.Instance
@@ -42,4 +50,23 @@ export const getSaleEventsFunction = (
 
     return saleEvents;
   };
+};
+
+export const getBuyNowSaleEventsFunction = (
+  instance: zAuction.Instance
+): GetBuyNowSaleEventsFunction => {
+  return async (domainId): Promise<DomainBuyNowSaleEvent[]> => {
+
+    const buyNowSales = await instance.listBuyNowSales(domainId);
+    const buyNowSalesEvents = buyNowSales.map((e) => {
+      return {
+        type: DomainEventType.buyNow,
+        timestamp: e.timestamp,
+        buyer: e.buyer,
+        seller: e.seller,
+        amount: e.amount
+      } as DomainBuyNowSaleEvent
+    });
+    return buyNowSalesEvents;
+  }
 };

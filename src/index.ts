@@ -69,6 +69,7 @@ export const createInstance = (config: Config): Instance => {
         getTransferEvents: subgraphClient.getDomainTransferEvents,
         getBidEvents: zAuction.getBidEventsFunction(zAuctionInstance),
         getSaleEvents: zAuction.getSaleEventsFunction(zAuctionInstance),
+        getBuyNowSaleEvents: zAuction.getBuyNowSaleEventsFunction(zAuctionInstance),
       });
     },
     getZAuctionInstanceForDomain: (domainId: string) =>

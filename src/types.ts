@@ -9,7 +9,7 @@ export interface Config {
   basicController: string;
   registrar: string;
   hub: string;
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider;
 }
 
 export interface Listing {
@@ -90,7 +90,7 @@ export interface Instance {
 
   /**
    * Check the current lock status of a domain's metadata
-   * 
+   *
    * @param domainId The domain whose metadata lock status is being checked
    * @param signer The connected account
    */
@@ -452,6 +452,7 @@ export enum DomainEventType {
   transfer,
   bid,
   sale,
+  buyNow,
 }
 
 export interface DomainEvent {
@@ -478,6 +479,8 @@ export interface DomainSaleEvent extends DomainEvent {
   seller: string;
   amount: string;
 }
+
+export interface DomainBuyNowSaleEvent extends DomainSaleEvent {}
 
 export interface DomainMetrics {
   highestSale: string;
