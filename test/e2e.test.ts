@@ -5,9 +5,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Registrar, ZNSHub } from "../src/contracts/types";
 import { Config } from "../src/types";
 import { rinkebyConfiguration } from "../src/configuration";
-import { Instance } from "@zero-tech/zauction-sdk";
 import { createInstance } from "../src";
-import { sign } from "crypto";
 
 dotenv.config();
 
@@ -27,6 +25,22 @@ describe("SDK test", () => {
     hub = await getHubContract(provider, ZNSHubAddress);
   });
 
+  it("Gets buynow sale events", async () => {
+    const pk = process.env.TESTNET_PRIVATE_KEY_ASTRO;
+    if(!pk) throw Error("no sir");
+
+    const astroWallet = new ethers.Wallet(pk, provider);
+
+    const config: Config = rinkebyConfiguration(provider);
+    const sdk = createInstance(config);
+
+    const wilderPancakes = "0x6e35a7ecbf6b6368bb8d42ee9b3dcfc8404857635036e60196931d4458c07622";
+    const wilderCats = "0x617b3c878abfceb89eb62b7a24f393569c822946bbc9175c6c65a7d2647c5402";
+
+    const domainEvents = await sdk.getDomainEvents(wilderPancakes);
+
+    console.log(domainEvents)
+  })
   it("Confirm listbids working through the SDKlist bids", async () => {
     const provider = new ethers.providers.StaticJsonRpcProvider(
       process.env.INFURA_URL,

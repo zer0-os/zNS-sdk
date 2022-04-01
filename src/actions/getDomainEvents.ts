@@ -1,5 +1,6 @@
 import {
   DomainBidEvent,
+  DomainBuyNowSaleEvent,
   DomainEvent,
   DomainMintEvent,
   DomainSaleEvent,
@@ -10,12 +11,14 @@ type GetMintEvent = (domainId: string) => Promise<DomainMintEvent>;
 type GetTransferEvents = (domainId: string) => Promise<DomainTransferEvent[]>;
 type GetBidEvents = (domainId: string) => Promise<DomainBidEvent[]>;
 type GetSaleEvents = (domainId: string) => Promise<DomainSaleEvent[]>;
+type GetBuyNowSaleEvents = (domainId: string) => Promise<DomainBuyNowSaleEvent[]>
 
 export interface DomainEventFetchers {
   getMintEvents: GetMintEvent;
   getTransferEvents: GetTransferEvents;
   getBidEvents: GetBidEvents;
   getSaleEvents: GetSaleEvents;
+  getBuyNowSaleEvents: GetBuyNowSaleEvents;
 }
 
 /**
@@ -46,10 +49,11 @@ export const getDomainEvents = async (
   }
 
   const saleEvents = await fetchers.getSaleEvents(domainId);
+  const buyNowEvents = await fetchers.getBuyNowSaleEvents(domainId);
   const bidEvents = await fetchers.getBidEvents(domainId);
 
   events = [mintEvent];
-  events = events.concat(transferEvents, saleEvents, bidEvents);
+  events = events.concat(transferEvents, saleEvents, buyNowEvents, bidEvents);
 
   events = events.sort((a, b) => {
     return Number(a.timestamp) - Number(b.timestamp);
