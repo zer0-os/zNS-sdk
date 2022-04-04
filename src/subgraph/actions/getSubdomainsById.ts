@@ -17,7 +17,7 @@ export const getSubdomainsById = async <T>(
     const queryResult = await performQuery<DomainsQueryDto>(
       apolloClient,
       queries.getSubdomainsById,
-      { parent: domainId, count: queryCount, skipAmount: skip }
+      { parent: domainId, count: queryCount, startIndex: skip }
     );
 
     const queriedDomains = queryResult.data.domains;
@@ -33,7 +33,7 @@ export const getSubdomainsById = async <T>(
     if (queriedDomains.length < queryCount) {
       break;
     }
-    skip += queriedDomains.length;
+    skip = queriedDomains[queriedDomains.length - 1].indexId;
   }
 
   return domains;
