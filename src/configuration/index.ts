@@ -5,7 +5,7 @@ import { zAuctionConfiguration } from "./zAuction";
 import { zAuctionRoute } from "../types";
 
 const mainnetRegistrar = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
-const mainnetHub = "0x6141d5Cb3517215A03519A464bF9C39814df7479";
+const mainnetHub = "0x3F0d0a0051D1E600B3f6B35a07ae7A64eD1A10Ca";
 const mainnetStaking = "0x45b13d8e6579d5C3FeC14bB9998A3640CD4F008D";
 const mainnetBasicController = "0xa05Ae774Da859943B7B859cd2A6aD9F5f1651d6a";
 
@@ -31,7 +31,7 @@ export const mainnetConfiguration = (
     basicController: mainnetBasicController,
     registrar: mainnetRegistrar,
     hub: mainnetHub,
-    provider: provider
+    provider: provider,
   };
 };
 
@@ -62,7 +62,7 @@ export const kovanConfiguration = (
     basicController: kovanBasicController,
     registrar: kovanRegistrar,
     hub: kovanHub,
-    provider: provider
+    provider: provider,
   };
 };
 
@@ -93,6 +93,6 @@ export const rinkebyConfiguration = (
     basicController: rinkebyBasicController,
     registrar: rinkebyRegistrar,
     hub: rinkebyHub,
-    provider: provider
+    provider: provider,
   };
 };
