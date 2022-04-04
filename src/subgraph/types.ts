@@ -23,6 +23,7 @@ export interface DomainDto extends DomainIdDto {
   lockedBy?: AccountDto;
   contract?: RegistrarContractDto;
   isLocked: boolean;
+  indexId: number;
 }
 
 export interface DomainQueryDto {

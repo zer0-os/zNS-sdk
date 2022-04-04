@@ -4,6 +4,7 @@ export const getDomainById = gql`
   query Domain($id: ID!) {
     domain(id: $id) {
       id
+      indexId
       name
       parent {
         id
@@ -30,6 +31,7 @@ export const getDomainsByName = gql`
   query Domains($name: String!) {
     domains(where: { name_contains: $name }) {
       id
+      indexId
       name
       parent {
         id
@@ -53,9 +55,15 @@ export const getDomainsByName = gql`
 `;
 
 export const getSubdomainsById = gql`
-  query Subdomains($parent: ID!, $count: Int!, $skipAmount: Int!) {
-    domains(where: { parent: $parent }, first: $count, skip: $skipAmount) {
+  query Subdomains($parent: ID!, $count: Int!, $startIndex: Int!) {
+    domains(
+      where: { parent: $parent, indexId_gt: $startIndex }
+      first: $count
+      orderBy: indexId
+      orderDirection: asc
+    ) {
       id
+      indexId
       name
       parent {
         id
@@ -82,6 +90,7 @@ export const getDomainsByOwner = gql`
   query Domains($owner: Bytes!) {
     domains(where: { name_not: null, owner: $owner }) {
       id
+      indexId
       name
       parent {
         id
@@ -137,6 +146,7 @@ export const getAllDomains = gql`
       orderBy: indexId
     ) {
       id
+      indexId
       name
       parent {
         id
@@ -168,6 +178,7 @@ export const getPastNDomains = gql`
       orderDirection: desc
     ) {
       id
+      indexId
       name
       parent {
         id
