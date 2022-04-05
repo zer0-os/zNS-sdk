@@ -541,7 +541,7 @@ export const createInstance = (config: Config): Instance => {
       ): Promise<DomainMetadata> => {
         return actions.getMetadataFromUri(
           metadataUri,
-          IPFSGatewayUri.fleek,
+          IPFSGatewayUri.ipfs,
           gatewayOverride
         );
       },
