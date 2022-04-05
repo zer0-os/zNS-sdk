@@ -139,7 +139,7 @@ export const createInstance = (config: Config): Instance => {
       const metadata = await actions.getDomainMetadata(
         domainId,
         hub,
-        IPFSGatewayUri.fleek
+        IPFSGatewayUri.ipfs // hot fix
       );
       return metadata;
     },
