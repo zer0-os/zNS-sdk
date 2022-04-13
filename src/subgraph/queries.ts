@@ -23,6 +23,7 @@ export const getDomainById = gql`
       }
       isLocked
       metadata
+      metadataName
     }
   }
 `;
@@ -50,6 +51,35 @@ export const getDomainsByName = gql`
       }
       isLocked
       metadata
+      metadataName
+    }
+  }
+`;
+
+export const getDomainsByMetadataName = gql`
+  query Domains($name: String!) {
+    domains(where: { metadataName_contains: $name }) {
+      id
+      indexId
+      name
+      parent {
+        id
+      }
+      owner {
+        id
+      }
+      minter {
+        id
+      }
+      lockedBy {
+        id
+      }
+      contract {
+        id
+      }
+      isLocked
+      metadata
+      metadataName
     }
   }
 `;
@@ -82,6 +112,7 @@ export const getSubdomainsById = gql`
       }
       isLocked
       metadata
+      metadataName
     }
   }
 `;
@@ -109,6 +140,7 @@ export const getDomainsByOwner = gql`
       }
       isLocked
       metadata
+      metadataName
     }
   }
 `;
@@ -165,6 +197,7 @@ export const getAllDomains = gql`
       }
       isLocked
       metadata
+      metadataName
     }
   }
 `;
@@ -197,6 +230,7 @@ export const getPastNDomains = gql`
       }
       isLocked
       metadata
+      metadataName
     }
   }
 `;
