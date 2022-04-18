@@ -174,7 +174,7 @@ export const getAllDomains = gql`
   query Domains($count: Int!, $startIndex: Int!) {
     domains(
       first: $count
-      where: { indexId_gt: $startIndex }
+      where: { indexId_gte: $startIndex }
       orderBy: indexId
     ) {
       id
