@@ -119,7 +119,7 @@ export const getSubdomainsById = gql`
 
 export const getDomainsByOwner = gql`
   query Domains($owner: Bytes!) {
-    domains(where: { name_not: null, owner: $owner }) {
+    domains(where: { name_not: null, owner: $owner }, first: 1000) {
       id
       indexId
       name
