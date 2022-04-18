@@ -26,7 +26,11 @@ export const getDomainsByName = async <T>(
   const metadataNameDomains: Domain[] =
     metadataNameQueryResult.data.domains.map(convertDomainDtoToDomain);
 
-  const domains = znaDomains.concat(metadataNameDomains);
+  let domains = znaDomains.concat(metadataNameDomains);
+  // Remove duplicates based on `domain.id`
+  domains = domains.filter(
+    (domain, index) => domains.findIndex((e) => e.id === domain.id) === index
+  );
 
   return domains;
 };
