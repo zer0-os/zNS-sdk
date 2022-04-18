@@ -459,6 +459,7 @@ export interface Domain {
   lockedBy: string;
   contract: string;
   isRoot?: boolean;
+  metadataName?: string;
 }
 
 export interface DomainMetadata {
