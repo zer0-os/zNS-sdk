@@ -50,6 +50,7 @@ export const convertDomainDtoToDomain = (e: DomainDto): Domain => {
     lockedBy: e.lockedBy?.id ?? ethers.constants.AddressZero,
     isLocked: e.isLocked,
     contract: e.contract?.id ?? ethers.constants.AddressZero,
+    metadataName: e.metadataName,
   };
 
   return domain;
