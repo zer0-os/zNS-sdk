@@ -1,14 +1,25 @@
 import * as zAuction from "./zAuction";
 import { ethers } from "ethers";
 
+/**
+ * Configuration for a zNS sdk instance
+ */
 export interface Config {
+  /** The zNS Subgraph URL */
   subgraphUri: string;
+  /** The Metrics server api URL */
   metricsUri: string;
+  /** The zNS backend api URL */
   apiUri: string;
+  /** Routing table for zAuction */
   zAuctionRoutes: zAuctionRoute[];
+  /** Address of the zNS Basic controller to use */
   basicController: string;
+  /** Address of the root zNS Registrar */
   registrar: string;
+  /** Address of the zNS Hub */
   hub: string;
+  /** Web3 provider to make web3 calls with */
   provider: ethers.providers.Provider;
 }
 
@@ -331,17 +342,39 @@ export interface Instance {
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
 
+    /**
+     * Purchases a domain
+     * @param params Parameters of the buy now operation
+     * @param signer The signer for who is buying now
+     */
     buyNow(
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
-    getBuyNowPrice(tokenId: string): Promise<string>;
+
+    /**
+     * Gets the buy now price of a domain
+     * @param domainId The token to get the price for
+     */
+    getBuyNowPrice(domainId: string): Promise<string>;
+
+    /**
+     * Sets the buy now price for a domain
+     * @param params Parameter object
+     * @param signer The signer
+     */
     setBuyNowPrice(
       params: zAuction.BuyNowParams,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
+
+    /**
+     * Cancels the buy now price (disables buy now)
+     * @param domainId The domain to cancel buy now for
+     * @param signer The signer
+     */
     cancelBuyNow(
-      tokenId: string,
+      domainId: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
   };
@@ -526,7 +559,12 @@ export interface SubdomainParams {
   owner?: string;
 }
 
+/**
+ * Place bid parameters
+ */
 export interface PlaceBidParams {
+  /** Domain id that is being bid on */
   domainId: string;
+  /** The amount of the bid (make sure to include 10^18 decimals) */
   bidAmount: ethers.BigNumber;
 }

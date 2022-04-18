@@ -24,6 +24,7 @@ export interface DomainDto extends DomainIdDto {
   contract?: RegistrarContractDto;
   isLocked: boolean;
   indexId: number;
+  metadataName?: string; // experimental feature
 }
 
 export interface DomainQueryDto {
