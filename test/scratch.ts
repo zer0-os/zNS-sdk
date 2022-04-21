@@ -6,6 +6,10 @@ const instance = sdk.createInstance(
   sdk.configuration.mainnetConfiguration(provider)
 );
 
+// const goerliInstance = sdk.createInstance(
+//   sdk.configuration.goerliConfiguration(provider)
+// );
+
 const main = async () => {
   const domains = await instance.getSubdomainsById(
     sdk.domains.domainNameToId("wilder.wheels.genesis")

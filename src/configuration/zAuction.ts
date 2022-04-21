@@ -36,6 +36,13 @@ export const zAuctionConfiguration = (
     defaultZAuctionAddress = "0xb2416Aed6f5439Ffa0eCCAaa2b643f3D9828f86B";
     defaultTokenContract = "0xa4F6C921f914ff7972D7C55c15f015419326e0Ca"; // not ERC20 token, technically 721 token
     defaultLegacyZAuctionAddress = "0x376030f58c76ECC288a4fce8F88273905544bC07";
+  } else if (network == "goerli") {
+    defaultApiUri = "https://zauction-api-goerli.herokuapp.com/api";
+    defaultSubgraphUri =
+      "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-goerli";
+    defaultZAuctionAddress = "0xdF0f9F007A38aD25E0c02959374f38719Af5fCf8";
+    defaultTokenContract = "0x53EF64F91e0d2f4577807f39760d2D266011cd40"; // not ERC20 token, technically 721 token
+    defaultLegacyZAuctionAddress = ethers.constants.AddressZero;
   } else {
     throw Error(`Network ${network} is not supported`);
   }

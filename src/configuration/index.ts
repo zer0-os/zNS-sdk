@@ -96,3 +96,34 @@ export const rinkebyConfiguration = (
     provider: provider,
   };
 };
+
+const goerliRegistrar = "0x53EF64F91e0d2f4577807f39760d2D266011cd40";
+const goerliHub = "0x35921570D157D6E9DA51e67B47d43bAF5da1e108";
+const goerliStaking = ethers.constants.AddressZero;
+const goerliBasicController = ethers.constants.AddressZero;
+
+export const goerliConfiguration = (
+  provider: ethers.providers.Provider
+): Config => {
+  return {
+    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-goerli",
+    apiUri: "https://zns.api.zero.tech/api",
+    metricsUri: "https://zns-metrics-mainnet.herokuapp.com",
+    zAuctionRoutes: [
+      {
+        uriPattern: "wilder",
+        // Use default values
+        config: zAuctionConfiguration(provider, "goerli") as zAuction.Config,
+      } as zAuctionRoute,
+      {
+        uriPattern: ".+",
+        // Use default values
+        config: zAuctionConfiguration(provider, "goerli") as zAuction.Config,
+      } as zAuctionRoute,
+    ],
+    basicController: goerliBasicController,
+    registrar: goerliRegistrar,
+    hub: goerliHub,
+    provider: provider,
+  };
+};
