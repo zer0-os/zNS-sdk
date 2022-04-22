@@ -99,7 +99,6 @@ export const rinkebyConfiguration = (
 
 const goerliRegistrar = "0x53EF64F91e0d2f4577807f39760d2D266011cd40";
 const goerliHub = "0x35921570D157D6E9DA51e67B47d43bAF5da1e108";
-const goerliStaking = ethers.constants.AddressZero;
 const goerliBasicController = ethers.constants.AddressZero;
 
 export const goerliConfiguration = (
