@@ -27,6 +27,7 @@ export { domains };
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
+import { Bid } from "./zAuction";
 
 export * from "./types";
 export { configuration };
@@ -69,7 +70,8 @@ export const createInstance = (config: Config): Instance => {
         getTransferEvents: subgraphClient.getDomainTransferEvents,
         getBidEvents: zAuction.getBidEventsFunction(zAuctionInstance),
         getSaleEvents: zAuction.getSaleEventsFunction(zAuctionInstance),
-        getBuyNowSaleEvents: zAuction.getBuyNowSaleEventsFunction(zAuctionInstance),
+        getBuyNowSaleEvents:
+          zAuction.getBuyNowSaleEventsFunction(zAuctionInstance),
       });
     },
     getZAuctionInstanceForDomain: (domainId: string) =>
@@ -105,9 +107,7 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
-    isDomainMetadataLocked: async (
-      domainId: string,
-    ): Promise<boolean> => {
+    isDomainMetadataLocked: async (domainId: string): Promise<boolean> => {
       const hub: ZNSHub = await getHubContract(config.provider, config.hub);
       const registrar = await getRegistrarForDomain(hub, domainId);
 
@@ -232,6 +232,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.transferOwnership(to, domainId, signer, hub);
       return tx;
     },
+    ////////////////////////////////////////////////////////////////////////////////////
     zauction: {
       needsToApproveZAuctionToSpendTokens: async (
         domainId: string,
@@ -246,9 +247,11 @@ export const createInstance = (config: Config): Instance => {
           getDomainContractForDomain
         );
 
-        const allowance = await zAuctionInstance.getZAuctionSpendAllowance(
-          account
-        );
+        const allowance =
+          await zAuctionInstance.getZAuctionSpendAllowanceByDomainToken(
+            account,
+            domainId
+          );
         const isApproved = allowance.gte(bidAmount);
         return isApproved;
       },
@@ -265,9 +268,11 @@ export const createInstance = (config: Config): Instance => {
           getDomainContractForDomain
         );
 
-        const tx = await zAuctionInstance.approveZAuctionSpendTradeTokens(
-          signer
-        );
+        const tx =
+          await zAuctionInstance.approveZAuctionSpendTradeTokensByDomainToken(
+            domainId,
+            signer
+          );
 
         return tx;
       },
@@ -283,9 +288,9 @@ export const createInstance = (config: Config): Instance => {
           domainIdToDomainName,
           getDomainContractForDomain
         );
-
+        // actually expects a domainId not contract address just had to adjust typing
         const isApproved =
-          await zAuctionInstance.isZAuctionApprovedToTransferNft(account);
+          await zAuctionInstance.isZAuctionApprovedToTransferNft(account, domainId);
 
         return isApproved;
       },
@@ -324,8 +329,7 @@ export const createInstance = (config: Config): Instance => {
           getDomainContractForDomain
         );
 
-        const tx = await zAuctionInstance.approveZAuctionTransferNft(signer);
-
+        const tx = await zAuctionInstance.approveZAuctionTransferNft(domainId, signer);
         return tx;
       },
 
@@ -366,7 +370,7 @@ export const createInstance = (config: Config): Instance => {
         await zAuctionInstance.placeBid(
           {
             tokenId: params.domainId,
-            bidAmount: params.bidAmount.toString(), // perhaps changes this to ethers.BigNumber
+            bidAmount: params.bidAmount.toString(),
           } as zAuction.NewBidParameters,
           signer,
           statusCallback
@@ -374,14 +378,12 @@ export const createInstance = (config: Config): Instance => {
       },
 
       cancelBid: async (
-        bidNonce: string,
-        signedBidMessage: string,
-        domainId: string,
+        bid: Bid,
         cancelOnChain: boolean,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction | void> => {
         const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
+          bid.tokenId,
           config.zAuctionRoutes,
           zAuctionRouteUriToInstance,
           domainIdToDomainName,
@@ -389,8 +391,7 @@ export const createInstance = (config: Config): Instance => {
         );
 
         const tx = await zAuctionInstance.cancelBid(
-          bidNonce,
-          signedBidMessage,
+          bid,
           cancelOnChain,
           signer
         );
@@ -466,7 +467,7 @@ export const createInstance = (config: Config): Instance => {
           getDomainContractForDomain
         );
         const domain = await subgraphClient.getDomainById(tokenId);
-        const listing: zAuction.Listing = await zAuctionInstance.getBuyNowPrice(
+        const listing: zAuction.BuyNowListing = await zAuctionInstance.getBuyNowPrice(
           tokenId
         );
         if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())

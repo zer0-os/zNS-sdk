@@ -1,5 +1,6 @@
 import * as zAuction from "./zAuction";
 import { ethers } from "ethers";
+import { Bid } from "./zAuction";
 
 /**
  * Configuration for a zNS sdk instance
@@ -313,9 +314,7 @@ export interface Instance {
      * @param signer The user account signer (connected wallet)
      */
     cancelBid(
-      bidNonce: string,
-      signedBidMessage: string,
-      domainId: string,
+      bid: Bid,
       cancelOnChain: boolean,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction | void>;
