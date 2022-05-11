@@ -1,62 +1,27 @@
-export enum LoggingLevel {
-  Debug,
-  Info,
-  Warning,
-  Error,
-}
+import * as consola from "consola";
 
-export interface Logger {
-  log: (level: LoggingLevel, message: string | unknown) => void;
-  debug: (message: string | unknown) => void;
-  warning: (message: string | unknown) => void;
-  error: (message: string | unknown) => void;
-}
+const logger = consola.default.create({
+  level: consola.LogLevel.Trace,
+});
 
-let currentLoggingLevel = LoggingLevel.Info;
-
-export class ConsoleLogger implements Logger {
-  constructor() {}
-
-  private logFunctions = {
-    [LoggingLevel.Debug]: console.debug,
-    [LoggingLevel.Info]: console.log,
-    [LoggingLevel.Warning]: console.warn,
-    [LoggingLevel.Error]: console.error,
-  };
-
-  log = (level: LoggingLevel, message: string | unknown) => {
-    // Filter out log messages below our current level
-    if (level < currentLoggingLevel) {
-      return;
-    }
-
-    this.logFunctions[level](message);
-  };
-
-  debug = (message: string | unknown) => this.log(LoggingLevel.Debug, message);
-
-  info = (message: string | unknown) => this.log(LoggingLevel.Info, message);
-
-  warning = (message: string | unknown) =>
-    this.log(LoggingLevel.Warning, message);
-
-  error = (message: string | unknown) => this.log(LoggingLevel.Error, message);
-}
-
-let currentLogger: Logger = new ConsoleLogger();
-
-export const getLogger = (): Logger => {
-  return currentLogger;
+export const getLogger = (tag?: string): consola.Consola => {
+  if (tag) {
+    return logger.withTag(tag);
+  }
+  return logger;
 };
 
-export const setLogger = (logger: Logger) => {
-  currentLogger = logger;
+const setLogLevel = (level?: consola.LogLevel) => {
+  if (level === undefined || typeof level != "number") {
+    console.log("provide a number");
+    Object.entries(consola.LogLevel).forEach(([key, value]) => {
+      console.log(`${key}=${value}`);
+    });
+    return;
+  }
+
+  logger.level = level;
 };
 
-export const getCurrentLoggingLevel = () => {
-  return currentLoggingLevel;
-};
-
-export const setCurrentLoggingLevel = (level: LoggingLevel) => {
-  currentLoggingLevel = level;
-};
+// eslint-disable-next-line
+(global as any).setZnsSDKLogLevel = setLogLevel;

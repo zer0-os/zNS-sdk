@@ -515,7 +515,7 @@ export interface DomainSaleEvent extends DomainEvent {
   amount: string;
 }
 
-export interface DomainBuyNowSaleEvent extends DomainSaleEvent {}
+export type DomainBuyNowSaleEvent = DomainSaleEvent;
 
 export interface DomainMetrics {
   highestSale: string;

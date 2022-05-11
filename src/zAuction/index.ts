@@ -56,7 +56,6 @@ export const getBuyNowSaleEventsFunction = (
   instance: zAuction.Instance
 ): GetBuyNowSaleEventsFunction => {
   return async (domainId): Promise<DomainBuyNowSaleEvent[]> => {
-
     const buyNowSales = await instance.listBuyNowSales(domainId);
     const buyNowSalesEvents = buyNowSales.map((e) => {
       return {
@@ -64,9 +63,9 @@ export const getBuyNowSaleEventsFunction = (
         timestamp: e.timestamp,
         buyer: e.buyer,
         seller: e.seller,
-        amount: e.amount
-      } as DomainBuyNowSaleEvent
+        amount: e.amount,
+      } as DomainBuyNowSaleEvent;
     });
     return buyNowSalesEvents;
-  }
+  };
 };
