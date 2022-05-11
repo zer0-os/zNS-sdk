@@ -69,7 +69,8 @@ export const createInstance = (config: Config): Instance => {
         getTransferEvents: subgraphClient.getDomainTransferEvents,
         getBidEvents: zAuction.getBidEventsFunction(zAuctionInstance),
         getSaleEvents: zAuction.getSaleEventsFunction(zAuctionInstance),
-        getBuyNowSaleEvents: zAuction.getBuyNowSaleEventsFunction(zAuctionInstance),
+        getBuyNowSaleEvents:
+          zAuction.getBuyNowSaleEventsFunction(zAuctionInstance),
       });
     },
     getZAuctionInstanceForDomain: (domainId: string) =>
@@ -105,9 +106,7 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
-    isDomainMetadataLocked: async (
-      domainId: string,
-    ): Promise<boolean> => {
+    isDomainMetadataLocked: async (domainId: string): Promise<boolean> => {
       const hub: ZNSHub = await getHubContract(config.provider, config.hub);
       const registrar = await getRegistrarForDomain(hub, domainId);
 
@@ -131,23 +130,17 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
-    getDomainMetadata: async (
-      domainId: string,
-      signer: ethers.Signer
-    ): Promise<DomainMetadata> => {
-      const hub: ZNSHub = await getHubContract(signer, config.hub);
+    getDomainMetadata: async (domainId: string): Promise<DomainMetadata> => {
+      const hub: ZNSHub = await getHubContract(config.provider, config.hub);
       const metadata = await actions.getDomainMetadata(
         domainId,
         hub,
-        IPFSGatewayUri.ipfs // hot fix
+        IPFSGatewayUri.infura // hot fix
       );
       return metadata;
     },
-    getDomainMetadataUri: async (
-      domainId: string,
-      signer: ethers.Signer
-    ): Promise<string> => {
-      const hub: ZNSHub = await getHubContract(signer, config.hub);
+    getDomainMetadataUri: async (domainId: string): Promise<string> => {
+      const hub: ZNSHub = await getHubContract(config.provider, config.hub);
       const registrar: Registrar = await getRegistrarForDomain(hub, domainId);
       const metadataUri = await registrar.tokenURI(domainId);
       return metadataUri;
