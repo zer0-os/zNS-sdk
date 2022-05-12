@@ -111,23 +111,17 @@ export const createInstance = (config: Config): Instance => {
 
       return tx;
     },
-    getDomainMetadata: async (
-      domainId: string,
-      signer: ethers.Signer
-    ): Promise<DomainMetadata> => {
-      const hub: ZNSHub = await getHubContract(signer, config.hub);
+    getDomainMetadata: async (domainId: string): Promise<DomainMetadata> => {
+      const hub: ZNSHub = await getHubContract(config.provider, config.hub);
       const metadata = await actions.getDomainMetadata(
         domainId,
         hub,
-        IPFSGatewayUri.ipfs // hot fix
+        IPFSGatewayUri.infura // hot fix
       );
       return metadata;
     },
-    getDomainMetadataUri: async (
-      domainId: string,
-      signer: ethers.Signer
-    ): Promise<string> => {
-      const hub: ZNSHub = await getHubContract(signer, config.hub);
+    getDomainMetadataUri: async (domainId: string): Promise<string> => {
+      const hub: ZNSHub = await getHubContract(config.provider, config.hub);
       const registrar: Registrar = await getRegistrarForDomain(hub, domainId);
       const metadataUri = await registrar.tokenURI(domainId);
       return metadataUri;

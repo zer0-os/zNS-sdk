@@ -523,6 +523,7 @@ export interface DomainMetadata {
 export enum IPFSGatewayUri {
   ipfs = "ipfs.io",
   fleek = "ipfs.fleek.co",
+  infura = "ipfs.infura.io",
 }
 
 export enum DomainEventType {
