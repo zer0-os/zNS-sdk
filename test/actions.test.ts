@@ -9,12 +9,10 @@ import * as subgraph from "../src/subgraph";
 import * as actions from "../src/actions";
 import { Config, IPFSGatewayUri, Listing, zAuctionRoute } from "../src/types";
 import { Registrar } from "../src/contracts/types";
-import { getRegistrar } from "../src/contracts";
-import {
-  createZAuctionInstances,
-  getZAuctionInstanceForDomain,
-} from "../src/utilities";
-import { zAuctionConfiguration } from "../src/configuration/zAuction";
+import { getHubContract, getRegistrar } from "../src/contracts";
+
+import { rinkebyConfiguration } from "../src/configuration";
+import { BuyNowListing } from "@zero-tech/zauction-sdk";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -32,7 +30,7 @@ describe("Test Custom SDK Logic", () => {
     ChainId.rinkeby
   );
 
-  const pk = process.env["PRIVATE_KEY"];
+  const pk = process.env["TESTNET_PRIVATE_KEY_ASTRO"];
   if (!pk) throw Error("No private key");
   const signer = new ethers.Wallet(pk, provider);
 
@@ -41,20 +39,8 @@ describe("Test Custom SDK Logic", () => {
   const basicControllerAddress = "0x1188dD1a0F42BA4a117EF1c09D884f5183D40B28";
 
   // Rinkeby config
-  const config: Config = {
-    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
-    metricsUri: "https://zns-metrics-kovan.herokuapp.com", // todo metrics on rinkeby
-    apiUri: "https://zns.api.zero.tech/api",
-    zAuctionRoutes: [
-      {
-        uriPattern: "wilder",
-        // Use default values specified in config
-        config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
-      } as zAuctionRoute,
-    ],
-    basicController: basicControllerAddress,
-    registrar: registrarAddress,
-  };
+  const config: Config = rinkebyConfiguration(provider);
+  const zAuctionSdkInstance = zAuction.createInstance(config.zAuction);
 
   const qmHash = "Qmc2cMdNMo6isDTjk8gej8ay9dZxGQNS3ftsDpct1RNV2H";
   const domainId =
@@ -102,19 +88,20 @@ describe("Test Custom SDK Logic", () => {
   });
   describe("getDomainMetadata", () => {
     it("runs as ipfs url", async () => {
-      const registrarInstance = await getRegistrar(provider, registrarAddress);
+      const hub = await getHubContract(provider, config.hub);
       const metadata = await actions.getDomainMetadata(
         domainId,
-        registrarInstance,
+        hub,
         IPFSGatewayUri.fleek
       );
       expect(metadata);
     });
     it("runs as well formed ipfs.fleek.co url", async () => {
-      const registrarInstance = await getRegistrar(provider, registrarAddress);
+      const hub = await getHubContract(provider, config.hub);
+
       const metadata = await actions.getDomainMetadata(
         domainId,
-        registrarInstance,
+        hub,
         IPFSGatewayUri.fleek
       );
       expect(metadata);
@@ -160,23 +147,15 @@ describe("Test Custom SDK Logic", () => {
   });
   describe("(get|set)buyNowPrice", () => {
     it("runs as expected", async () => {
-      const zAuctionRouteUriToInstance = createZAuctionInstances(config);
-
-      const zAuctionInstance = await getZAuctionInstanceForDomain(
-        domainId,
-        config.zAuctionRoutes,
-        zAuctionRouteUriToInstance,
-        domainIdToDomainName
-      );
+      
       // Set to a new value every time it's run, loop is same as current price
-      const currentBuyNowPrice = await zAuctionInstance.getBuyNowPrice(
-        domainId,
-        signer
+      const listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowPrice(
+        domainId
       );
       let newBuyNowPrice = ethers.utils.parseEther(
         Math.round(Math.random() * 100).toString()
       );
-      while (currentBuyNowPrice.eq(newBuyNowPrice)) {
+      while (listing.price.eq(newBuyNowPrice)) {
         newBuyNowPrice = ethers.utils.parseEther(
           Math.round(Math.random() * 100).toString()
         );
@@ -187,19 +166,20 @@ describe("Test Custom SDK Logic", () => {
       };
 
       const address = await signer.getAddress();
-      const isApproved = await zAuctionInstance.isZAuctionApprovedToTransferNft(
-        address
+      const isApproved = await zAuctionSdkInstance.isZAuctionApprovedToTransferNftByDomain(
+        address,
+        domainId
       );
 
       if (!isApproved)
-        await zAuctionInstance.approveZAuctionTransferNft(signer);
+        await zAuctionSdkInstance.approveZAuctionTransferNftByDomain(domainId, signer);
 
-      const tx = await zAuctionInstance.setBuyNowPrice(params, signer);
+      const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
 
-      const listing: Listing = await zAuctionInstance.getBuyNowPrice(
-        domainId,
-        signer
-      );
+      // const listing: Listing = await zAuctionSdkInstance.getBuyNowPrice(
+      //   domainId,
+      //   signer
+      // );
       expect(listing);
     });
   });
@@ -213,12 +193,14 @@ describe("Test Custom SDK Logic", () => {
       const isLocked = await registrar.isDomainMetadataLocked(domainId);
 
       const toSet = !isLocked;
+      
+      const hub = await getHubContract(provider, config.hub);
 
       const tx = await actions.lockDomainMetadata(
         domainId,
         toSet,
         signer,
-        registrar
+        hub
       );
     });
   });

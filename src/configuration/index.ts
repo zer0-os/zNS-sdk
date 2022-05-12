@@ -16,18 +16,9 @@ export const mainnetConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
-    zAuctionRoutes: [
-      {
-        uriPattern: "wilder",
-        // Use default values
-        config: zAuctionConfiguration(provider, "mainnet") as zAuction.Config,
-      } as zAuctionRoute,
-      {
-        uriPattern: ".+",
-        // Use default values
-        config: zAuctionConfiguration(provider, "mainnet") as zAuction.Config,
-      } as zAuctionRoute,
-    ],
+    zAuction: {
+      ...zAuctionConfiguration(provider, "mainnet")
+    },
     basicController: mainnetBasicController,
     registrar: mainnetRegistrar,
     hub: mainnetHub,
@@ -47,18 +38,9 @@ export const kovanConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
-    zAuctionRoutes: [
-      {
-        uriPattern: "wilder",
-        // Use default values
-        config: zAuctionConfiguration(provider, "kovan") as zAuction.Config,
-      } as zAuctionRoute,
-      {
-        uriPattern: ".+",
-        // Use default values
-        config: zAuctionConfiguration(provider, "kovan") as zAuction.Config,
-      } as zAuctionRoute,
-    ],
+    zAuction: {
+      ...zAuctionConfiguration(provider, "kovan")
+    },
     basicController: kovanBasicController,
     registrar: kovanRegistrar,
     hub: kovanHub,
@@ -78,18 +60,9 @@ export const rinkebyConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
-    zAuctionRoutes: [
-      {
-        uriPattern: "wilder",
-        // Use default values
-        config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
-      } as zAuctionRoute,
-      {
-        uriPattern: ".+",
-        // Use default values
-        config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
-      } as zAuctionRoute,
-    ],
+    zAuction: {
+      ...zAuctionConfiguration(provider, "rinkeby")
+    },
     basicController: rinkebyBasicController,
     registrar: rinkebyRegistrar,
     hub: rinkebyHub,
