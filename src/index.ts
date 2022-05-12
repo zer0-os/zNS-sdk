@@ -7,8 +7,8 @@ import * as actions from "./actions";
 import {
   getBidEventsFunction,
   getSaleEventsFunction,
-  getBuyNowSaleEventsFunction
-} from "./zAuction"
+  getBuyNowSaleEventsFunction,
+} from "./zAuction";
 import {
   Config,
   DomainMetadata,
@@ -42,7 +42,7 @@ export const createInstance = (config: Config): Instance => {
   const apiClient = api.createClient(config.apiUri);
 
   const zAuctionConfig: zAuction.Config = {
-    ...config.zAuction
+    ...config.zAuction,
   };
 
   const zAuctionSdkInstance = zAuction.createInstance(zAuctionConfig);
@@ -58,8 +58,7 @@ export const createInstance = (config: Config): Instance => {
         getTransferEvents: subgraphClient.getDomainTransferEvents,
         getBidEvents: getBidEventsFunction(zAuctionSdkInstance),
         getSaleEvents: getSaleEventsFunction(zAuctionSdkInstance),
-        getBuyNowSaleEvents:
-          getBuyNowSaleEventsFunction(zAuctionSdkInstance),
+        getBuyNowSaleEvents: getBuyNowSaleEventsFunction(zAuctionSdkInstance),
       });
     },
     getAllDomains: subgraphClient.getAllDomains,
@@ -207,6 +206,23 @@ export const createInstance = (config: Config): Instance => {
       return tx;
     },
     zauction: {
+      setPaymentTokenForDomain: async (
+        networkId: string,
+        paymentTokenAddress: string,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+
+        const hub = await getHubContract(config.provider, config.hub);
+
+        const registrar = await hub.parentOf(networkId);
+
+        const tx = await zAuctionSdkInstance.setNetworkPaymentToken(
+          networkId,
+          paymentTokenAddress,
+          signer
+        );
+        return tx;
+      },
       getPaymentTokenForDomain: async (domainId): Promise<string> => {
         const paymentToken = await zAuctionSdkInstance.getPaymentTokenForDomain(
           domainId

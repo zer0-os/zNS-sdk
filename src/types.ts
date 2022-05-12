@@ -219,13 +219,24 @@ export interface Instance {
    * These methods are for bidding or sales of domains
    */
   zauction: {
-    /** 
+    /**
+     * Sets the payment token used within a network for sales
+     * @param networkId The network to set a payment token for
+     * @param paymentTokenAddress The ERC20 token to set it to
+     * @param signer The signer to perform the tx, must be the owner
+     */
+    setPaymentTokenForDomain: (
+      networkId: string,
+      paymentTokenAddress: string,
+      signer: ethers.Signer
+    ) => Promise<ethers.ContractTransaction>;
+    /**
      * Returns the payment token for a domain based on the network it's in.
      * e.g. A domain that is `0://wilder.wheels.123 will return the payment
      * token used in the Wilder World network.
      * @param domainId The domain to get a payment token for
      */
-    getPaymentTokenForDomain: (domainId: string) => Promise<string>
+    getPaymentTokenForDomain: (domainId: string) => Promise<string>;
     /**
      * Checks whether a user account has approved zAuction to spend tokens on their
      * behalf using a bid.
@@ -252,7 +263,7 @@ export interface Instance {
     ): Promise<boolean>;
 
     /**
-     * Checks whether a user account has approved zAuction to spend a 
+     * Checks whether a user account has approved zAuction to spend a
      * specific token on their behalf using a given paymentTokenAddress
      * @param paymentTokenAddress The address of an ERC-20 payment token
      * @param account The user account that will use funds
@@ -265,7 +276,7 @@ export interface Instance {
     ): Promise<any>;
 
     /**
-     * Approves zAuction to spend the payment token for the domain 
+     * Approves zAuction to spend the payment token for the domain
      * being bid on
      * @param bid The bid that contains a payment token to approve
      * @param signer The user account signer (connected wallet)
@@ -273,7 +284,7 @@ export interface Instance {
     approveZAuctionToSpendTokensByBid: (
       bid: Bid,
       signer: ethers.Signer
-    ) => Promise<ethers.ContractTransaction>
+    ) => Promise<ethers.ContractTransaction>;
     /**
      * Approves zAuction to spend the payment token for that domain's network
      * @param domainId The domain id that is going to be bid on
