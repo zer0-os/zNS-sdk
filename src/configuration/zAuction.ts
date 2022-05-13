@@ -2,14 +2,14 @@ import { ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 
 export interface ConfigurationParameters {
-  web3Provider: ethers.providers.Provider,
-  network: string,
-  apiUri?: string,
-  subgraphUri?: string,
-  zAuctionAddress?: string,
-  zAuctionLegacyAddress?: string,
-  wildTokenAddress?: string,
-  znsHubAddress?: string,
+  web3Provider: ethers.providers.Provider;
+  network: string;
+  apiUri?: string;
+  subgraphUri?: string;
+  zAuctionAddress?: string;
+  zAuctionLegacyAddress?: string;
+  wildTokenAddress?: string;
+  znsHubAddress?: string;
 }
 
 export const zAuctionConfiguration = (
@@ -31,7 +31,7 @@ export const zAuctionConfiguration = (
     defaultTokenContract = "0xc2e9678A71e50E5AEd036e00e9c5caeb1aC5987D";
     defaultLegacyZAuctionAddress = "0x05cBD37cA528B7ea50800aA80ddD0F9F30C952F0";
     defaultWildTokenAddress = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34";
-    defaultZnsHubAddress = "0x3F0d0a0051D1E600B3f6B35a07ae7A64eD1A10Ca"; 
+    defaultZnsHubAddress = "0x3F0d0a0051D1E600B3f6B35a07ae7A64eD1A10Ca";
   } else if (params.network === "kovan") {
     defaultApiUri = "https://zauction-kovan-api.herokuapp.com/api";
     defaultSubgraphUri =
@@ -59,9 +59,10 @@ export const zAuctionConfiguration = (
     apiUri: params.apiUri ?? defaultApiUri,
     subgraphUri: params.subgraphUri ?? defaultSubgraphUri,
     zAuctionAddress: params.zAuctionAddress ?? defaultZAuctionAddress,
-    zAuctionLegacyAddress: params.zAuctionLegacyAddress ?? defaultLegacyZAuctionAddress,
+    zAuctionLegacyAddress:
+      params.zAuctionLegacyAddress ?? defaultLegacyZAuctionAddress,
     wildTokenAddress: params.wildTokenAddress ?? defaultWildTokenAddress,
-    znsHubAddress: params.znsHubAddress ?? defaultZnsHubAddress
+    znsHubAddress: params.znsHubAddress ?? defaultZnsHubAddress,
   };
 
   return config;

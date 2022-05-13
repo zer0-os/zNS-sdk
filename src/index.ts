@@ -211,7 +211,6 @@ export const createInstance = (config: Config): Instance => {
         paymentTokenAddress: string,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-
         const hub = await getHubContract(config.provider, config.hub);
 
         const parent = await hub.parentOf(networkId);

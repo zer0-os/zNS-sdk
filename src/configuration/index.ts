@@ -14,15 +14,14 @@ export const mainnetConfiguration = (
   const mainnetConfig: ConfigurationParameters = {
     web3Provider: provider,
     network: "rinkeby",
-    znsHubAddress: mainnetHub
-  }
+    znsHubAddress: mainnetHub,
+  };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
     zAuction: {
-
-      ...zAuctionConfiguration(mainnetConfig)
+      ...zAuctionConfiguration(mainnetConfig),
     },
     basicController: mainnetBasicController,
     registrar: mainnetRegistrar,
@@ -42,14 +41,14 @@ export const kovanConfiguration = (
   const kovanConfig: ConfigurationParameters = {
     web3Provider: provider,
     network: "kovan",
-    znsHubAddress: kovanHub
-  }
+    znsHubAddress: kovanHub,
+  };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
     zAuction: {
-      ...zAuctionConfiguration(kovanConfig)
+      ...zAuctionConfiguration(kovanConfig),
     },
     basicController: kovanBasicController,
     registrar: kovanRegistrar,
@@ -69,14 +68,14 @@ export const rinkebyConfiguration = (
   const rinkebyConfig: ConfigurationParameters = {
     web3Provider: provider,
     network: "rinkeby",
-    znsHubAddress: rinkebyHub
-  }
+    znsHubAddress: rinkebyHub,
+  };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
     zAuction: {
-      ...zAuctionConfiguration(rinkebyConfig)
+      ...zAuctionConfiguration(rinkebyConfig),
     },
     basicController: rinkebyBasicController,
     registrar: rinkebyRegistrar,
