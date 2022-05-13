@@ -241,8 +241,8 @@ export const createInstance = (config: Config): Instance => {
             account,
             bid
           );
-        const isApproved = allowance.gte(bid.amount);
-        return isApproved;
+        const needsToApprove = allowance.lt(bid.amount);
+        return needsToApprove;
       },
       needsToApproveZAuctionToSpendTokensByDomain: async (
         domainId: string,
@@ -254,8 +254,8 @@ export const createInstance = (config: Config): Instance => {
             account,
             domainId
           );
-        const isApproved = allowance.gte(bidAmount);
-        return isApproved;
+        const needsToApprove = allowance.lt(bidAmount);
+        return needsToApprove;
       },
       needsToApproveZAuctionToSpendTokensByPaymentToken: async (
         paymentTokenAddress: string,
@@ -266,8 +266,8 @@ export const createInstance = (config: Config): Instance => {
           paymentTokenAddress,
           account
         );
-        const isApproved = allowance.gte(amount);
-        return isApproved;
+        const needsToApprove = allowance.lt(amount);
+        return needsToApprove;
       },
       approveZAuctionToSpendTokensByBid: async (
         bid: Bid,
@@ -314,7 +314,8 @@ export const createInstance = (config: Config): Instance => {
             domainId
           );
 
-        return isApproved;
+        // If they are approved, return false because they do not need to approve
+        return !isApproved;
       },
       needsToApproveZAuctionToTransferNftsByBid: async (
         account: string,
@@ -325,8 +326,8 @@ export const createInstance = (config: Config): Instance => {
             account,
             bid
           );
-
-        return isApproved;
+        // If they are approved, return false because they do not need to approve
+        return !isApproved;
       },
       approveZAuctionToTransferNftsByDomain: async (
         domainId: string,

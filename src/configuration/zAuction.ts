@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 
-export interface ConfigurationParameters {
+export interface zAuctionConfig {
   web3Provider: ethers.providers.Provider;
   network: string;
   apiUri?: string;
@@ -12,8 +12,8 @@ export interface ConfigurationParameters {
   znsHubAddress?: string;
 }
 
-export const zAuctionConfiguration = (
-  params: ConfigurationParameters
+export const configuration = (
+  params: zAuctionConfig
 ): zAuction.Config => {
   let defaultApiUri;
   let defaultSubgraphUri;
