@@ -7,7 +7,7 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 import * as zNSSDK from "../src/index";
 import * as subgraph from "../src/subgraph";
 import * as actions from "../src/actions";
-import { Config, IPFSGatewayUri, Listing, zAuctionRoute } from "../src/types";
+import { Config, IPFSGatewayUri, } from "../src/types";
 import { Registrar } from "../src/contracts/types";
 import { getHubContract, getRegistrar } from "../src/contracts";
 

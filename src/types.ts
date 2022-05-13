@@ -33,10 +33,6 @@ export interface ZAuctionInstances {
   [registrarAddress: string]: zAuction.Instance;
 }
 
-export interface RouteUriToInstance {
-  [key: string]: ZAuctionInstances;
-}
-
 /**
  * An instance of the zNS SDK
  */
@@ -496,11 +492,6 @@ export interface UrlToIPFS {
 
 export interface InvalidInputMessage {
   errorMessage: string;
-}
-
-export interface zAuctionRoute {
-  uriPattern: string;
-  config: zAuction.Config;
 }
 
 export interface Domain {

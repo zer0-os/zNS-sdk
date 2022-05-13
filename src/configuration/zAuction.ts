@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 
-export const zAuctionConfiguration = (
+export interface ConfigurationParameters {
   web3Provider: ethers.providers.Provider,
   network: string,
   apiUri?: string,
@@ -10,6 +10,10 @@ export const zAuctionConfiguration = (
   zAuctionLegacyAddress?: string,
   wildTokenAddress?: string,
   znsHubAddress?: string,
+}
+
+export const zAuctionConfiguration = (
+  params: ConfigurationParameters
 ): zAuction.Config => {
   let defaultApiUri;
   let defaultSubgraphUri;
@@ -19,7 +23,7 @@ export const zAuctionConfiguration = (
   let defaultWildTokenAddress;
   let defaultZnsHubAddress;
 
-  if (network === "mainnet" || network === "homestead") {
+  if (params.network === "mainnet" || params.network === "homestead") {
     defaultApiUri = "https://mainnet.zauction.api.zero.tech/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction";
@@ -28,7 +32,7 @@ export const zAuctionConfiguration = (
     defaultLegacyZAuctionAddress = "0x05cBD37cA528B7ea50800aA80ddD0F9F30C952F0";
     defaultWildTokenAddress = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34";
     defaultZnsHubAddress = "0x3F0d0a0051D1E600B3f6B35a07ae7A64eD1A10Ca"; 
-  } else if (network === "kovan") {
+  } else if (params.network === "kovan") {
     defaultApiUri = "https://zauction-kovan-api.herokuapp.com/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-kovan";
@@ -37,7 +41,7 @@ export const zAuctionConfiguration = (
     defaultLegacyZAuctionAddress = "0x18A804a028aAf1F30082E91d2947734961Dd7f89";
     defaultWildTokenAddress = "0x50A0A3E9873D7e7d306299a75Dc05bd3Ab2d251F";
     defaultZnsHubAddress = "";
-  } else if (network == "rinkeby") {
+  } else if (params.network == "rinkeby") {
     defaultApiUri = "https://zauction-api-rinkeby.herokuapp.com/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-rinkeby";
@@ -47,17 +51,17 @@ export const zAuctionConfiguration = (
     defaultWildTokenAddress = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
     defaultZnsHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
   } else {
-    throw Error(`Network ${network} is not supported`);
+    throw Error(`params.network ${params.network} is not supported`);
   }
 
   const config: zAuction.Config = {
-    web3Provider: web3Provider as ethers.providers.Web3Provider,
-    apiUri: apiUri ?? defaultApiUri,
-    subgraphUri: subgraphUri ?? defaultSubgraphUri,
-    zAuctionAddress: zAuctionAddress ?? defaultZAuctionAddress,
-    zAuctionLegacyAddress: zAuctionLegacyAddress ?? defaultLegacyZAuctionAddress,
-    wildTokenAddress: wildTokenAddress ?? defaultWildTokenAddress,
-    znsHubAddress: znsHubAddress ?? defaultZnsHubAddress
+    web3Provider: params.web3Provider as ethers.providers.Web3Provider,
+    apiUri: params.apiUri ?? defaultApiUri,
+    subgraphUri: params.subgraphUri ?? defaultSubgraphUri,
+    zAuctionAddress: params.zAuctionAddress ?? defaultZAuctionAddress,
+    zAuctionLegacyAddress: params.zAuctionLegacyAddress ?? defaultLegacyZAuctionAddress,
+    wildTokenAddress: params.wildTokenAddress ?? defaultWildTokenAddress,
+    znsHubAddress: params.znsHubAddress ?? defaultZnsHubAddress
   };
 
   return config;
