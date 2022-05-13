@@ -214,7 +214,11 @@ export const createInstance = (config: Config): Instance => {
 
         const hub = await getHubContract(config.provider, config.hub);
 
-        const registrar = await hub.parentOf(networkId);
+        const parent = await hub.parentOf(networkId);
+
+        if (!parent.eq(ethers.constants.HashZero)) {
+          throw Error("Can only set network payment tokens on network domains");
+        }
 
         const tx = await zAuctionSdkInstance.setNetworkPaymentToken(
           networkId,
