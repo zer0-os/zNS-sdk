@@ -14,10 +14,8 @@
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --timeout 300000",
-    "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\"",
-    "prepublish": "yarn build",
-    "prepare": "yarn build"
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit",
+    "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
   },
   "devDependencies": {
     "@typechain/ethers-v5": "7.0.1",
@@ -29,7 +27,7 @@
     "@types/sinon": "10.0.2",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
-    "@zero-tech/zauction-sdk": "https://github.com/zer0-os/zAuction-SDK#je/fix-yarn",
+    "@zero-tech/zauction-sdk": "0.1.4",
     "chai": "4.3.4",
     "chai-as-promised": "7.1.1",
     "dotenv": "10.0.0",
