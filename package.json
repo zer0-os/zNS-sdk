@@ -29,7 +29,7 @@
     "@types/sinon": "10.0.2",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
-    "@zero-tech/zauction-sdk": "0.1.0",
+    "@zero-tech/zauction-sdk": "https://github.com/zer0-os/zAuction-SDK#je/fix-yarn",
     "chai": "4.3.4",
     "chai-as-promised": "7.1.1",
     "dotenv": "10.0.0",
@@ -55,7 +55,6 @@
     "lolex": "6.0.0"
   },
   "peerDependencies": {
-    "@zero-tech/zauction-sdk": "0.1.0",
     "ethers": "^5.4.6"
   }
 }
