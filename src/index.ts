@@ -18,6 +18,8 @@ import {
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
+  TokenAddressMapping,
+  TokenInfo,
   UploadJobStatus,
   UrlToJobId,
 } from "./types";
@@ -207,13 +209,24 @@ export const createInstance = (config: Config): Instance => {
       return tx;
     },
     zauction: {
-      getPaymentTokenPriceUsd: async (tokenName: string) => {
+      getPaymentTokenInfo: async (
+        paymentTokenAddress: string,
+        chainNetworkName: string
+      ): Promise<TokenInfo> => {
+        const tokenInfo =
+          domains.tokenAddressToFriendlyName[chainNetworkName][
+            paymentTokenAddress
+          ]
+
         const client = new CoinGecko();
-        const tokenData = await client.coins.fetch(tokenName, {
+        const tokenData = await client.coins.fetch(tokenInfo.id, {
           market_data: true,
         });
         const tokenPriceUsd = tokenData.data.market_data.current_price.usd;
-        return tokenPriceUsd;
+        return {
+          price: tokenPriceUsd,
+          name: tokenInfo.name
+        } as TokenInfo
       },
       setPaymentTokenForDomain: async (
         networkId: string,

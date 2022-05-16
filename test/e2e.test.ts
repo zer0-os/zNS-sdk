@@ -6,7 +6,6 @@ import { Config, Instance } from "../src/types";
 import { rinkebyConfiguration } from "../src/configuration";
 import { createInstance } from "../src";
 import { expect } from "chai";
-// import { ethers } from  "hardhat";
 dotenv.config();
 
 // Rinkeby Addresses
@@ -22,6 +21,9 @@ describe("SDK test", () => {
   const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
   const lootToken = "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2";
 
+  // 0://wilder as hex
+  const wilderDomainHex =
+    "0x196C0A1E30004B9998C97B363E44F1F4E97497E59D52AD151208E9393D70BB3B";
   // 0://wilder
   const wilderDomain =
     "11498710528894704621672125451994986004212771421624589370395108607834545240891";
@@ -47,12 +49,13 @@ describe("SDK test", () => {
     hub = await getHubContract(provider, ZNSHubAddress);
     sdk = await createInstance(config);
   });
-  it("Ges ERC20 token price", async () => {
-    const wildPrice = await sdk.zauction.getPaymentTokenPriceUsd("wilder-world");
-    console.log(wildPrice);
-
-    const ethPrice = await sdk.zauction.getPaymentTokenPriceUsd("ethereum");
-    console.log(ethPrice);
+  it("Ges ERC20 token name and price", async () => {
+    const wildInfo = await sdk.zauction.getPaymentTokenInfo(
+      wildToken,
+      "rinkeby"
+    );
+    expect(wildInfo.name).to.eq("WILD");
+    expect(wildInfo.price).to.exist;
   });
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
@@ -93,18 +96,18 @@ describe("SDK test", () => {
       );
     expect(needsToApprove).to.eq(true);
 
-    needsToApprove = await sdk.zauction.needsToApproveZAuctionToSpendTokensByPaymentToken(
-      wildToken,
-      astroWallet.address,
-      ethers.utils.parseEther("1").toString()
-    );
-    expect(needsToApprove).to.eq(false) 
+    needsToApprove =
+      await sdk.zauction.needsToApproveZAuctionToSpendTokensByPaymentToken(
+        wildToken,
+        astroWallet.address,
+        ethers.utils.parseEther("1").toString()
+      );
+    expect(needsToApprove).to.eq(false);
   });
   it("Gets buynow sale events", async () => {
     await sdk.getDomainEvents(wilderPancakesDomain);
   });
   it("Confirm listbids working through the SDKlist bids", async () => {
-    
     const sdk = createInstance(config);
     const bids = await sdk.zauction.listBids(domainFromBrett);
     const bids2 = await sdk.zauction.listBidsByAccount(

@@ -33,6 +33,22 @@ export interface ZAuctionInstances {
   [registrarAddress: string]: zAuction.Instance;
 }
 
+export interface TokenAddressMapping {
+  [address: string]: Mapping;
+}
+
+export interface Mapping {
+  [address: string]: {
+    id: string,
+    name: string
+  };
+}
+
+export interface TokenInfo {
+  price: number,
+  name: string;
+}
+
 /**
  * An instance of the zNS SDK
  */
@@ -215,9 +231,15 @@ export interface Instance {
    * These methods are for bidding or sales of domains
    */
   zauction: {
-
-    /** */
-    getPaymentTokenPriceUsd: (tokenName: string) => Promise<number>;
+    /**
+     * Get information about a payment token like price in USD and friendly name
+     * @param domainId The domain to get the payment token for
+     * @param chainNetworkName The name of the blockchain network e.g. mainnet, rinkeby
+     */
+    getPaymentTokenInfo: (
+      paymentTokenAddress: string,
+      chainNetworkName: string
+    ) => Promise<TokenInfo>;
     /**
      * Sets the payment token used within a network for sales
      * @param networkId The network to set a payment token for
