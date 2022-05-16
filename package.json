@@ -14,7 +14,7 @@
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --timeout 25000",
+    "test": "mocha --config .mocharc.js",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
   },
   "devDependencies": {
@@ -55,6 +55,7 @@
     "lolex": "6.0.0"
   },
   "peerDependencies": {
-    "ethers": "^5.4.6"
+    "ethers": "^5.4.6",
+    "@zero-tech/zauction-sdk": ">=0.1.4"
   }
 }
