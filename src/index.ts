@@ -211,10 +211,10 @@ export const createInstance = (config: Config): Instance => {
     zauction: {
       getPaymentTokenInfo: async (
         paymentTokenAddress: string,
-        chainNetworkName: string
+        chainName: string
       ): Promise<TokenInfo> => {
         const tokenInfo =
-          domains.tokenAddressToFriendlyName[chainNetworkName][
+          domains.tokenAddressToFriendlyName[chainName][
             paymentTokenAddress
           ]
 
