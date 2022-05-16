@@ -1,5 +1,6 @@
 import { ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
+import CoinGecko from "coingecko-api";
 
 import * as subgraph from "./subgraph";
 import * as api from "./api";
@@ -206,6 +207,14 @@ export const createInstance = (config: Config): Instance => {
       return tx;
     },
     zauction: {
+      getPaymentTokenPriceUsd: async (tokenName: string) => {
+        const client = new CoinGecko();
+        const tokenData = await client.coins.fetch(tokenName, {
+          market_data: true,
+        });
+        const tokenPriceUsd = tokenData.data.market_data.current_price.usd;
+        return tokenPriceUsd;
+      },
       setPaymentTokenForDomain: async (
         networkId: string,
         paymentTokenAddress: string,

@@ -215,6 +215,9 @@ export interface Instance {
    * These methods are for bidding or sales of domains
    */
   zauction: {
+
+    /** */
+    getPaymentTokenPriceUsd: (tokenName: string) => Promise<number>;
     /**
      * Sets the payment token used within a network for sales
      * @param networkId The network to set a payment token for

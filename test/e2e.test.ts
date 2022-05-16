@@ -1,16 +1,12 @@
 import { ethers, Wallet } from "ethers";
 import { getHubContract, getRegistrar } from "../src/contracts";
 import * as dotenv from "dotenv";
-import { JsonRpcProvider } from "@ethersproject/providers";
 import { Registrar, ZNSHub } from "../src/contracts/types";
 import { Config, Instance } from "../src/types";
 import { rinkebyConfiguration } from "../src/configuration";
 import { createInstance } from "../src";
 import { expect } from "chai";
-import { buildExecutionContext } from "graphql/execution/execute";
-import { Bid } from "@zero-tech/zauction-sdk";
-import { assert } from "console";
-
+// import { ethers } from  "hardhat";
 dotenv.config();
 
 // Rinkeby Addresses
@@ -51,7 +47,13 @@ describe("SDK test", () => {
     hub = await getHubContract(provider, ZNSHubAddress);
     sdk = await createInstance(config);
   });
+  it("Ges ERC20 token price", async () => {
+    const wildPrice = await sdk.zauction.getPaymentTokenPriceUsd("wilder-world");
+    console.log(wildPrice);
 
+    const ethPrice = await sdk.zauction.getPaymentTokenPriceUsd("ethereum");
+    console.log(ethPrice);
+  });
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
       wilderPancakesDomain
