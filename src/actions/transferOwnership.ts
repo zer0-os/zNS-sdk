@@ -20,6 +20,5 @@ export const transferOwnership = async (
     .connect(signer)
     ["safeTransferFrom(address,address,uint256)"](signerAddress, to, domainId);
 
-  console.log(tx);
   return tx;
 };

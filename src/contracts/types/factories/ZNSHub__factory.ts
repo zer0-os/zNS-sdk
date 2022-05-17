@@ -8,236 +8,6 @@ import type { ZNSHub, ZNSHubInterface } from "../ZNSHub";
 
 const _abi = [
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "registrar",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "label",
-        type: "string",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "labelHash",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "parent",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "minter",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "controller",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "metadataUri",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "royaltyAmount",
-        type: "uint256",
-      },
-    ],
-    name: "EEDomainCreatedV2",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "registrar",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "uri",
-        type: "string",
-      },
-    ],
-    name: "EEMetadataChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "registrar",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "locker",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "isLocked",
-        type: "bool",
-      },
-    ],
-    name: "EEMetadataLockChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "parentRegistrar",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "rootId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "childRegistrar",
-        type: "address",
-      },
-    ],
-    name: "EENewSubdomainRegistrar",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "registrar",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "EERoyaltiesAmountChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "registrar",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "EETransferV1",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "OwnershipTransferred",
-    type: "event",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "controller",
-        type: "address",
-      },
-    ],
-    name: "addController",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint256",
@@ -258,82 +28,18 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "authorizedRegistrars",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "beacon",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "controllers",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "defaultRegistrar",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "id",
         type: "uint256",
       },
       {
         internalType: "string",
-        name: "label",
+        name: "name",
         type: "string",
       },
       {
         internalType: "uint256",
-        name: "labelHash",
+        name: "nameHash",
         type: "uint256",
       },
       {
@@ -370,12 +76,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "domainId",
-        type: "uint256",
+        internalType: "address",
+        name: "registrar",
+        type: "address",
       },
     ],
-    name: "domainExists",
+    name: "authorizedRegistrars",
     outputs: [
       {
         internalType: "bool",
@@ -390,16 +96,16 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "domainId",
         type: "uint256",
       },
     ],
-    name: "domainToContract",
+    name: "domainExists",
     outputs: [
       {
-        internalType: "address",
+        internalType: "bool",
         name: "",
-        type: "address",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -451,24 +157,6 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "defaultRegistrar_",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "registrarBeacon_",
-        type: "address",
-      },
-    ],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "controller",
         type: "address",
       },
@@ -481,7 +169,7 @@ const _abi = [
         type: "bool",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -558,6 +246,25 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+    ],
+    name: "parentOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "registrarBeacon",
     outputs: [
@@ -568,26 +275,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "controller",
-        type: "address",
-      },
-    ],
-    name: "removeController",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -604,57 +291,6 @@ const _abi = [
       },
     ],
     name: "royaltiesAmountChanged",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "subdomainRegistrars",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes4",
-        name: "interfaceId",
-        type: "bytes4",
-      },
-    ],
-    name: "supportsInterface",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

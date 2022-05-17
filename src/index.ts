@@ -1,7 +1,15 @@
+import { ContractTransaction, ethers } from "ethers";
+import * as zAuction from "@zero-tech/zauction-sdk";
+import CoinGecko from "coingecko-api";
+
 import * as subgraph from "./subgraph";
 import * as api from "./api";
 import * as actions from "./actions";
-import * as zAuction from "./zAuction";
+import {
+  getBidEventsFunction,
+  getSaleEventsFunction,
+  getBuyNowSaleEventsFunction,
+} from "./zAuction";
 import {
   Config,
   DomainMetadata,
@@ -10,14 +18,10 @@ import {
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
+  TokenPriceInfo,
   UploadJobStatus,
   UrlToJobId,
 } from "./types";
-import {
-  getZAuctionInstanceForDomain,
-  createZAuctionInstances,
-} from "./utilities";
-import { ContractTransaction, ethers } from "ethers";
 import { Registrar, ZNSHub } from "./contracts/types";
 import { getBasicController, getHubContract } from "./contracts";
 
@@ -27,6 +31,7 @@ export { domains };
 import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
+import { Bid } from "./zAuction";
 
 export * from "./types";
 export { configuration };
@@ -38,17 +43,12 @@ export const createInstance = (config: Config): Instance => {
   const subgraphClient = subgraph.createClient(config.subgraphUri);
   const apiClient = api.createClient(config.apiUri);
 
-  const zAuctionRouteUriToInstance = createZAuctionInstances(config);
-
-  const domainIdToDomainName = async (domainId: string) => {
-    const domainData = await subgraphClient.getDomainById(domainId);
-    return domainData.name;
+  const zAuctionConfig: zAuction.Config = {
+    ...config.zAuction,
   };
 
-  const getDomainContractForDomain = async (domainId: string) => {
-    const domain = await subgraphClient.getDomainById(domainId);
-    return domain.contract;
-  };
+  const zAuctionSdkInstance: zAuction.Instance =
+    zAuction.createInstance(zAuctionConfig);
 
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
@@ -56,31 +56,14 @@ export const createInstance = (config: Config): Instance => {
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
     getSubdomainsById: subgraphClient.getSubdomainsById,
     getDomainEvents: async (domainId: string) => {
-      const zAuctionInstance = await getZAuctionInstanceForDomain(
-        domainId,
-        config.zAuctionRoutes,
-        zAuctionRouteUriToInstance,
-        domainIdToDomainName,
-        getDomainContractForDomain
-      );
-
       return actions.getDomainEvents(domainId, {
         getMintEvents: subgraphClient.getDomainMintedEvent,
         getTransferEvents: subgraphClient.getDomainTransferEvents,
-        getBidEvents: zAuction.getBidEventsFunction(zAuctionInstance),
-        getSaleEvents: zAuction.getSaleEventsFunction(zAuctionInstance),
-        getBuyNowSaleEvents:
-          zAuction.getBuyNowSaleEventsFunction(zAuctionInstance),
+        getBidEvents: getBidEventsFunction(zAuctionSdkInstance),
+        getSaleEvents: getSaleEventsFunction(zAuctionSdkInstance),
+        getBuyNowSaleEvents: getBuyNowSaleEventsFunction(zAuctionSdkInstance),
       });
     },
-    getZAuctionInstanceForDomain: (domainId: string) =>
-      getZAuctionInstanceForDomain(
-        domainId,
-        config.zAuctionRoutes,
-        zAuctionRouteUriToInstance,
-        domainIdToDomainName,
-        getDomainContractForDomain
-      ),
     getAllDomains: subgraphClient.getAllDomains,
     getDomainMetrics: async (domainIds: string[]) =>
       getDomainMetrics(config.metricsUri, domainIds),
@@ -226,278 +209,228 @@ export const createInstance = (config: Config): Instance => {
       return tx;
     },
     zauction: {
-      needsToApproveZAuctionToSpendTokens: async (
+      getPaymentTokenInfo: async (
+        paymentTokenAddress: string
+      ): Promise<TokenPriceInfo> => {
+        const info: TokenPriceInfo = await actions.getPaymentTokenInfo(
+          paymentTokenAddress,
+          config
+        );
+        return info;
+      },
+      setPaymentTokenForDomain: async (
+        networkId: string,
+        paymentTokenAddress: string,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const tx = await actions.setPaymentTokenForDomain(
+          networkId,
+          paymentTokenAddress,
+          signer,
+          config,
+          zAuctionSdkInstance
+        );
+        return tx;
+      },
+      getPaymentTokenForDomain: async (domainId): Promise<string> => {
+        const paymentToken = await zAuctionSdkInstance.getPaymentTokenForDomain(
+          domainId
+        );
+        return paymentToken;
+      },
+      needsToApproveZAuctionToSpendTokensByBid: async (
+        account: string,
+        bid: zAuction.Bid
+      ): Promise<boolean> => {
+        const allowance =
+          await zAuctionSdkInstance.getZAuctionSpendAllowanceByBid(
+            account,
+            bid
+          );
+        const needsToApprove = allowance.lt(bid.amount);
+        return needsToApprove;
+      },
+      needsToApproveZAuctionToSpendTokensByDomain: async (
         domainId: string,
         account: string,
         bidAmount: ethers.BigNumber
       ): Promise<boolean> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const allowance = await zAuctionInstance.getZAuctionSpendAllowance(
+        const allowance =
+          await zAuctionSdkInstance.getZAuctionSpendAllowanceByDomain(
+            account,
+            domainId
+          );
+        const needsToApprove = allowance.lt(bidAmount);
+        return needsToApprove;
+      },
+      needsToApproveZAuctionToSpendTokensByPaymentToken: async (
+        paymentTokenAddress: string,
+        account: string,
+        amount: string
+      ): Promise<boolean> => {
+        const allowance = await zAuctionSdkInstance.getZAuctionSpendAllowance(
+          paymentTokenAddress,
           account
         );
-        const isApproved = allowance.gte(bidAmount);
-        return isApproved;
+        const needsToApprove = allowance.lt(amount);
+        return needsToApprove;
       },
+      approveZAuctionToSpendTokensByBid: async (
+        bid: Bid,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const tx =
+          await zAuctionSdkInstance.approveZAuctionSpendPaymentTokenByBid(
+            bid,
+            signer
+          );
 
-      approveZAuctionToSpendTokens: async (
+        return tx;
+      },
+      approveZAuctionToSpendTokensByDomain: async (
         domainId: string,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
+        const tx =
+          await zAuctionSdkInstance.approveZAuctionSpendPaymentTokenByDomain(
+            domainId,
+            signer
+          );
 
-        const tx = await zAuctionInstance.approveZAuctionSpendTradeTokens(
+        return tx;
+      },
+      approveZAuctionToSpendPaymentToken: async (
+        paymentTokenAddress: string,
+        signer: ethers.Signer
+      ): Promise<ethers.ContractTransaction> => {
+        const tx = await zAuctionSdkInstance.approveZAuctionSpendPaymentToken(
+          paymentTokenAddress,
           signer
         );
 
         return tx;
       },
-
-      needsToApproveZAuctionToTransferNfts: async (
+      needsToApproveZAuctionToTransferNftsByDomain: async (
         domainId: string,
         account: string
       ): Promise<boolean> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
         const isApproved =
-          await zAuctionInstance.isZAuctionApprovedToTransferNft(account);
+          await zAuctionSdkInstance.isZAuctionApprovedToTransferNftByDomain(
+            account,
+            domainId
+          );
 
-        return isApproved;
+        // If they are approved, return false because they do not need to approve
+        return !isApproved;
       },
-
       needsToApproveZAuctionToTransferNftsByBid: async (
-        domainId: string,
         account: string,
-        bid: zAuction.Bid
+        bid: Bid
       ): Promise<boolean> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
         const isApproved =
-          await zAuctionInstance.isZAuctionApprovedToTransferNftByBid(
+          await zAuctionSdkInstance.isZAuctionApprovedToTransferNftByBid(
             account,
             bid
           );
-
-        return isApproved;
+        // If they are approved, return false because they do not need to approve
+        return !isApproved;
       },
-
-      approveZAuctionToTransferNfts: async (
+      approveZAuctionToTransferNftsByDomain: async (
         domainId: string,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
+        const tx = await zAuctionSdkInstance.approveZAuctionTransferNftByDomain(
           domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
+          signer
         );
-
-        const tx = await zAuctionInstance.approveZAuctionTransferNft(signer);
-
         return tx;
       },
-
       approveZAuctionToTransferNftsByBid: async (
-        domainId: string,
-        bid: zAuction.Bid,
+        bid: Bid,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const tx = await zAuctionInstance.approveZAuctionTransferNftByBid(
+        const tx = await zAuctionSdkInstance.approveZAuctionTransferNftByBid(
           bid,
           signer
         );
 
         return tx;
       },
-
       placeBid: async (
         params: PlaceBidParams,
         signer: ethers.Signer,
         statusCallback?: zAuction.PlaceBidStatusCallback
       ): Promise<void> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          params.domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        await zAuctionInstance.placeBid(
+        await zAuctionSdkInstance.placeBid(
           {
             tokenId: params.domainId,
-            bidAmount: params.bidAmount.toString(), // perhaps changes this to ethers.BigNumber
+            bidAmount: params.bidAmount.toString(),
           } as zAuction.NewBidParameters,
           signer,
           statusCallback
         );
       },
-
       cancelBid: async (
-        bidNonce: string,
-        signedBidMessage: string,
-        domainId: string,
+        bid: Bid,
         cancelOnChain: boolean,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction | void> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const tx = await zAuctionInstance.cancelBid(
-          bidNonce,
-          signedBidMessage,
+        const tx = await zAuctionSdkInstance.cancelBid(
+          bid,
           cancelOnChain,
           signer
         );
         if (tx) return tx;
       },
-
       listBids: async (domainId: string): Promise<zAuction.Bid[]> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          domainId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const bidCollection = await zAuctionInstance.listBids([domainId]);
+        const bidCollection = await zAuctionSdkInstance.listBids([domainId]);
         const domainBids = bidCollection[domainId];
 
         return domainBids;
       },
-
       listBidsByAccount: async (account: string): Promise<zAuction.Bid[]> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          "0x0000000000000000000000000000000000000000000000000000000000000000", //Todo replace with cheese
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const bids = await zAuctionInstance.listBidsByAccount(account);
+        const bids = await zAuctionSdkInstance.listBidsByAccount(account);
         return bids;
       },
-
       acceptBid: async (
-        bid: zAuction.Bid,
+        bid: Bid,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          bid.tokenId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const tx = await zAuctionInstance.acceptBid(bid, signer);
-
+        const tx = await zAuctionSdkInstance.acceptBid(bid, signer);
         return tx;
       },
-      // Awaiting zAuction-SDK PR to be merged, npm package to upgrade, then can uncomment
       buyNow: async (
         params: zAuction.BuyNowParams,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          params.tokenId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const tx = await zAuctionInstance.buyNow(params, signer);
+        const tx = await zAuctionSdkInstance.buyNow(params, signer);
         return tx;
       },
       getBuyNowPrice: async (tokenId: string): Promise<string> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          tokenId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-        const domain = await subgraphClient.getDomainById(tokenId);
-        const listing: zAuction.Listing = await zAuctionInstance.getBuyNowPrice(
-          tokenId
-        );
-        if (listing.holder.toLowerCase() !== domain.owner.toLowerCase())
-          return "0";
-        return ethers.utils.formatEther(listing.price);
+        const buyNowListing = await zAuctionSdkInstance.getBuyNowPrice(tokenId);
+        return ethers.utils.formatEther(buyNowListing.price);
       },
       setBuyNowPrice: async (
         params: zAuction.BuyNowParams,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          params.tokenId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-        const tx = await zAuctionInstance.setBuyNowPrice(params, signer);
+        const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
         return tx;
       },
       cancelBuyNow: async (
         tokenId: string,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const zAuctionInstance = await getZAuctionInstanceForDomain(
-          tokenId,
-          config.zAuctionRoutes,
-          zAuctionRouteUriToInstance,
-          domainIdToDomainName,
-          getDomainContractForDomain
-        );
-
-        const tx = await zAuctionInstance.cancelBuyNow(tokenId, signer);
+        const tx = await zAuctionSdkInstance.cancelBuyNow(tokenId, signer);
         return tx;
       },
     },
 
     utility: {
+      getDomainContractForDomain: async (domainId: string): Promise<string> => {
+        const domain = await subgraphClient.getDomainById(domainId);
+        return domain.contract;
+      },
       uploadMedia: async (media: Buffer): Promise<string> =>
         apiClient.uploadMedia(media),
       uploadObjectAsJson: async (

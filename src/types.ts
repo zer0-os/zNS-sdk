@@ -1,5 +1,7 @@
 import * as zAuction from "./zAuction";
+import { Maybe } from "./utilities";
 import { ethers } from "ethers";
+import { Bid } from "./zAuction";
 
 /**
  * Configuration for a zNS sdk instance
@@ -11,8 +13,8 @@ export interface Config {
   metricsUri: string;
   /** The zNS backend api URL */
   apiUri: string;
-  /** Routing table for zAuction */
-  zAuctionRoutes: zAuctionRoute[];
+  /** Addresses of zAuction, legacy zAuction, and the $WILD token */
+  zAuction: zAuction.Config;
   /** Address of the zNS Basic controller to use */
   basicController: string;
   /** Address of the root zNS Registrar */
@@ -32,8 +34,9 @@ export interface ZAuctionInstances {
   [registrarAddress: string]: zAuction.Instance;
 }
 
-export interface RouteUriToInstance {
-  [key: string]: ZAuctionInstances;
+export interface TokenPriceInfo {
+  price: number,
+  name: string;
 }
 
 /**
@@ -69,12 +72,6 @@ export interface Instance {
    * @param domainId Domain id to get events for
    */
   getDomainEvents(domainId: string): Promise<DomainEvent[]>;
-
-  /**
-   * Gets the zAuction Instance for a domain.
-   * @param domainId Domain id to fetch for
-   */
-  getZAuctionInstanceForDomain(domainId: string): Promise<zAuction.Instance>;
 
   /**
    * Gets all domains
@@ -225,26 +222,95 @@ export interface Instance {
    */
   zauction: {
     /**
+     * Get information about a payment token like price in USD and friendly name
+     * @param domainId The domain to get the payment token for
+     */
+    getPaymentTokenInfo: (
+      paymentTokenAddress: string,
+    ) => Promise<TokenPriceInfo>;
+    /**
+     * Sets the payment token used within a network for sales
+     * @param networkId The domain network to set a payment token for e.g. Wilder
+     * @param paymentTokenAddress The ERC20 token to set it to
+     * @param signer The signer to perform the tx, must be the owner
+     */
+    setPaymentTokenForDomain: (
+      networkId: string,
+      paymentTokenAddress: string,
+      signer: ethers.Signer
+    ) => Promise<ethers.ContractTransaction>;
+    /**
+     * Returns the payment token for a domain based on the network it's in.
+     * e.g. A domain that is `0://wilder.wheels.123 will return the payment
+     * token used in the Wilder World network.
+     * @param domainId The domain to get a payment token for
+     */
+    getPaymentTokenForDomain: (domainId: string) => Promise<string>;
+    /**
      * Checks whether a user account has approved zAuction to spend tokens on their
-     * behalf. They need to approve zAuction to spend their tokens for their bid to
+     * behalf using a bid.
+     * @param account The user account that will use funds
+     * @param bid The bid from the user with an amount to check
+     */
+    needsToApproveZAuctionToSpendTokensByBid(
+      account: string,
+      bid: zAuction.Bid
+    ): Promise<boolean>;
+    /**
+     * Checks whether a user account has approved zAuction to spend tokens on their
+     * behalf using a domainId.
+     * They need to approve zAuction to spend their tokens for their bid to
      * be valid and actionable by the seller.
      * @param domainId The domain id a user is going to bid for
-     * @param account The user account that is going to bid
-     * @param bidAmount The size of bid the user is trying to place
+     * @param account The user account that will use funds
+     * @param bidAmount The amount to check zAuction is approved to spend
      */
-    needsToApproveZAuctionToSpendTokens(
+    needsToApproveZAuctionToSpendTokensByDomain(
       domainId: string,
       account: string,
       bidAmount: ethers.BigNumber
     ): Promise<boolean>;
 
     /**
-     * Approves zAuction to spend the needed tokens so that a bid may be placed.
+     * Checks whether a user account has approved zAuction to spend a
+     * specific token on their behalf using a given paymentTokenAddress
+     * @param paymentTokenAddress The address of an ERC-20 payment token
+     * @param account The user account that will use funds
+     * @param amount The amount to check how much the user has allowed
+     */
+    needsToApproveZAuctionToSpendTokensByPaymentToken(
+      paymentTokenAddress: string,
+      account: string,
+      amount: string
+    ): Promise<boolean>;
+
+    /**
+     * Approves zAuction to spend the payment token for the domain
+     * being bid on
+     * @param bid The bid that contains a payment token to approve
+     * @param signer The user account signer (connected wallet)
+     */
+    approveZAuctionToSpendTokensByBid: (
+      bid: Bid,
+      signer: ethers.Signer
+    ) => Promise<ethers.ContractTransaction>;
+    /**
+     * Approves zAuction to spend the payment token for that domain's network
      * @param domainId The domain id that is going to be bid on
      * @param signer The user account signer (connected wallet)
      */
-    approveZAuctionToSpendTokens(
+    approveZAuctionToSpendTokensByDomain(
       domainId: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction>;
+
+    /**
+     * Approves zAuction to spend the specified trade token
+     * @param paymentTokenAddress The address of the token
+     * @param signer The user account signer (connected wallet)
+     */
+    approveZAuctionToSpendPaymentToken(
+      paymentTokenAddress: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
 
@@ -256,7 +322,6 @@ export interface Instance {
      * @param bid The bid that is being transferred for
      */
     needsToApproveZAuctionToTransferNftsByBid(
-      domainId: string,
       account: string,
       bid: zAuction.Bid
     ): Promise<boolean>;
@@ -267,7 +332,7 @@ export interface Instance {
      * @param domainId The domain ID that is going to be sold
      * @param account The user account which is selling the domain
      */
-    needsToApproveZAuctionToTransferNfts(
+    needsToApproveZAuctionToTransferNftsByDomain(
       domainId: string,
       account: string
     ): Promise<boolean>;
@@ -279,8 +344,7 @@ export interface Instance {
      * @param signer The user account which is selling the domain (connected wallet)
      */
     approveZAuctionToTransferNftsByBid(
-      domainId: string,
-      bid: zAuction.Bid,
+      bid: Bid,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
 
@@ -290,7 +354,7 @@ export interface Instance {
      * @param domainId The domain Id that is going to be sold
      * @param signer The user account which is selling the domain (connected wallet)
      */
-    approveZAuctionToTransferNfts(
+    approveZAuctionToTransferNftsByDomain(
       domainId: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction>;
@@ -313,9 +377,7 @@ export interface Instance {
      * @param signer The user account signer (connected wallet)
      */
     cancelBid(
-      bidNonce: string,
-      signedBidMessage: string,
-      domainId: string,
+      bid: Bid,
       cancelOnChain: boolean,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction | void>;
@@ -391,6 +453,8 @@ export interface Instance {
      */
     uploadMedia(media: Buffer): Promise<string>;
 
+    getDomainContractForDomain(domainId: string): Promise<string>;
+
     startUrlUploadJob(urls: string[]): Promise<UrlToJobId>; // returns job ids
 
     checkBulkUploadJob(jobIds: string[]): Promise<UploadJobStatus>; // return status of the jobs
@@ -441,11 +505,6 @@ export interface UrlToIPFS {
 
 export interface InvalidInputMessage {
   errorMessage: string;
-}
-
-export interface zAuctionRoute {
-  uriPattern: string;
-  config: zAuction.Config;
 }
 
 export interface Domain {

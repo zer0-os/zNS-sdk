@@ -14,23 +14,24 @@
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit",
-    "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\"",
-    "prepublish": "yarn build"
+    "test": "mocha --config .mocharc.js",
+    "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
   },
   "devDependencies": {
     "@typechain/ethers-v5": "7.0.1",
     "@types/chai": "4.2.21",
     "@types/chai-as-promised": "7.1.4",
+    "@types/coingecko-api": "1.0.10",
     "@types/mocha": "9.0.0",
     "@types/node": "16.7.13",
     "@types/node-fetch": "3.0.3",
     "@types/sinon": "10.0.2",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
-    "@zero-tech/zauction-sdk": "0.0.60",
+    "@zero-tech/zauction-sdk": "0.1.4",
     "chai": "4.3.4",
     "chai-as-promised": "7.1.1",
+    "coingecko-api": "1.0.10",
     "dotenv": "10.0.0",
     "eslint": "7.32.0",
     "eslint-plugin-prettier": "4.0.0",
@@ -54,7 +55,7 @@
     "lolex": "6.0.0"
   },
   "peerDependencies": {
-    "@zero-tech/zauction-sdk": ">=0.0.55",
-    "ethers": "^5.4.6"
+    "ethers": "^5.4.6",
+    "@zero-tech/zauction-sdk": ">=0.1.4"
   }
 }

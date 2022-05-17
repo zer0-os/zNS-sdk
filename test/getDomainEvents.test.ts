@@ -1,5 +1,5 @@
 import { DomainEventType, DomainMintEvent, DomainTransferEvent } from "../src/types";
-import { getDomainEvents } from "../src/actions";
+import { DomainEventFetchers, getDomainEvents } from "../src/actions";
 
 import { expect } from "chai";
 import Sinon from "sinon";
@@ -33,10 +33,11 @@ describe("getDomainEvents", () => {
       "testid",
       {
         getBidEvents: Sinon.fake.returns([]),
+        getBuyNowSaleEvents: Sinon.fake.returns([]),
         getMintEvents: Sinon.fake.returns(mintEvent),
         getTransferEvents: Sinon.fake.returns(transferEvents),
         getSaleEvents: Sinon.fake.returns([])
-      }
+      } as DomainEventFetchers
     );
 
     expect(events.length).eq(1);
@@ -56,6 +57,7 @@ describe("getDomainEvents", () => {
       "testid",
       {
         getBidEvents: Sinon.fake.returns([]),
+        getBuyNowSaleEvents: Sinon.fake.returns([]),
         getMintEvents: Sinon.fake.returns(mintEvent),
         getTransferEvents: Sinon.fake.returns(transferEvents),
         getSaleEvents: Sinon.fake.returns([])
@@ -91,6 +93,7 @@ describe("getDomainEvents", () => {
       "testid",
       {
         getBidEvents: Sinon.fake.returns([]),
+        getBuyNowSaleEvents: Sinon.fake.returns([]),
         getMintEvents: Sinon.fake.returns(mintEvent),
         getTransferEvents: Sinon.fake.returns(transferEvents),
         getSaleEvents: Sinon.fake.returns([])
