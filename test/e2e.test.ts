@@ -50,12 +50,8 @@ describe("SDK test", () => {
     sdk = await createInstance(config);
   });
   it("Ges ERC20 token name and price", async () => {
-    const wildInfo = await sdk.zauction.getPaymentTokenInfo(
-      wildToken,
-      "rinkeby"
-    );
-    expect(wildInfo.name).to.eq("WILD");
-    expect(wildInfo.price).to.exist;
+    const info = await sdk.zauction.getPaymentTokenInfo(wildToken);
+    expect(info.name).to.eq("WILD")
   });
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(

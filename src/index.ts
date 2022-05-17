@@ -18,8 +18,7 @@ import {
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
-  TokenAddressMapping,
-  TokenInfo,
+  TokenPriceInfo,
   UploadJobStatus,
   UrlToJobId,
 } from "./types";
@@ -48,7 +47,8 @@ export const createInstance = (config: Config): Instance => {
     ...config.zAuction,
   };
 
-  const zAuctionSdkInstance = zAuction.createInstance(zAuctionConfig);
+  const zAuctionSdkInstance: zAuction.Instance =
+    zAuction.createInstance(zAuctionConfig);
 
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
@@ -210,41 +210,25 @@ export const createInstance = (config: Config): Instance => {
     },
     zauction: {
       getPaymentTokenInfo: async (
-        paymentTokenAddress: string,
-        chainName: string
-      ): Promise<TokenInfo> => {
-        const tokenInfo =
-          domains.tokenAddressToFriendlyName[chainName][
-            paymentTokenAddress
-          ]
-
-        const client = new CoinGecko();
-        const tokenData = await client.coins.fetch(tokenInfo.id, {
-          market_data: true,
-        });
-        const tokenPriceUsd = tokenData.data.market_data.current_price.usd;
-        return {
-          price: tokenPriceUsd,
-          name: tokenInfo.name
-        } as TokenInfo
+        paymentTokenAddress: string
+      ): Promise<TokenPriceInfo> => {
+        const info: TokenPriceInfo = await actions.getPaymentTokenInfo(
+          paymentTokenAddress,
+          config
+        );
+        return info;
       },
       setPaymentTokenForDomain: async (
         networkId: string,
         paymentTokenAddress: string,
         signer: ethers.Signer
       ): Promise<ethers.ContractTransaction> => {
-        const hub = await getHubContract(config.provider, config.hub);
-
-        const parent = await hub.parentOf(networkId);
-
-        if (!parent.eq(ethers.constants.HashZero)) {
-          throw Error("Can only set network payment tokens on network domains");
-        }
-
-        const tx = await zAuctionSdkInstance.setNetworkPaymentToken(
+        const tx = await actions.setPaymentTokenForDomain(
           networkId,
           paymentTokenAddress,
-          signer
+          signer,
+          config,
+          zAuctionSdkInstance
         );
         return tx;
       },
@@ -283,7 +267,7 @@ export const createInstance = (config: Config): Instance => {
         paymentTokenAddress: string,
         account: string,
         amount: string
-      ) => {
+      ): Promise<boolean> => {
         const allowance = await zAuctionSdkInstance.getZAuctionSpendAllowance(
           paymentTokenAddress,
           account

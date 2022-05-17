@@ -1,4 +1,5 @@
 import * as zAuction from "./zAuction";
+import { Maybe } from "./utilities";
 import { ethers } from "ethers";
 import { Bid } from "./zAuction";
 
@@ -33,18 +34,20 @@ export interface ZAuctionInstances {
   [registrarAddress: string]: zAuction.Instance;
 }
 
-export interface TokenAddressMapping {
-  [address: string]: Mapping;
+export interface NetworksToAddresses {
+  [address: string]: Maybe<AddressesToTokenApiInfo>;
 }
 
-export interface Mapping {
-  [address: string]: {
-    id: string,
-    name: string
-  };
+export interface AddressesToTokenApiInfo {
+  [address: string]: Maybe<TokenApiInfo>
 }
 
-export interface TokenInfo {
+export interface TokenApiInfo {
+  id: string,
+  name:string
+}
+
+export interface TokenPriceInfo {
   price: number,
   name: string;
 }
@@ -234,15 +237,13 @@ export interface Instance {
     /**
      * Get information about a payment token like price in USD and friendly name
      * @param domainId The domain to get the payment token for
-     * @param chainNetworkName The name of the blockchain network e.g. mainnet, rinkeby
      */
     getPaymentTokenInfo: (
       paymentTokenAddress: string,
-      chainNetworkName: string
-    ) => Promise<TokenInfo>;
+    ) => Promise<TokenPriceInfo>;
     /**
      * Sets the payment token used within a network for sales
-     * @param networkId The network to set a payment token for
+     * @param networkId The domain network to set a payment token for e.g. Wilder
      * @param paymentTokenAddress The ERC20 token to set it to
      * @param signer The signer to perform the tx, must be the owner
      */
@@ -294,7 +295,7 @@ export interface Instance {
       paymentTokenAddress: string,
       account: string,
       amount: string
-    ): Promise<any>;
+    ): Promise<boolean>;
 
     /**
      * Approves zAuction to spend the payment token for the domain
