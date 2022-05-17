@@ -1,6 +1,45 @@
 import CoinGecko from "coingecko-api";
-import { domains } from "..";
 import { Config, TokenPriceInfo } from "../types";
+import { Maybe } from "../utilities";
+
+interface NetworksToPaymentTokens {
+  [network: string]: Maybe<PaymentTokensToTokenApiInfo>;
+}
+
+interface PaymentTokensToTokenApiInfo {
+  [address: string]: Maybe<TokenApiInfo>
+}
+
+interface TokenApiInfo {
+  id: string,
+  name:string
+}
+
+// ID must be the given ID from CoinGecko API.
+// You can get this value from a token's page under "API ID"
+// https://www.coingecko.com/en/coins/zero-tech
+const tokenAddressToFriendlyName: NetworksToPaymentTokens = {
+  mainnet: {
+    "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34": {
+      id: "wilder-world",
+      name: "WILD"
+    } as TokenApiInfo,
+    "0x0ec78ed49c2d27b315d462d43b5bab94d2c79bf8": {
+      id: "zero-tech",
+      name: "ZERO"
+    } as TokenApiInfo
+  } as PaymentTokensToTokenApiInfo,
+  rinkeby: {
+    "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79": {
+      id: "wilder-world",
+      name: "WILD"
+    } as TokenApiInfo,
+    "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2": {
+      id: "zero-tech",
+      name: "ZERO"
+    } as TokenApiInfo
+  } as PaymentTokensToTokenApiInfo
+}
 
 export const getPaymentTokenInfo = async (
   paymentTokenAddress: string,
@@ -8,7 +47,7 @@ export const getPaymentTokenInfo = async (
 ): Promise<TokenPriceInfo> => {
   const network = await config.provider.getNetwork();
 
-  const addresses = domains.tokenAddressToFriendlyName[network.name]
+  const addresses = tokenAddressToFriendlyName[network.name]
   if (!addresses) {
     throw Error("Network not supported")
   }
@@ -28,9 +67,9 @@ export const getPaymentTokenInfo = async (
   }
 
   const tokenPriceUsd = tokenData.data.market_data.current_price.usd;
-
-  return {
+  const info: TokenPriceInfo = {
     price: tokenPriceUsd,
     name: tokenInfo.name
-  } as TokenPriceInfo
+  }
+  return info;
 };

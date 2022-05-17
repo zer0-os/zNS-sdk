@@ -34,19 +34,6 @@ export interface ZAuctionInstances {
   [registrarAddress: string]: zAuction.Instance;
 }
 
-export interface NetworksToAddresses {
-  [address: string]: Maybe<AddressesToTokenApiInfo>;
-}
-
-export interface AddressesToTokenApiInfo {
-  [address: string]: Maybe<TokenApiInfo>
-}
-
-export interface TokenApiInfo {
-  id: string,
-  name:string
-}
-
 export interface TokenPriceInfo {
   price: number,
   name: string;

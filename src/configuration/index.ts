@@ -13,7 +13,7 @@ export const mainnetConfiguration = (
 ): Config => {
   const mainnetConfig: zAuctionConfig = {
     web3Provider: provider,
-    network: "rinkeby",
+    network: "mainnet",
     znsHubAddress: mainnetHub,
   };
   return {
