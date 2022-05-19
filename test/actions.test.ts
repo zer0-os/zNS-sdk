@@ -7,14 +7,13 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 import * as zNSSDK from "../src/index";
 import * as subgraph from "../src/subgraph";
 import * as actions from "../src/actions";
-import { Config, IPFSGatewayUri, Listing, zAuctionRoute } from "../src/types";
+import { Config, IPFSGatewayUri, Listing, } from "../src/types";
 import { Registrar } from "../src/contracts/types";
-import { getRegistrar } from "../src/contracts";
-import {
-  createZAuctionInstances,
-  getZAuctionInstanceForDomain,
-} from "../src/utilities";
-import { zAuctionConfiguration } from "../src/configuration/zAuction";
+import { getHubContract, getRegistrar } from "../src/contracts";
+
+import { rinkebyConfiguration } from "../src/configuration";
+import { BuyNowListing } from "@zero-tech/zauction-sdk";
+import { assert } from "console";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -32,7 +31,7 @@ describe("Test Custom SDK Logic", () => {
     ChainId.rinkeby
   );
 
-  const pk = process.env["PRIVATE_KEY"];
+  const pk = process.env["TESTNET_PRIVATE_KEY_MAIN"];
   if (!pk) throw Error("No private key");
   const signer = new ethers.Wallet(pk, provider);
 
@@ -41,23 +40,11 @@ describe("Test Custom SDK Logic", () => {
   const basicControllerAddress = "0x1188dD1a0F42BA4a117EF1c09D884f5183D40B28";
 
   // Rinkeby config
-  const config: Config = {
-    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
-    metricsUri: "https://zns-metrics-kovan.herokuapp.com", // todo metrics on rinkeby
-    apiUri: "https://zns.api.zero.tech/api",
-    zAuctionRoutes: [
-      {
-        uriPattern: "wilder",
-        // Use default values specified in config
-        config: zAuctionConfiguration(provider, "rinkeby") as zAuction.Config,
-      } as zAuctionRoute,
-    ],
-    basicController: basicControllerAddress,
-    registrar: registrarAddress,
-  };
+  const config: Config = rinkebyConfiguration(provider);
+  const zAuctionSdkInstance = zAuction.createInstance(config.zAuction);
 
   const qmHash = "Qmc2cMdNMo6isDTjk8gej8ay9dZxGQNS3ftsDpct1RNV2H";
-  const domainId =
+  const wilderPancakesDomain =
     "0x6e35a7ecbf6b6368bb8d42ee9b3dcfc8404857635036e60196931d4458c07622";
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
@@ -87,7 +74,6 @@ describe("Test Custom SDK Logic", () => {
       //   owner: "0xbB6a3A7ea2bC5cf840016843FA01D799Be975320",
       // }
       // const tx = await sdkInstance.mintSubdomain(params, signer);
-      // console.log(tx);
     });
     it("gets all domains", async () => {
       const sdkInstance = await zNSSDK.createInstance(config);
@@ -96,25 +82,26 @@ describe("Test Custom SDK Logic", () => {
     });
     it("gets a domain by an ID", async () => {
       const sdkInstance = await zNSSDK.createInstance(config);
-      const domain = await sdkInstance.getDomainById(domainId);
+      const domain = await sdkInstance.getDomainById(wilderPancakesDomain);
       expect(domain);
     });
   });
   describe("getDomainMetadata", () => {
     it("runs as ipfs url", async () => {
-      const registrarInstance = await getRegistrar(provider, registrarAddress);
+      const hub = await getHubContract(provider, config.hub);
       const metadata = await actions.getDomainMetadata(
-        domainId,
-        registrarInstance,
+        wilderPancakesDomain,
+        hub,
         IPFSGatewayUri.fleek
       );
       expect(metadata);
     });
     it("runs as well formed ipfs.fleek.co url", async () => {
-      const registrarInstance = await getRegistrar(provider, registrarAddress);
+      const hub = await getHubContract(provider, config.hub);
+
       const metadata = await actions.getDomainMetadata(
-        domainId,
-        registrarInstance,
+        wilderPancakesDomain,
+        hub,
         IPFSGatewayUri.fleek
       );
       expect(metadata);
@@ -149,7 +136,6 @@ describe("Test Custom SDK Logic", () => {
     //     signer,
     //     registrar
     //   );
-    //   console.log(tx.v);
     //   const retrievedMetadata = await actions.getDomainMetadata(
     //     domainId,
     //     registrar,
@@ -160,66 +146,39 @@ describe("Test Custom SDK Logic", () => {
   });
   describe("(get|set)buyNowPrice", () => {
     it("runs as expected", async () => {
-      const zAuctionRouteUriToInstance = createZAuctionInstances(config);
-
-      const zAuctionInstance = await getZAuctionInstanceForDomain(
-        domainId,
-        config.zAuctionRoutes,
-        zAuctionRouteUriToInstance,
-        domainIdToDomainName
-      );
+      
       // Set to a new value every time it's run, loop is same as current price
-      const currentBuyNowPrice = await zAuctionInstance.getBuyNowPrice(
-        domainId,
-        signer
+      let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowPrice(
+        wilderPancakesDomain
       );
       let newBuyNowPrice = ethers.utils.parseEther(
         Math.round(Math.random() * 100).toString()
       );
-      while (currentBuyNowPrice.eq(newBuyNowPrice)) {
+      while (listing.price.eq(newBuyNowPrice)) {
         newBuyNowPrice = ethers.utils.parseEther(
           Math.round(Math.random() * 100).toString()
         );
       }
       const params: zAuction.BuyNowParams = {
         amount: ethers.utils.parseEther(`${newBuyNowPrice}`).toString(),
-        tokenId: domainId,
+        tokenId: wilderPancakesDomain,
       };
 
       const address = await signer.getAddress();
-      const isApproved = await zAuctionInstance.isZAuctionApprovedToTransferNft(
-        address
+      const isApproved = await zAuctionSdkInstance.isZAuctionApprovedToTransferNftByDomain(
+        address,
+        wilderPancakesDomain
       );
 
       if (!isApproved)
-        await zAuctionInstance.approveZAuctionTransferNft(signer);
+        await zAuctionSdkInstance.approveZAuctionTransferNftByDomain(wilderPancakesDomain, signer);
 
-      const tx = await zAuctionInstance.setBuyNowPrice(params, signer);
+      const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
 
-      const listing: Listing = await zAuctionInstance.getBuyNowPrice(
-        domainId,
-        signer
+      listing = await zAuctionSdkInstance.getBuyNowPrice(
+        wilderPancakesDomain,
       );
-      expect(listing);
-    });
-  });
-  describe("lockDomainMetadata", () => {
-    it("runs", async () => {
-      const registrar: Registrar = await getRegistrar(
-        provider,
-        registrarAddress
-      );
-
-      const isLocked = await registrar.isDomainMetadataLocked(domainId);
-
-      const toSet = !isLocked;
-
-      const tx = await actions.lockDomainMetadata(
-        domainId,
-        toSet,
-        signer,
-        registrar
-      );
+      assert(listing)
     });
   });
 });

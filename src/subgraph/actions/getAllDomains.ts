@@ -39,7 +39,7 @@ export const getAllDomains = async <T>(
     if (queriedDomains.length < queryCount) {
       break;
     }
-    skip += queriedDomains.length;
+    skip = queriedDomains[queriedDomains.length - 1].indexId + 1;
   }
 
   logger.trace(`Found ${domains.length} domains`);

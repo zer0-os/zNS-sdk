@@ -7,12 +7,14 @@
     ],
     "module": "CommonJS",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "strict": true,
     "target": "ES2018",
     "sourceMap": true,
     "composite": true,
     "outDir": "lib",
-    "rootDir": "src"
+    "rootDir": "src",
+    "strictNullChecks": true
   },
   "include": [
     "src"
