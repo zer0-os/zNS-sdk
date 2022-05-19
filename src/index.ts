@@ -2,6 +2,9 @@ import { ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 import CoinGecko from "coingecko-api";
 
+import { getLogger } from "./utilities";
+export const logger = getLogger().withTag("zns-sdk");
+
 import * as subgraph from "./subgraph";
 import * as api from "./api";
 import * as actions from "./actions";
@@ -40,6 +43,9 @@ const invalidInputMessage =
   "Please only make requests of up to 100 URLs at a time.";
 
 export const createInstance = (config: Config): Instance => {
+  logger.debug(`Creating instance of zNS SDK`);
+  logger.debug(config);
+
   const subgraphClient = subgraph.createClient(config.subgraphUri);
   const apiClient = api.createClient(config.apiUri);
 
@@ -452,7 +458,7 @@ export const createInstance = (config: Config): Instance => {
           throw new Error(invalidInputMessage);
         }
         if (jobIds.length == 0) {
-          return new Promise<UploadJobStatus>(() => {});
+          throw new Error(`no jobs`);
         }
         return apiClient.checkBulkUploadJob(jobIds);
       },

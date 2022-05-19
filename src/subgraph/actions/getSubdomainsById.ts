@@ -1,8 +1,11 @@
 import { ApolloClient } from "@apollo/client/core";
 import { Domain } from "../../types";
+import { getLogger } from "../../utilities";
 import * as queries from "../queries";
 import { DomainsQueryDto } from "../types";
 import { convertDomainDtoToDomain, performQuery } from "./helpers";
+
+const logger = getLogger().withTag("subgraph:actions:getSubdomainsById");
 
 export const getSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
@@ -14,6 +17,10 @@ export const getSubdomainsById = async <T>(
   const domains: Domain[] = [];
 
   while (true) {
+    logger.trace(
+      `Querying for ${queryCount} subdomains of ${domainId} starting at indexId ${skip}`
+    );
+
     const queryResult = await performQuery<DomainsQueryDto>(
       apolloClient,
       queries.getSubdomainsById,
@@ -35,6 +42,8 @@ export const getSubdomainsById = async <T>(
     }
     skip = queriedDomains[queriedDomains.length - 1].indexId;
   }
+
+  logger.trace(`Found ${domains.length} subdomains of ${domainId}`);
 
   return domains;
 };

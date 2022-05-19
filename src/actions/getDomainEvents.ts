@@ -11,7 +11,9 @@ type GetMintEvent = (domainId: string) => Promise<DomainMintEvent>;
 type GetTransferEvents = (domainId: string) => Promise<DomainTransferEvent[]>;
 type GetBidEvents = (domainId: string) => Promise<DomainBidEvent[]>;
 type GetSaleEvents = (domainId: string) => Promise<DomainSaleEvent[]>;
-type GetBuyNowSaleEvents = (domainId: string) => Promise<DomainBuyNowSaleEvent[]>
+type GetBuyNowSaleEvents = (
+  domainId: string
+) => Promise<DomainBuyNowSaleEvent[]>;
 
 export interface DomainEventFetchers {
   getMintEvents: GetMintEvent;
