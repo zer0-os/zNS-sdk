@@ -68,6 +68,12 @@ export interface Instance {
   getSubdomainsById(domainId: string): Promise<Domain[]>;
 
   /**
+   * Finds all recent subdomains of a given domain
+   * @param domainId (parent) domain id
+   */
+  getRecentSubdomainsById(domainId: string): Promise<Domain[]>;
+
+  /**
    * Gets all domain events for a domain
    * @param domainId Domain id to get events for
    */

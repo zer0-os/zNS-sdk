@@ -234,3 +234,36 @@ export const getPastNDomains = gql`
     }
   }
 `;
+
+export const getRecentSubdomainsById = gql`
+  query Subdomains($parent: ID!, $count: Int!, $startIndex: Int!) {
+    domains(
+      where: { parent: $parent, indexId_gt: $startIndex }
+      first: $count
+      orderBy: indexId
+      orderDirection: desc
+    ) {
+      id
+      indexId
+      name
+      parent {
+        id
+      }
+      owner {
+        id
+      }
+      minter {
+        id
+      }
+      lockedBy {
+        id
+      }
+      contract {
+        id
+      }
+      isLocked
+      metadata
+      metadataName
+    }
+  }
+`;

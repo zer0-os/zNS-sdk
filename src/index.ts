@@ -61,6 +61,7 @@ export const createInstance = (config: Config): Instance => {
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
     getSubdomainsById: subgraphClient.getSubdomainsById,
+    getRecentSubdomainsById: subgraphClient.getRecentSubdomainsById,
     getDomainEvents: async (domainId: string) => {
       return actions.getDomainEvents(domainId, {
         getMintEvents: subgraphClient.getDomainMintedEvent,
