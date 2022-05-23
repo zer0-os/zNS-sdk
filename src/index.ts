@@ -18,6 +18,7 @@ import {
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
+  TokenAllowanceParams,
   TokenPriceInfo,
   UploadJobStatus,
   UrlToJobId,
@@ -237,6 +238,17 @@ export const createInstance = (config: Config): Instance => {
           domainId
         );
         return paymentToken;
+      },
+      getZAuctionSpendAllowance: async (
+        params: TokenAllowanceParams,
+        account: string
+      ): Promise<ethers.BigNumber> => {
+        const allowance = await actions.getZauctionSpendAllowance(
+          params,
+          account,
+          zAuctionSdkInstance
+        );
+        return allowance;
       },
       needsToApproveZAuctionToSpendTokensByBid: async (
         account: string,
