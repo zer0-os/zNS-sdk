@@ -11,3 +11,4 @@ export * from "./setAndLockDomainMetadataUri";
 export * from "./setPaymentTokenForDomain";
 export * from "./setDomainRoyalty";
 export * from "./transferOwnership";
+export * from "./getZAuctionSpendAllowance";

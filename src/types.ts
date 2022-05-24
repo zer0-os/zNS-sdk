@@ -39,6 +39,12 @@ export interface TokenPriceInfo {
   name: string;
 }
 
+export interface TokenAllowanceParams {
+  bid?: zAuction.Bid;
+  tokenId?: string;
+  paymentTokenAddress?: string;
+}
+
 /**
  * An instance of the zNS SDK
  */
@@ -246,6 +252,21 @@ export interface Instance {
      * @param domainId The domain to get a payment token for
      */
     getPaymentTokenForDomain: (domainId: string) => Promise<string>;
+
+    /**
+     * Returns the amount that zAuction has been approved to spend on behalf
+     * of the given account.
+     * 
+     * Note: If all properties are null an attempt to get the legacy 
+     * zAuction balance is made instead. If that still returns nothing
+     * the user must call to approve 
+     * @param params 
+     * @param account The account
+     */
+    getZAuctionSpendAllowance: (
+      params: TokenAllowanceParams,
+      account: string
+    ) => Promise<ethers.BigNumber>
     /**
      * Checks whether a user account has approved zAuction to spend tokens on their
      * behalf using a bid.

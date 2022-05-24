@@ -2,10 +2,12 @@ import { ethers, Wallet } from "ethers";
 import { getHubContract, getRegistrar } from "../src/contracts";
 import * as dotenv from "dotenv";
 import { Registrar, ZNSHub } from "../src/contracts/types";
-import { Config, Instance } from "../src/types";
+import { Config, Instance, TokenAllowanceParams } from "../src/types";
 import { rinkebyConfiguration } from "../src/configuration";
 import { createInstance } from "../src";
-import { expect } from "chai";
+import { assert, expect } from "chai";
+import * as zAuction from "@zero-tech/zauction-sdk";
+
 dotenv.config();
 
 // Rinkeby Addresses
@@ -20,6 +22,7 @@ describe("SDK test", () => {
   const ZNSHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
   const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
   const lootToken = "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2";
+  const accountThatNeverApproved = "0x0f3b88095e750bdD54A25B2109c7b166A34B6dDb";
 
   // 0://wilder as hex
   const wilderDomainHex =
@@ -49,9 +52,82 @@ describe("SDK test", () => {
     hub = await getHubContract(provider, ZNSHubAddress);
     sdk = await createInstance(config);
   });
+  it("Gets the spend allowance in multiple ways", async () => {
+    const account = await astroWallet.getAddress();
+
+    // By paymentTokenAddress
+    let params: TokenAllowanceParams = {
+      paymentTokenAddress: wildToken,
+    };
+    let allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      params,
+      account
+    );
+    expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
+
+    // By tokenId
+    params = {
+      tokenId: wilderPancakesDomain,
+    };
+    allowance = await sdk.zauction.getZAuctionSpendAllowance(params, account);
+    expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
+
+    // by Bid
+    params = {
+      bid: {
+        tokenId: wildToken,
+      } as zAuction.Bid,
+    };
+    allowance = await sdk.zauction.getZAuctionSpendAllowance(params, account);
+    expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
+
+    params = {};
+    allowance = await sdk.zauction.getZAuctionSpendAllowance(params, account);
+    expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
+  });
+  it("Always returns 0 for an account that has never approved", async () => {
+    // By paymentTokenAddress
+    let params: TokenAllowanceParams = {
+      paymentTokenAddress: wildToken,
+    };
+    let allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      params,
+      accountThatNeverApproved
+    );
+    assert(allowance.eq(ethers.BigNumber.from("0")));
+
+    // By tokenId
+    params = {
+      tokenId: wilderPancakesDomain,
+    };
+    allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      params,
+      accountThatNeverApproved
+    );
+    assert(allowance.eq(ethers.BigNumber.from("0")));
+
+    // by Bid
+    params = {
+      bid: {
+        tokenId: wildToken,
+      } as zAuction.Bid,
+    };
+    allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      params,
+      accountThatNeverApproved
+    );
+    assert(allowance.eq(ethers.BigNumber.from("0")))
+
+    params = {};
+    allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      params,
+      accountThatNeverApproved
+    );
+    assert(allowance.eq(ethers.BigNumber.from("0")));
+  });
   it("Ges ERC20 token name and price", async () => {
     const info = await sdk.zauction.getPaymentTokenInfo(wildToken);
-    expect(info.name).to.eq("WILD")
+    expect(info.name).to.eq("WILD");
   });
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
