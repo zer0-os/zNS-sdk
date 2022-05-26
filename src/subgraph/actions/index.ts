@@ -6,3 +6,4 @@ export * from "./getDomainMintEvent";
 export * from "./getDomainTransferEvents";
 export * from "./getAllDomains";
 export * from "./getMostRecentDomains";
+export * from "./getRecentSubdomainsById";
