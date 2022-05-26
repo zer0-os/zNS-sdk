@@ -246,12 +246,12 @@ export const createInstance = (config: Config): Instance => {
         return paymentToken;
       },
       getZAuctionSpendAllowance: async (
-        params: TokenAllowanceParams,
-        account: string
+        account: string,
+        params: TokenAllowanceParams
       ): Promise<ethers.BigNumber> => {
         const allowance = await actions.getZauctionSpendAllowance(
-          params,
           account,
+          params,
           zAuctionSdkInstance
         );
         return allowance;
@@ -269,8 +269,8 @@ export const createInstance = (config: Config): Instance => {
         return needsToApprove;
       },
       needsToApproveZAuctionToSpendTokensByDomain: async (
-        domainId: string,
         account: string,
+        domainId: string,
         bidAmount: ethers.BigNumber
       ): Promise<boolean> => {
         const allowance =
@@ -282,13 +282,13 @@ export const createInstance = (config: Config): Instance => {
         return needsToApprove;
       },
       needsToApproveZAuctionToSpendTokensByPaymentToken: async (
-        paymentTokenAddress: string,
         account: string,
+        paymentTokenAddress: string,
         amount: string
       ): Promise<boolean> => {
         const allowance = await zAuctionSdkInstance.getZAuctionSpendAllowance(
+          account,
           paymentTokenAddress,
-          account
         );
         const needsToApprove = allowance.lt(amount);
         return needsToApprove;

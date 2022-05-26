@@ -46,43 +46,58 @@ describe("SDK test", () => {
     4
   );
   const astroWallet = new ethers.Wallet(pk, provider);
-
+  
+  let astroAccount: string;
   before(async () => {
+    astroAccount = await astroWallet.getAddress();
     config = rinkebyConfiguration(provider);
     hub = await getHubContract(provider, ZNSHubAddress);
     sdk = await createInstance(config);
   });
-  it("Gets the spend allowance in multiple ways", async () => {
-    const account = await astroWallet.getAddress();
+  it("Gets the spend allowance", async () => {
 
     // By paymentTokenAddress
-    let params: TokenAllowanceParams = {
+    const  params: TokenAllowanceParams = {
       paymentTokenAddress: wildToken,
     };
     let allowance = await sdk.zauction.getZAuctionSpendAllowance(
-      params,
-      account
+      astroAccount,
+      params
     );
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
-
-    // By tokenId
-    params = {
+    });
+    it("gets allowance by tokenId", async () => {
+          // By tokenId
+    const params = {
       tokenId: wilderPancakesDomain,
     };
-    allowance = await sdk.zauction.getZAuctionSpendAllowance(params, account);
+    const allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      astroAccount,
+      params,
+    );
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
-
-    // by Bid
-    params = {
+    
+  });
+  it("get allowance by bid", async () => {
+    // By Bid
+    const params = {
       bid: {
         tokenId: wildToken,
       } as zAuction.Bid,
     };
-    allowance = await sdk.zauction.getZAuctionSpendAllowance(params, account);
+    const allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      astroAccount,
+      params,
+    );
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
+  });
+  it("gets legacy allowance", async () => {
 
-    params = {};
-    allowance = await sdk.zauction.getZAuctionSpendAllowance(params, account);
+    const params = {};
+    const allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      astroAccount,
+      params,
+    );
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
   });
   it("Always returns 0 for an account that has never approved", async () => {
@@ -91,8 +106,8 @@ describe("SDK test", () => {
       paymentTokenAddress: wildToken,
     };
     let allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      accountThatNeverApproved,
       params,
-      accountThatNeverApproved
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
 
@@ -101,8 +116,8 @@ describe("SDK test", () => {
       tokenId: wilderPancakesDomain,
     };
     allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      accountThatNeverApproved,
       params,
-      accountThatNeverApproved
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
 
@@ -113,15 +128,15 @@ describe("SDK test", () => {
       } as zAuction.Bid,
     };
     allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      accountThatNeverApproved,
       params,
-      accountThatNeverApproved
     );
-    assert(allowance.eq(ethers.BigNumber.from("0")))
+    assert(allowance.eq(ethers.BigNumber.from("0")));
 
     params = {};
     allowance = await sdk.zauction.getZAuctionSpendAllowance(
+      accountThatNeverApproved,
       params,
-      accountThatNeverApproved
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
   });
@@ -162,16 +177,16 @@ describe("SDK test", () => {
     // User is not approved for any loot token, so they do need to approve
     let needsToApprove =
       await sdk.zauction.needsToApproveZAuctionToSpendTokensByPaymentToken(
-        lootToken,
         astroWallet.address,
+        lootToken,
         ethers.utils.parseEther("1").toString()
       );
     expect(needsToApprove).to.eq(true);
 
     needsToApprove =
       await sdk.zauction.needsToApproveZAuctionToSpendTokensByPaymentToken(
-        wildToken,
         astroWallet.address,
+        wildToken,
         ethers.utils.parseEther("1").toString()
       );
     expect(needsToApprove).to.eq(false);
@@ -179,7 +194,7 @@ describe("SDK test", () => {
   it("Gets buynow sale events", async () => {
     await sdk.getDomainEvents(wilderPancakesDomain);
   });
-  it("Confirm listbids working through the SDKlist bids", async () => {
+  it("Confirm listbids working through the SDK", async () => {
     const sdk = createInstance(config);
     const bids = await sdk.zauction.listBids(domainFromBrett);
     const bids2 = await sdk.zauction.listBidsByAccount(

@@ -35,15 +35,39 @@ export interface ZAuctionInstances {
 }
 
 export interface TokenPriceInfo {
-  price: number,
+  price: number;
   name: string;
 }
 
-export interface TokenAllowanceParams {
-  bid?: zAuction.Bid;
-  tokenId?: string;
-  paymentTokenAddress?: string;
+export interface TokenAllowanceByBid {
+  bid: zAuction.Bid;
+  tokenId?: undefined;
+  paymentTokenAddress?: undefined;
 }
+
+interface TokenAllowanceByDomain {
+  tokenId: string;
+  bid?: undefined;
+  paymentTokenAddress?: undefined;
+}
+
+interface TokenAllowanceByPaymentTokenAddress {
+  paymentTokenAddress: string;
+  tokenId?: undefined;
+  bid?: undefined;
+}
+
+interface TokenAllowanceLegacy {
+  tokenId?: undefined;
+  bid?: undefined;
+  paymentTokenAddress?: undefined;
+}
+
+export type TokenAllowanceParams =
+  | TokenAllowanceByBid
+  | TokenAllowanceByDomain
+  | TokenAllowanceByPaymentTokenAddress
+  | TokenAllowanceLegacy;
 
 /**
  * An instance of the zNS SDK
@@ -232,7 +256,7 @@ export interface Instance {
      * @param domainId The domain to get the payment token for
      */
     getPaymentTokenInfo: (
-      paymentTokenAddress: string,
+      paymentTokenAddress: string
     ) => Promise<TokenPriceInfo>;
     /**
      * Sets the payment token used within a network for sales
@@ -256,17 +280,17 @@ export interface Instance {
     /**
      * Returns the amount that zAuction has been approved to spend on behalf
      * of the given account.
-     * 
-     * Note: If all properties are null an attempt to get the legacy 
+     *
+     * Note: If all properties are null an attempt to get the legacy
      * zAuction balance is made instead. If that still returns nothing
-     * the user must call to approve 
-     * @param params 
-     * @param account The account
+     * the user must call to approve.
+     * @param account The account to check allowance for
+     * @param params A Bid object, tokenId, or the specific payment token
      */
     getZAuctionSpendAllowance: (
-      params: TokenAllowanceParams,
-      account: string
-    ) => Promise<ethers.BigNumber>
+      account: string,
+      params: TokenAllowanceParams
+    ) => Promise<ethers.BigNumber>;
     /**
      * Checks whether a user account has approved zAuction to spend tokens on their
      * behalf using a bid.
