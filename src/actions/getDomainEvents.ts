@@ -7,6 +7,10 @@ import {
   DomainTransferEvent,
 } from "../types";
 
+import { getLogger } from "../utilities";
+
+const logger = getLogger("actions:getDomainEvents");
+
 type GetMintEvent = (domainId: string) => Promise<DomainMintEvent>;
 type GetTransferEvents = (domainId: string) => Promise<DomainTransferEvent[]>;
 type GetBidEvents = (domainId: string) => Promise<DomainBidEvent[]>;
@@ -36,6 +40,7 @@ export const getDomainEvents = async (
 ): Promise<DomainEvent[]> => {
   let events: DomainEvent[] = [];
 
+  logger.trace(`Get domain events for ${domainId}`);
   const mintEvent = await fetchers.getMintEvents(domainId);
   const transferEvents = await fetchers.getTransferEvents(domainId);
 
@@ -60,6 +65,6 @@ export const getDomainEvents = async (
   events = events.sort((a, b) => {
     return Number(a.timestamp) - Number(b.timestamp);
   });
-
+  logger.trace(`Found ${events.length} events for domain`);
   return events;
 };

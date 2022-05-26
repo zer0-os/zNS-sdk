@@ -2,6 +2,10 @@ import { ethers } from "ethers";
 import { ZNSHub } from "../contracts/types";
 import { getRegistrarForDomain } from "../helpers";
 
+import { getLogger } from "../utilities";
+
+const logger = getLogger("actions:setPaymentTokenForDomain");
+
 export const transferOwnership = async (
   to: string,
   domainId: string,
