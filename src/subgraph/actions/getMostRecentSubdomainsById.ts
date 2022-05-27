@@ -8,7 +8,7 @@ import { convertDomainDtoToDomain, performQuery } from "./helpers";
 const logger = getLogger().withTag("subgraph:actions:getRecentSubdomainsById");
 const MAX_RECORDS = 5000;
 
-export const getRecentSubdomainsById = async <T>(
+export const getMostRecentSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
   domainId: string,
   count = 1000

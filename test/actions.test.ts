@@ -189,7 +189,7 @@ describe("Test Custom SDK Logic", () => {
     });
     it("gets most recent subdomains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
-      const domains = await sdkInstance.getRecentSubdomainsById(wilderPancakesDomain, 2);
+      const domains = await sdkInstance.getMostRecentSubdomainsById(wilderPancakesDomain, 2);
       expect(domains.length).to.equal(2);    
     });
   });
