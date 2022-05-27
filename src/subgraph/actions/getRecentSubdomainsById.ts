@@ -6,25 +6,30 @@ import { DomainsQueryDto } from "../types";
 import { convertDomainDtoToDomain, performQuery } from "./helpers";
 
 const logger = getLogger().withTag("subgraph:actions:getRecentSubdomainsById");
+const MAX_RECORDS = 5000;
 
 export const getRecentSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
-  domainId: string
+  domainId: string,
+  count = 1000
 ): Promise<Domain[]> => {
-  const queryCount = 1000;
   let skip = 0;
-
   const domains: Domain[] = [];
 
+  if (count >= MAX_RECORDS) {
+    throw new Error(
+      `Please request no more than ${MAX_RECORDS} records at a time.`
+    );
+  }
   while (true) {
     logger.trace(
-      `Querying for ${queryCount} recent subdomains of ${domainId} starting at indexId ${skip}`
+      `Querying for ${count} recent subdomains of ${domainId} starting at indexId ${skip}`
     );
 
     const queryResult = await performQuery<DomainsQueryDto>(
       apolloClient,
       queries.getRecentSubdomainsById,
-      { parent: domainId, count: queryCount, startIndex: skip }
+      { parent: domainId, count: count, startIndex: skip }
     );
 
     const queriedDomains = queryResult.data.domains;
@@ -37,7 +42,7 @@ export const getRecentSubdomainsById = async <T>(
      * So if we get that many there's probably more domains we need
      * to fetch. If we got back less, we can stop querying
      */
-    if (queriedDomains.length < queryCount) {
+    if (queriedDomains.length < count) {
       break;
     }
     skip = queriedDomains[queriedDomains.length - 1].indexId;

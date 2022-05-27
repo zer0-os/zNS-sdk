@@ -181,4 +181,16 @@ describe("Test Custom SDK Logic", () => {
       assert(listing)
     });
   });
+  describe("get domains", () => {
+    it("gets most recent domains", async () => {
+      const sdkInstance = zNSSDK.createInstance(config);
+      const domains = await sdkInstance.getMostRecentDomains(10);
+      expect(domains.length).to.equal(10);
+    });
+    it("gets most recent subdomains", async () => {
+      const sdkInstance = zNSSDK.createInstance(config);
+      const domains = await sdkInstance.getRecentSubdomainsById(wilderPancakesDomain, 2);
+      expect(domains.length).to.equal(2);    
+    });
+  });
 });
