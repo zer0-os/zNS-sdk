@@ -32,11 +32,10 @@ export const getZauctionSpendAllowance = async (
   sdk: zAuction.Instance
 ): Promise<ethers.BigNumber> => {
   let allowance: ethers.BigNumber;
-  logger.trace(`Getting allowance for user ${account}`);
 
   if (params.paymentTokenAddress) {
     logger.trace(
-      `Getting by paymentTokenAddress ${params.paymentTokenAddress}`
+      `Getting allowance for ${account} by paymentTokenAddress ${params.paymentTokenAddress}`
     );
     allowance = await getAllowance<string>(
       sdk.getZAuctionSpendAllowance,
@@ -49,7 +48,7 @@ export const getZauctionSpendAllowance = async (
   }
 
   if (params.tokenId) {
-    logger.trace(`Getting by tokenId ${params.tokenId}`);
+    logger.trace(`Getting allowance for ${account} by tokenId ${params.tokenId}`);
     allowance = await getAllowance<string>(
       sdk.getZAuctionSpendAllowanceByDomain,
       account,
@@ -61,7 +60,7 @@ export const getZauctionSpendAllowance = async (
   }
 
   if (params.bid) {
-    logger.trace(`Getting by bid ${params.bid}`);
+    logger.trace(`Getting allowance for ${account} by bid ${params.bid}`);
     allowance = await getAllowance<zAuction.Bid>(
       sdk.getZAuctionSpendAllowanceByBid,
       account,
@@ -72,12 +71,12 @@ export const getZauctionSpendAllowance = async (
     return allowance;
   }
 
-  logger.trace(`Falling back to checking legacy zAuction allowance`);
+  logger.trace(`Getting allowance for ${account} with legacy zAuction`);
 
   // If no params are given we can only check the legacy contract allowance
   allowance = await sdk.getZAuctionLegacySpendAllowance(account);
 
-  logger.trace(`User has allowance ${allowance}`);
+  logger.trace(`User has allowance ${allowance.toString()}`);
   // If account has never approved this value will be 0
   return allowance;
 };

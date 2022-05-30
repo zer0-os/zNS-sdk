@@ -59,10 +59,36 @@ interface TokenAllowanceByPaymentTokenAddress {
 
 interface TokenAllowanceLegacy {
   tokenId?: undefined;
-  bid?: undefined;
   paymentTokenAddress?: undefined;
+  bid?: undefined;
 }
 
+/**
+ * This type is used to specify the different ways for using the
+ * `getZAuctionSpendAllowance` function specified below. You are
+ * able to provide none of, or exactly one of three possible
+ * properties. Below are examples of each.
+ *
+ * You can use:
+ *
+ * A domain token ID
+ * {
+ *   tokenId: "0x2b4..."
+ * }
+ *
+ * A payment token address
+ * {
+ *   paymentTokenAddress: "0x8f3..."
+ * }
+ *
+ * or a Bid object
+ * {
+ *   bid: {
+ *     bidNonce: 1928472731,
+ *     bidAmount: ...
+ *   }
+ * }
+ */
 export type TokenAllowanceParams =
   | TokenAllowanceByBid
   | TokenAllowanceByDomain
@@ -284,8 +310,14 @@ export interface Instance {
      * Note: If all properties are null an attempt to get the legacy
      * zAuction balance is made instead. If that still returns nothing
      * the user must call to approve.
+     *
      * @param account The account to check allowance for
-     * @param params A Bid object, tokenId, or the specific payment token
+     * @param params A TokenAllowanceParams object which has either none
+     * or exactly one of three possible properties.
+     *
+     * The domain token ID as `tokenId`, the ERC-20 payment token address,
+     * as `paymentTokenAddress`, or a Bid object as `bid`. See the TokenAllowanceParams
+     * type above for more details.
      */
     getZAuctionSpendAllowance: (
       account: string,
