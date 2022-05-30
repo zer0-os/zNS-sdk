@@ -2,6 +2,9 @@ import * as ethers from "ethers";
 import { Registrar, ZNSHub } from "../contracts/types";
 import { getRegistrarForDomain } from "../helpers";
 import { validateUserOwnsDomain } from "./helpers";
+import { getLogger } from "../utilities";
+
+const logger = getLogger("actions:setDomainRoyalty");
 
 export const setDomainRoyalty = async (
   domainId: string,
@@ -9,6 +12,9 @@ export const setDomainRoyalty = async (
   signer: ethers.Signer,
   hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
+  logger.trace(
+    `Calling to set royalty of ${amount.toString()} for domain ${domainId}`
+  );
   const signerAddress = await signer.getAddress();
   const registrar = await getRegistrarForDomain(hub, domainId);
 

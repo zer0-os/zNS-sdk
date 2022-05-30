@@ -35,15 +35,65 @@ export interface ZAuctionInstances {
 }
 
 export interface TokenPriceInfo {
-  price: number,
+  price: number;
   name: string;
 }
 
-export interface TokenAllowanceParams {
-  bid?: zAuction.Bid;
-  tokenId?: string;
-  paymentTokenAddress?: string;
+export interface TokenAllowanceByBid {
+  bid: zAuction.Bid;
+  tokenId?: undefined;
+  paymentTokenAddress?: undefined;
 }
+
+interface TokenAllowanceByDomain {
+  tokenId: string;
+  bid?: undefined;
+  paymentTokenAddress?: undefined;
+}
+
+interface TokenAllowanceByPaymentTokenAddress {
+  paymentTokenAddress: string;
+  tokenId?: undefined;
+  bid?: undefined;
+}
+
+interface TokenAllowanceLegacy {
+  tokenId?: undefined;
+  paymentTokenAddress?: undefined;
+  bid?: undefined;
+}
+
+/**
+ * This type is used to specify the different ways for using the
+ * `getZAuctionSpendAllowance` function specified below. You are
+ * able to provide none of, or exactly one of three possible
+ * properties. Below are examples of each.
+ *
+ * You can use:
+ *
+ * A domain token ID
+ * {
+ *   tokenId: "0x2b4..."
+ * }
+ *
+ * A payment token address
+ * {
+ *   paymentTokenAddress: "0x8f3..."
+ * }
+ *
+ * or a Bid object
+ * {
+ *   bid: {
+ *     bidNonce: 1928472731,
+ *     bidAmount: ...
+ *   }
+ * }
+ */
+export type TokenAllowanceParams =
+  | TokenAllowanceByBid
+  | TokenAllowanceByDomain
+  | TokenAllowanceByPaymentTokenAddress
+  | TokenAllowanceLegacy;
 
 /**
  * An instance of the zNS SDK
@@ -238,7 +288,7 @@ export interface Instance {
      * @param domainId The domain to get the payment token for
      */
     getPaymentTokenInfo: (
-      paymentTokenAddress: string,
+      paymentTokenAddress: string
     ) => Promise<TokenPriceInfo>;
     /**
      * Sets the payment token used within a network for sales
@@ -262,17 +312,23 @@ export interface Instance {
     /**
      * Returns the amount that zAuction has been approved to spend on behalf
      * of the given account.
-     * 
-     * Note: If all properties are null an attempt to get the legacy 
+     *
+     * Note: If all properties are null an attempt to get the legacy
      * zAuction balance is made instead. If that still returns nothing
-     * the user must call to approve 
-     * @param params 
-     * @param account The account
+     * the user must call to approve.
+     *
+     * @param account The account to check allowance for
+     * @param params A TokenAllowanceParams object which has either none
+     * or exactly one of three possible properties.
+     *
+     * The domain token ID as `tokenId`, the ERC-20 payment token address,
+     * as `paymentTokenAddress`, or a Bid object as `bid`. See the TokenAllowanceParams
+     * type above for more details.
      */
     getZAuctionSpendAllowance: (
-      params: TokenAllowanceParams,
-      account: string
-    ) => Promise<ethers.BigNumber>
+      account: string,
+      params: TokenAllowanceParams
+    ) => Promise<ethers.BigNumber>;
     /**
      * Checks whether a user account has approved zAuction to spend tokens on their
      * behalf using a bid.
