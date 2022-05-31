@@ -55,7 +55,6 @@ describe("SDK test", () => {
     sdk = await createInstance(config);
   });
   it("Gets the spend allowance", async () => {
-
     // By paymentTokenAddress
     const  params: TokenAllowanceParams = {
       paymentTokenAddress: wildToken,

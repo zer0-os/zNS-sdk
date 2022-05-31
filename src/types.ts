@@ -649,12 +649,15 @@ export interface DomainMintEvent extends DomainEvent {
 export interface DomainBidEvent extends DomainEvent {
   bidder: string;
   amount: string;
+  paymentToken: string;
 }
 
 export interface DomainSaleEvent extends DomainEvent {
   buyer: string;
   seller: string;
   amount: string;
+  paymentToken: string;
+  domainNetworkId: string;
 }
 
 export type DomainBuyNowSaleEvent = DomainSaleEvent;
