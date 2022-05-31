@@ -14,7 +14,7 @@ export const getMostRecentSubdomainsById = async <T>(
   count = 1000
 ): Promise<Domain[]> => {
   let skip = 0;
-  const domains: Domain[] = [];
+  const subDomains: Domain[] = [];
   let yetUnreceived = count;
   if (count >= MAX_RECORDS) {
     throw new Error(
@@ -34,7 +34,7 @@ export const getMostRecentSubdomainsById = async <T>(
 
     const queriedDomains = queryResult.data.domains;
     for (const domain of queriedDomains) {
-      domains.push(convertDomainDtoToDomain(domain));
+      subDomains.push(convertDomainDtoToDomain(domain));
     }
 
     /**
@@ -49,7 +49,7 @@ export const getMostRecentSubdomainsById = async <T>(
     skip = queriedDomains[queriedDomains.length - 1].indexId;
   }
 
-  logger.trace(`Found ${domains.length} recent subdomains of ${domainId}`);
+  logger.trace(`Found ${subDomains.length} recent subdomains of ${domainId}`);
 
-  return domains;
+  return subDomains;
 };
