@@ -16,8 +16,6 @@ export const getMostRecentSubdomainsById = async <T>(
   let skip = 0;
   const domains: Domain[] = [];
   let yetUnreceived = count;
-
-  
   if (count >= MAX_RECORDS) {
     throw new Error(
       `Please request no more than ${MAX_RECORDS} records at a time.`
