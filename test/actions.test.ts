@@ -46,7 +46,7 @@ describe("Test Custom SDK Logic", () => {
   const qmHash = "Qmc2cMdNMo6isDTjk8gej8ay9dZxGQNS3ftsDpct1RNV2H";
   const wilderPancakesDomain =
     "0x6e35a7ecbf6b6368bb8d42ee9b3dcfc8404857635036e60196931d4458c07622";
-
+  const wilderDogsDomainId = "0xd4b1753dd4b8e14dc6fb88382a7381146b23fad2737fba56174ef1665f00f575"
   const subgraphClient = subgraph.createClient(config.subgraphUri);
 
   const domainIdToDomainName = async (domainId: string) => {
@@ -189,7 +189,7 @@ describe("Test Custom SDK Logic", () => {
     });
     it("gets most recent subdomains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
-      const domains = await sdkInstance.getMostRecentSubdomainsById(wilderPancakesDomain, 2);
+      const domains = await sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 2);
       expect(domains.length).to.equal(2);    
     });
   });
