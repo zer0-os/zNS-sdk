@@ -21,6 +21,8 @@ export interface Config {
   registrar: string;
   /** Address of the zNS Hub */
   hub: string;
+  /** Address of the Domain Purchaser*/
+  domainPurchaser: string;
   /** Web3 provider to make web3 calls with */
   provider: ethers.providers.Provider;
 }
