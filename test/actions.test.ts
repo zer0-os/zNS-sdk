@@ -184,21 +184,21 @@ describe("Test Custom SDK Logic", () => {
   describe("get domains", () => {
     it("gets most recent domains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
-      const domains = await sdkInstance.getMostRecentDomains(10);
+      const domains = await sdkInstance.getMostRecentDomains(10, 0);
       expect(domains.length).to.equal(10);
     });
     it("cannot get over 5000 most recent domains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
-      expect (sdkInstance.getMostRecentDomains(5000)).to.eventually.throw(Error);
+      expect (sdkInstance.getMostRecentDomains(5000, 0)).to.eventually.throw(Error);
     });
     it("gets most recent subdomains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
-      const domains = await sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 2);
+      const domains = await sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 2, 0);
       expect(domains.length).to.equal(2);    
     });
     it("cannot get over 5000 most recent subdomains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
-      expect (sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 5000)).to.eventually.throw(Error);
+      expect (sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 5000, 0)).to.eventually.throw(Error);
     });
   });
 });

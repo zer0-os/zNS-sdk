@@ -6,17 +6,17 @@ import { getLogger } from "../utilities";
 import * as actions from "./actions";
 
 const logger = getLogger().withTag("subgraph:client");
-
+type Maybe<T> = T | undefined;
 export interface SubgraphClient {
   getDomainById(domainId: string): Promise<Domain>;
   getDomainsByName(name: string): Promise<Domain[]>;
   getDomainsByOwner(owner: string): Promise<Domain[]>;
   getSubdomainsById(domainId: string): Promise<Domain[]>;
-  getMostRecentSubdomainsById(domainId: string, count: number | undefined): Promise<Domain[]>;
+  getMostRecentSubdomainsById(domainId: string, count: Maybe<number>, skip: Maybe<number>): Promise<Domain[]>;
   getDomainTransferEvents(domainId: string): Promise<DomainTransferEvent[]>;
   getDomainMintedEvent(domainId: string): Promise<DomainMintEvent>;
   getAllDomains(): Promise<Domain[]>;
-  getMostRecentDomains(count: number | undefined): Promise<Domain[]>;
+  getMostRecentDomains(count: Maybe<number>, skip: Maybe<number>): Promise<Domain[]>;
 }
 
 const createApolloClient = (
@@ -54,12 +54,17 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
       const domains = await actions.getSubdomainsById(apolloClient, domainId);
       return domains;
     },
-    getMostRecentSubdomainsById: async (domainId: string, count: number | undefined): Promise<Domain[]> => {
+    getMostRecentSubdomainsById: async (
+      domainId: string, 
+      count: Maybe<number>, 
+      skip: Maybe<number>
+      ): Promise<Domain[]> => {
       logger.debug(`Get recent subdomains by id: ${domainId}`);
       const domains = await actions.getMostRecentSubdomainsById(
         apolloClient,
         domainId,
-        count
+        count,
+        skip
       );
       return domains;
     },
@@ -86,10 +91,11 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
       return domains;
     },
     getMostRecentDomains: async (
-      count: number | undefined
+      count: Maybe<number>,
+      skip: Maybe<number>
     ): Promise<Domain[]> => {
       logger.debug(`Get recent domains (${count})`);
-      const domains = await actions.getMostRecentDomains(apolloClient, count);
+      const domains = await actions.getMostRecentDomains(apolloClient, count, skip);
       return domains;
     },
   };

@@ -11,9 +11,9 @@ const MAX_RECORDS = 5000;
 export const getMostRecentSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
   domainId: string,
-  count = 1000
+  count = 1000,
+  skip = 0
 ): Promise<Domain[]> => {
-  let skip = 0;
   const subDomains: Domain[] = [];
   let yetUnreceived = count;
   if (count >= MAX_RECORDS) {
