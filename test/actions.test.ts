@@ -177,7 +177,7 @@ describe("Test Custom SDK Logic", () => {
       if (!isApproved)
         await zAuctionSdkInstance.approveZAuctionTransferNftByDomain(wilderPancakesDomain, signer);
 
-      const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
+      // const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
 
       listing = await zAuctionSdkInstance.getBuyNowPrice(
         wilderPancakesDomain,
