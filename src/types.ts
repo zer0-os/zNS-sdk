@@ -346,26 +346,26 @@ export interface Instance {
      * behalf using a domainId.
      * They need to approve zAuction to spend their tokens for their bid to
      * be valid and actionable by the seller.
-     * @param domainId The domain id a user is going to bid for
      * @param account The user account that will use funds
+     * @param domainId The domain id a user is going to bid for
      * @param bidAmount The amount to check zAuction is approved to spend
      */
     needsToApproveZAuctionToSpendTokensByDomain(
-      domainId: string,
       account: string,
+      domainId: string,
       bidAmount: ethers.BigNumber
     ): Promise<boolean>;
 
     /**
      * Checks whether a user account has approved zAuction to spend a
      * specific token on their behalf using a given paymentTokenAddress
-     * @param paymentTokenAddress The address of an ERC-20 payment token
      * @param account The user account that will use funds
+     * @param paymentTokenAddress The address of an ERC-20 payment token
      * @param amount The amount to check how much the user has allowed
      */
     needsToApproveZAuctionToSpendTokensByPaymentToken(
-      paymentTokenAddress: string,
       account: string,
+      paymentTokenAddress: string,
       amount: string
     ): Promise<boolean>;
 
