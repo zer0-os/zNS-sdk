@@ -4,6 +4,9 @@ import { ApiClient } from "../api";
 import { ZNSHub } from "../contracts/types";
 import { getRegistrarForDomain } from "../helpers";
 import { validateOwnerAndStatus } from "./helpers";
+import { getLogger } from "../utilities";
+
+const logger = getLogger("actions:setAndLockDomainMetadata");
 
 export const setAndLockDomainMetadata = async (
   domainId: string,
@@ -12,6 +15,9 @@ export const setAndLockDomainMetadata = async (
   signer: ethers.Signer,
   hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
+  logger.trace(
+    `Calling to set and lock domain metadata for domain ${domainId}`
+  );
   const isLocked = true;
   const signerAddress = await signer.getAddress();
   const registrar = await getRegistrarForDomain(hub, domainId);

@@ -1,11 +1,16 @@
 import { DomainMetadata, IPFSGatewayUri } from "../types";
 import { makeApiCall } from "../api/actions/helpers";
+import { getLogger } from "../utilities";
+
+const logger = getLogger("actions:getMetadataFromUri");
 
 export const getMetadataFromUri = async (
   metadataUri: string,
   ipfsGatewayUri: IPFSGatewayUri,
   ipfsGatewayOverride?: string
 ): Promise<DomainMetadata> => {
+  logger.trace(`Get domain metadata from URI ${metadataUri}`);
+
   const ipfsHashMatcher = /(Qm[a-zA-Z0-9]{44}(\/.+)?)$/;
   const matches = ipfsHashMatcher.exec(metadataUri);
 
@@ -30,5 +35,9 @@ export const getMetadataFromUri = async (
   const formattedUri = `${gateway}/${ipfsHash}`;
 
   metadata = await makeApiCall<DomainMetadata>(formattedUri, "GET");
+  logger.trace(
+    `Formatted metadata URI is ${metadataUri} for domain ${metadata.name}`
+  );
+
   return metadata;
 };

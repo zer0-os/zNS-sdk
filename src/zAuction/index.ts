@@ -17,16 +17,20 @@ export const getBidEventsFunction = (
   instance: zAuction.Instance
 ): GetBidEventsFunction => {
   return async (domainId: string): Promise<DomainBidEvent[]> => {
-    const bidCollection = await instance.listBids([domainId]);
-    const bids = bidCollection[domainId];
+    const bidCollection: zAuction.TokenBidCollection = await instance.listBids([
+      domainId,
+    ]);
+    const bids: zAuction.Bid[] = bidCollection[domainId];
 
     const bidEvents = bids.map((e) => {
-      return {
+      const bidEvent: DomainBidEvent = {
         type: DomainEventType.bid,
         timestamp: e.timestamp,
         bidder: e.bidder,
         amount: e.amount,
-      } as DomainBidEvent;
+        paymentToken: e.bidToken,
+      };
+      return bidEvent;
     });
 
     return bidEvents;
@@ -39,13 +43,16 @@ export const getSaleEventsFunction = (
   return async (domainId: string): Promise<DomainSaleEvent[]> => {
     const sales = await instance.listSales(domainId);
     const saleEvents = sales.map((e) => {
-      return {
+      const saleEvent: DomainSaleEvent = {
         type: DomainEventType.sale,
         timestamp: e.timestamp,
         buyer: e.buyer,
         seller: e.seller,
         amount: e.saleAmount,
-      } as DomainSaleEvent;
+        paymentToken: e.paymentToken,
+        domainNetworkId: e.topLevelDomainId,
+      }
+      return saleEvent
     });
 
     return saleEvents;
@@ -58,13 +65,16 @@ export const getBuyNowSaleEventsFunction = (
   return async (domainId): Promise<DomainBuyNowSaleEvent[]> => {
     const buyNowSales = await instance.listBuyNowSales(domainId);
     const buyNowSalesEvents = buyNowSales.map((e) => {
-      return {
+      const buyNowSaleEvent: DomainBuyNowSaleEvent = {
         type: DomainEventType.buyNow,
         timestamp: e.timestamp,
         buyer: e.buyer,
         seller: e.seller,
         amount: e.amount,
-      } as DomainBuyNowSaleEvent;
+        paymentToken: e.paymentToken,
+        domainNetworkId: e.topLevelDomainId,
+      };
+      return buyNowSaleEvent;
     });
     return buyNowSalesEvents;
   };

@@ -1,6 +1,9 @@
 import CoinGecko from "coingecko-api";
 import { Config, TokenPriceInfo } from "../types";
 import { Maybe } from "../utilities";
+import { getLogger } from "../utilities";
+
+const logger = getLogger("actions:getPaymentTokenInfo");
 
 interface NetworksToPaymentTokens {
   [network: string]: Maybe<PaymentTokensToTokenApiInfo>;
@@ -46,7 +49,8 @@ export const getPaymentTokenInfo = async (
   config: Config
 ): Promise<TokenPriceInfo> => {
   const network = await config.provider.getNetwork();
-
+  logger.trace(`Getting paymentToken info for ${paymentTokenAddress} on network ${network}`);
+  
   const addresses = tokenAddressToFriendlyName[network.name]
   if (!addresses) {
     throw Error("Network not supported")

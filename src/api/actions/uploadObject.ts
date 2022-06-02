@@ -1,6 +1,6 @@
 import { Maybe } from "../../utilities";
 import { UploadedFileDto } from "../types";
-import { ipfsHashToUrl, makeApiCall } from "./helpers";
+import { makeApiCall } from "./helpers";
 
 export const uploadObject = async (
   apiUri: string,

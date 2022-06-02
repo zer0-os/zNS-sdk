@@ -1,7 +1,11 @@
 import { ethers } from "ethers";
-import { Registrar, ZNSHub } from "../contracts/types";
+import { ZNSHub } from "../contracts/types";
 import { getRegistrarForDomain } from "../helpers";
 import { validateOwnerAndStatus } from "./helpers";
+
+import { getLogger } from "../utilities";
+
+const logger = getLogger("actions:lockDomainMetadata");
 
 // Call to set domain metadata lock status to `lockStatus`
 // e.g. set to `true` to lock, and `false` to unlock
@@ -11,6 +15,8 @@ export const lockDomainMetadata = async (
   signer: ethers.Signer,
   hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
+  logger.trace(`Calling to lock metadata for domain ${domainId}`);
+
   const signerAddress = await signer.getAddress();
   const registrar = await getRegistrarForDomain(hub, domainId);
 

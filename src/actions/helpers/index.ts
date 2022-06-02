@@ -1,5 +1,9 @@
 import { Registrar } from "../../contracts/types";
 
+import { getLogger } from "../../utilities";
+
+const logger = getLogger("actions:helpers");
+
 export const validateUserOwnsDomain = async (
   domainId: string,
   potentialOwner: string,
@@ -32,6 +36,9 @@ export const validateOwnerAndStatus = async (
   potentialOwner: string,
   desiredLock: boolean
 ) => {
+  logger.trace(
+    `Validate the potential owner ${potentialOwner} of domain ${domainId} and set lock status to ${desiredLock}`
+  );
   await validateUserOwnsDomain(domainId, potentialOwner, registrar);
   await validateStatus(domainId, registrar, desiredLock, potentialOwner);
 };

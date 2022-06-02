@@ -2,7 +2,9 @@ import { ethers } from "ethers";
 import { Config } from "../types";
 import { getHubContract } from "../contracts";
 import { Instance } from "@zero-tech/zauction-sdk";
+import { getLogger } from "../utilities";
 
+const logger = getLogger("actions:setPaymentTokenForDomain");
 
 export const setPaymentTokenForDomain = async (
   networkId: string,
@@ -11,6 +13,9 @@ export const setPaymentTokenForDomain = async (
   config: Config,
   zAuctionInstance: Instance
 ): Promise<ethers.ContractTransaction> => {
+  logger.trace(
+    `Calling to set payment token to ${paymentTokenAddress} for network with ID ${networkId}`
+  );
   const hub = await getHubContract(config.provider, config.hub);
 
   const parent = await hub.parentOf(networkId);
