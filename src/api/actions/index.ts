@@ -4,4 +4,3 @@ export * from "./uploadObject";
 export * from "./checkBulkUploadJob";
 export * from "./startBulkUpload";
 export * from "./uploadInBackground";
-export * from "./generateDefaultMetadata";
