@@ -920,10 +920,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@zero-tech/zauction-sdk@0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.2.3.tgz#f12007f0cd0a54ed299e03e182f62ab18b057c17"
-  integrity sha512-uX0IdpB3ynb0uWa/2zPlT7NCLyf0FKpHHeqzEP5aehD4QeDz8yVjG/0fLwPzp5PgVH/AXhRA9gMVC5WgXn0gWw==
+"@zero-tech/zauction-sdk@0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@zero-tech/zauction-sdk/-/zauction-sdk-0.2.4.tgz#3d5d5702eb7523c3a8f526fcdf743efe76e9a8a3"
+  integrity sha512-y4vN2FfAhaEIoSfbCJu51NzJOjPU2Bj7dbk0jsVe2W1dxZbFqAG8wgeroIFc8Z6jUmGu4PhPkcRJ0a2Y6RzAPA==
   dependencies:
     "@apollo/client" "3.4.10"
     "@ethersproject/abi" "5.4.1"
@@ -2118,15 +2118,6 @@ node-fetch@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
-
-node-fetch@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.2.0.tgz#59390db4e489184fa35d4b74caf5510e8dfbaf3b"
-  integrity sha512-8xeimMwMItMw8hRrOl3C9/xzU49HV/yE6ORew/l+dxWimO5A4Ra8ld2rerlJvc/O7et5Z1zrWsPX43v1QBjCxw==
-  dependencies:
-    data-uri-to-buffer "^4.0.0"
-    fetch-blob "^3.1.4"
-    formdata-polyfill "^4.0.10"
 
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
