@@ -11,6 +11,7 @@ export interface ApiClient {
   uploadObject: (object: Record<string, unknown>) => Promise<string>;
   startBulkUpload: (urls: string[]) => Promise<UrlToJobId>;
   checkBulkUploadJob: (urls: string[]) => Promise<UploadJobStatus>;
+  generateDefaultMetadata: (name: string) => Promise<string>;
 }
 
 export const createClient = (apiUri: string): ApiClient => {
@@ -39,6 +40,10 @@ export const createClient = (apiUri: string): ApiClient => {
       logger.debug(`Check bulk upload status for ${jobIds.length} jobs`);
       const status = actions.checkBulkUploadJob(apiUri, jobIds);
       return status;
+    },
+    generateDefaultMetadata: (name: string) => {
+      logger.debug(`Generating metadata for domain ${name}`);
+      return actions.generateDefaultMetadata(apiUri, name);
     },
   };
 

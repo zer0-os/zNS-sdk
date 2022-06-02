@@ -609,10 +609,10 @@ export interface Domain {
 export interface DomainMetadata {
   [key: string]: unknown | undefined;
   image: string;
-  animation_url: string | undefined;
   name: string;
   description: string;
-  stakingRequests: "disabled" | "enabled" | undefined;
+  animation_url?: string;
+  stakingRequests?: "disabled" | "enabled";
   isBiddable?: boolean;
   gridViewByDefault?: boolean;
   customDomainHeader?: boolean;
