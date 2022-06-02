@@ -426,7 +426,7 @@ export const createInstance = (config: Config): Instance => {
         return tx;
       },
       getBuyNowPrice: async (tokenId: string): Promise<string> => {
-        const buyNowListing = await zAuctionSdkInstance.getBuyNowPrice(tokenId);
+        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(tokenId);
         return ethers.utils.formatEther(buyNowListing.price);
       },
       setBuyNowPrice: async (

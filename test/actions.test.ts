@@ -151,7 +151,7 @@ describe("Test Custom SDK Logic", () => {
     it("runs as expected", async () => {
       
       // Set to a new value every time it's run, loop is same as current price
-      let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowPrice(
+      let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowListing(
         wilderPancakesDomain
       );
       let newBuyNowPrice = ethers.utils.parseEther(
@@ -179,7 +179,7 @@ describe("Test Custom SDK Logic", () => {
 
       // const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
 
-      listing = await zAuctionSdkInstance.getBuyNowPrice(
+      listing = await zAuctionSdkInstance.getBuyNowListing(
         wilderPancakesDomain,
       );
       assert(listing)
