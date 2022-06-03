@@ -8,10 +8,10 @@ const MAX_RECORDS = 5000;
 
 export const getMostRecentDomains = async <T>(
   apolloClient: ApolloClient<T>,
-  count = 100
+  count = 100,
+  skip = 0
 ): Promise<Domain[]> => {
   const domains: Domain[] = [];
-  let skip = 0;
   let yetUnreceived = count;
 
   if (count >= MAX_RECORDS) {
