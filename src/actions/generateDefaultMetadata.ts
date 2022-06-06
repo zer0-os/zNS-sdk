@@ -11,7 +11,9 @@ export const generateDefaultMetadata = async (
     const domainMetaData: DomainMetadata = {
         name: `0://${name}`,
         description: `0://${name} - A Zero Name Service (zNS) Root Domain on the Ethereum Blockchain`,
-        image: "ipfs://QmXni8ehkAiwpgBLRsdKTfEZKvRcZgNJF2vVws3QoRLS6Q" //TEMPORARY, CURRENTLY WILDER BEASTS,
+        image: "ipfs://QmS6DZzG6pTdWszubmDXzJ7vcEWsPNMGJZuviDaCMc7beB",
+        animation_url: "ipfs://QmY11GVZDjFjqYKDYur4Z64QCyXGSbgovHXEZzDPYjFNxr",
+        previewImage: "ipfs://QmP3uXEBuuJQwWWwLAxGqBAa2sviKCnexyuWKyk6i8NnLJ"
     }
     logger.trace(`Generating default metadata for: ${name}`);
     const metadataUri = await apiClient.uploadMetadata(domainMetaData);
