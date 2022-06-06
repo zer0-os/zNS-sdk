@@ -205,4 +205,34 @@ describe("Test Custom SDK Logic", () => {
       expect (sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 5000, 0)).to.eventually.throw(Error);
     });
   });
+
+  describe("content moderator", () => {
+    it("flags inappropriate content", async () => {
+      var sample = `She got a big booty so I call her Big Booty
+      Skrr skrr wrists movin cookin gettin to it
+      Im in the kitchen
+      Yams everywhere
+      Just made a juug 
+      I got bands everywhere`
+      const sdkInstance = zNSSDK.createInstance(config);
+      const moderation = await sdkInstance.utility.checkContentModeration(sample);
+      expect(moderation.flagged).to.be.true;
+      expect(moderation.reason).to.equal('Contains explicit content.')
+    });
+
+    it("flags special characters", async () => {
+      var sample = `2 Chainz!`
+      const sdkInstance = zNSSDK.createInstance(config);
+      const moderation = await sdkInstance.utility.checkContentModeration(sample);
+      expect(moderation.flagged).to.be.true;
+      expect(moderation.reason).to.equal('Contains special characters.')
+    });
+
+    it("does not flag acceptable content", async () => {
+      var sample = `2 Chains`
+      const sdkInstance = zNSSDK.createInstance(config);
+      const moderation = await sdkInstance.utility.checkContentModeration(sample);
+      expect(moderation.flagged).to.be.false;
+    });
+  });
 });

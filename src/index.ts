@@ -15,6 +15,7 @@ import {
 } from "./zAuction";
 import {
   Config,
+  ContentModerationResponse,
   DomainMetadata,
   Instance,
   IPFSGatewayUri,
@@ -48,7 +49,7 @@ export const createInstance = (config: Config): Instance => {
   logger.debug(config);
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const apiClient = api.createClient(config.apiUri);
+  const apiClient = api.createClient(config.apiUri, config.utilitiesUri);
 
   const zAuctionConfig: zAuction.Config = {
     ...config.zAuction,
@@ -479,6 +480,10 @@ export const createInstance = (config: Config): Instance => {
 
       checkUploadJob: (jobId: string): Promise<UploadJobStatus> => {
         return apiClient.checkBulkUploadJob([jobId]);
+      },
+
+      checkContentModeration: (text: string): Promise<ContentModerationResponse> => {
+        return apiClient.checkContentModeration(text);
       },
 
       getMetadataFromUri: (

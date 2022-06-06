@@ -11,6 +11,8 @@ export interface Config {
   subgraphUri: string;
   /** The Metrics server api URL */
   metricsUri: string;
+  /** The utilities api URL */
+  utilitiesUri: string;
   /** The zNS backend api URL */
   apiUri: string;
   /** Addresses of zAuction, legacy zAuction, and the $WILD token */
@@ -552,6 +554,8 @@ export interface Instance {
 
     checkUploadJob(jobId: string): Promise<UploadJobStatus>;
 
+    checkContentModeration(text: string): Promise<ContentModerationResponse>; // Checks if content meets moderation standards
+
     /**
      * Uploads an object to IPFS as JSON
      * @param object Some object
@@ -580,6 +584,36 @@ export interface UploadJobStatus {
     failed: boolean;
     error?: string;
   };
+}
+
+export interface ContentModerationResponse {
+  flagged: boolean;
+  reason: string;
+  offendingTerms: string[];
+}
+
+export interface ContentModeration {
+  Classification: {
+    ReviewRecommended: boolean; //If the content has been flagged
+    Category1: {  //Sexually Explicit Rating
+      Score: number;
+    };
+    Category2: {  //Sexually Suggestive Rating
+      Score: number; 
+    };
+    Category3: {  //Offensive Rating
+      Score: number;
+    };
+  };
+  OriginalText: string; //Input text
+  Terms: ContentTerm[]; //List of offending terms
+}
+
+export interface ContentTerm {
+  Index: number;
+  OriginalIndex: number;
+  ListId: number;
+  Term: string;   //Offending Phrase
 }
 
 export interface UrlToJobId {
