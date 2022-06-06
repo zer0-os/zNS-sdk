@@ -14,5 +14,7 @@ export const generateDefaultMetadata = async (
         image: "ipfs://QmXni8ehkAiwpgBLRsdKTfEZKvRcZgNJF2vVws3QoRLS6Q" //TEMPORARY, CURRENTLY WILDER BEASTS,
     }
     logger.trace(`Generating default metadata for: ${name}`);
-    return await apiClient.uploadMetadata(domainMetaData);
+    const metadataUri = await apiClient.uploadMetadata(domainMetaData);
+    logger.trace(`IPFS Uri generated: ${metadataUri}`);
+    return metadataUri;
 };
