@@ -62,7 +62,8 @@ export const createInstance = (config: Config): Instance => {
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
     getSubdomainsById: subgraphClient.getSubdomainsById,
-    getRecentSubdomainsById: subgraphClient.getRecentSubdomainsById,
+    getMostRecentSubdomainsById: subgraphClient.getMostRecentSubdomainsById,
+    getMostRecentDomains: subgraphClient.getMostRecentDomains,
     getDomainEvents: async (domainId: string) => {
       return actions.getDomainEvents(domainId, {
         getMintEvents: subgraphClient.getDomainMintedEvent,
@@ -426,7 +427,7 @@ export const createInstance = (config: Config): Instance => {
         return tx;
       },
       getBuyNowPrice: async (tokenId: string): Promise<string> => {
-        const buyNowListing = await zAuctionSdkInstance.getBuyNowPrice(tokenId);
+        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(tokenId);
         return ethers.utils.formatEther(buyNowListing.price);
       },
       setBuyNowPrice: async (

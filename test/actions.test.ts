@@ -47,10 +47,10 @@ describe("Test Custom SDK Logic", () => {
   const qmHash = "Qmc2cMdNMo6isDTjk8gej8ay9dZxGQNS3ftsDpct1RNV2H";
   const wilderPancakesDomain =
     "0x6e35a7ecbf6b6368bb8d42ee9b3dcfc8404857635036e60196931d4458c07622";
+  const wilderDogsDomainId = "0xd4b1753dd4b8e14dc6fb88382a7381146b23fad2737fba56174ef1665f00f575"
 
   // Rinkeby
   const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
-
   const subgraphClient = subgraph.createClient(config.subgraphUri);
   const apiClient = api.createClient(config.apiUri);
   const domainIdToDomainName = async (domainId: string) => {
@@ -160,7 +160,7 @@ describe("Test Custom SDK Logic", () => {
     it("runs as expected", async () => {
       
       // Set to a new value every time it's run, loop is same as current price
-      let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowPrice(
+      let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowListing(
         wilderPancakesDomain
       );
       let newBuyNowPrice = ethers.utils.parseEther(
@@ -188,10 +188,30 @@ describe("Test Custom SDK Logic", () => {
 
       // const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
 
-      listing = await zAuctionSdkInstance.getBuyNowPrice(
+      listing = await zAuctionSdkInstance.getBuyNowListing(
         wilderPancakesDomain,
       );
       assert(listing)
+    });
+  });
+  describe("get domains", () => {
+    it("gets most recent domains", async () => {
+      const sdkInstance = zNSSDK.createInstance(config);
+      const domains = await sdkInstance.getMostRecentDomains(10, 0);
+      expect(domains.length).to.equal(10);
+    });
+    it("cannot get over 5000 most recent domains", async () => {
+      const sdkInstance = zNSSDK.createInstance(config);
+      expect (sdkInstance.getMostRecentDomains(5000, 0)).to.eventually.throw(Error);
+    });
+    it("gets most recent subdomains", async () => {
+      const sdkInstance = zNSSDK.createInstance(config);
+      const domains = await sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 2, 0);
+      expect(domains.length).to.equal(2);    
+    });
+    it("cannot get over 5000 most recent subdomains", async () => {
+      const sdkInstance = zNSSDK.createInstance(config);
+      expect (sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 5000, 0)).to.eventually.throw(Error);
     });
   });
 });
