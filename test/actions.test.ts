@@ -15,6 +15,7 @@ import { getHubContract, getRegistrar } from "../src/contracts";
 import { rinkebyConfiguration } from "../src/configuration";
 import { BuyNowListing } from "@zero-tech/zauction-sdk";
 import { assert } from "console";
+import { generateDefaultMetadata } from "../src/actions";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -149,7 +150,8 @@ describe("Test Custom SDK Logic", () => {
     // });
     
     it("generates default metadata", async () => {
-      const metadata = await apiClient.generateDefaultMetadata(
+      const metadata = await generateDefaultMetadata(
+        apiClient,
         'test'       
         );
       expect(metadata).contains('ipfs://Qm');
