@@ -617,13 +617,19 @@ export interface DomainMetadata {
   image: string;
   name: string;
   description: string;
+  image_full?: string;
   animation_url?: string;
-  stakingRequests?: "disabled" | "enabled";
+  stakingRequests?: StakingRequests;
   isBiddable?: boolean;
   gridViewByDefault?: boolean;
   customDomainHeader?: boolean;
   previewImage?: string;
   customDomainHeaderValue?: string;
+}
+
+export enum StakingRequests {
+  Enabled,
+  Disabled
 }
 
 export enum IPFSGatewayUri {
