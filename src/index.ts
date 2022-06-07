@@ -15,7 +15,6 @@ import {
 } from "./zAuction";
 import {
   Config,
-  ContentModerationResponse,
   DomainMetadata,
   Instance,
   IPFSGatewayUri,
@@ -37,6 +36,7 @@ import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
+import { ContentModerationResponse } from "./api/types";
 
 export * from "./types";
 export { configuration };

@@ -2,6 +2,7 @@ import * as zAuction from "./zAuction";
 import { Maybe } from "./utilities";
 import { ethers } from "ethers";
 import { Bid } from "./zAuction";
+import { ContentModerationResponse } from "./api/types";
 
 /**
  * Configuration for a zNS sdk instance
@@ -131,13 +132,17 @@ export interface Instance {
    * Finds all recent subdomains of a given domain
    * @param domainId (parent) domain id
    */
-  getMostRecentSubdomainsById(domainId: string, count: number, skip: number): Promise<Domain[]>;
+  getMostRecentSubdomainsById(
+    domainId: string,
+    count: number,
+    skip: number
+  ): Promise<Domain[]>;
 
   /**
    * Gets the n most recent domains
    * @param count Number of results to retrieve
    */
-  getMostRecentDomains(count: number, skip: number): Promise<Domain[]>
+  getMostRecentDomains(count: number, skip: number): Promise<Domain[]>;
 
   /**
    * Gets all domain events for a domain
@@ -584,36 +589,6 @@ export interface UploadJobStatus {
     failed: boolean;
     error?: string;
   };
-}
-
-export interface ContentModerationResponse {
-  flagged: boolean;
-  reason: string;
-  offendingTerms: string[];
-}
-
-export interface ContentModeration {
-  Classification: {
-    ReviewRecommended: boolean; //If the content has been flagged
-    Category1: {  //Sexually Explicit Rating
-      Score: number;
-    };
-    Category2: {  //Sexually Suggestive Rating
-      Score: number; 
-    };
-    Category3: {  //Offensive Rating
-      Score: number;
-    };
-  };
-  OriginalText: string; //Input text
-  Terms: ContentTerm[]; //List of offending terms
-}
-
-export interface ContentTerm {
-  Index: number;
-  OriginalIndex: number;
-  ListId: number;
-  Term: string;   //Offending Phrase
 }
 
 export interface UrlToJobId {

@@ -1,7 +1,12 @@
-import { ContentModeration, ContentModerationResponse, DomainMetadata, UploadJobStatus, UrlToJobId } from "../types";
+import {
+  DomainMetadata,
+  UploadJobStatus,
+  UrlToJobId,
+} from "../types";
 import * as actions from "./actions";
 
 import { getLogger } from "../utilities";
+import { ContentModerationResponse } from "./types";
 
 const logger = getLogger("api:client");
 
@@ -43,9 +48,12 @@ export const createClient = (apiUri: string, utilityUri: string): ApiClient => {
     },
     checkContentModeration: (text: string) => {
       logger.debug(`Checking content moderation for: ${text}`);
-      const contentModeration = actions.checkContentModeration(utilityUri, text);
+      const contentModeration = actions.checkContentModeration(
+        utilityUri,
+        text
+      );
       return contentModeration;
-    }
+    },
   };
 
   return apiClient;
