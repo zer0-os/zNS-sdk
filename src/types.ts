@@ -129,13 +129,17 @@ export interface Instance {
    * Finds all recent subdomains of a given domain
    * @param domainId (parent) domain id
    */
-  getMostRecentSubdomainsById(domainId: string, count: number, skip: number): Promise<Domain[]>;
+  getMostRecentSubdomainsById(
+    domainId: string,
+    count: number,
+    skip: number
+  ): Promise<Domain[]>;
 
   /**
    * Gets the n most recent domains
    * @param count Number of results to retrieve
    */
-  getMostRecentDomains(count: number, skip: number): Promise<Domain[]>
+  getMostRecentDomains(count: number, skip: number): Promise<Domain[]>;
 
   /**
    * Gets all domain events for a domain
@@ -316,6 +320,31 @@ export interface Instance {
      * @param domainId The domain to get a payment token for
      */
     getPaymentTokenForDomain: (domainId: string) => Promise<string>;
+
+    /**
+     * Get a user's balance for a specific ERC20 token;
+     *
+     * @param account The user to get the balance for
+     * @param erc20TokenAddress The token to get a users balance of
+     */
+    getUserBalanceForPaymentToken: (
+      account: string,
+      paymentToken: string
+    ) => Promise<ethers.BigNumber>;
+
+    /**
+     * Get a user's balance of the ERC20 token used in a domain's network
+     * e.g. 0://wilder.kitty is in the Wilder World network and will
+     * use the payment token specified by that network and return the user's
+     * balance for that token.
+     * 
+     * @param account The user to get the balance for
+     * @param domainId The domain to get the payment token of
+     */
+    getUserBalanceForPaymentTokenByDomain: (
+      account: string,
+      domainId: string
+    ) => Promise<ethers.BigNumber>;
 
     /**
      * Returns the amount that zAuction has been approved to spend on behalf
@@ -629,7 +658,7 @@ export interface DomainMetadata {
 
 export enum StakingRequests {
   Enabled,
-  Disabled
+  Disabled,
 }
 
 export enum IPFSGatewayUri {

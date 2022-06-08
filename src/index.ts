@@ -27,7 +27,11 @@ import {
   UrlToJobId,
 } from "./types";
 import { Registrar, ZNSHub } from "./contracts/types";
-import { getBasicController, getHubContract } from "./contracts";
+import {
+  getBasicController,
+  getERC20Contract,
+  getHubContract,
+} from "./contracts";
 
 import * as domains from "./utilities/domains";
 export { domains };
@@ -227,6 +231,28 @@ export const createInstance = (config: Config): Instance => {
         );
         return info;
       },
+      getUserBalanceForPaymentToken: async (
+        account: string,
+        paymentToken: string
+      ) => {
+        const contract = await getERC20Contract(
+          config.provider,
+          paymentToken
+        );
+        const balance = await contract.balanceOf(account);
+        return balance;
+      },
+      getUserBalanceForPaymentTokenByDomain: async (
+        account: string,
+        domainId: string
+      ) => {
+        const paymentToken = await zAuctionSdkInstance.getPaymentTokenForDomain(
+          domainId
+        );
+        const contract = await getERC20Contract(config.provider, paymentToken);
+        const balance = await contract.balanceOf(account);
+        return balance;
+      },
       setPaymentTokenForDomain: async (
         networkId: string,
         paymentTokenAddress: string,
@@ -290,7 +316,7 @@ export const createInstance = (config: Config): Instance => {
       ): Promise<boolean> => {
         const allowance = await zAuctionSdkInstance.getZAuctionSpendAllowance(
           account,
-          paymentTokenAddress,
+          paymentTokenAddress
         );
         const needsToApprove = allowance.lt(amount);
         return needsToApprove;
@@ -427,7 +453,9 @@ export const createInstance = (config: Config): Instance => {
         return tx;
       },
       getBuyNowPrice: async (tokenId: string): Promise<string> => {
-        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(tokenId);
+        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(
+          tokenId
+        );
         return ethers.utils.formatEther(buyNowListing.price);
       },
       setBuyNowPrice: async (

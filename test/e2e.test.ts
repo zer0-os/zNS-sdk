@@ -46,36 +46,59 @@ describe("SDK test", () => {
     4
   );
   const astroWallet = new ethers.Wallet(pk, provider);
-  
+
   let astroAccount: string;
+  let mainAccount: string;
   before(async () => {
     astroAccount = await astroWallet.getAddress();
+    mainAccount = "0xaE3153c9F5883FD2E78031ca2716520748c521dB"
     config = rinkebyConfiguration(provider);
     hub = await getHubContract(provider, ZNSHubAddress);
     sdk = await createInstance(config);
   });
+  it("Gets a user's balance of a specific ERC20 token", async () => {
+    const balance = await sdk.zauction.getUserBalanceForPaymentToken(
+      astroAccount,
+      wildToken
+    );
+    assert(balance.gt("0"));
+  });
+  it("Gets a user's balance of a specific ERC20 token through a domain", async () => {
+    const balance = await sdk.zauction.getUserBalanceForPaymentTokenByDomain(
+      astroAccount,
+      wilderPancakesDomain
+    );
+    assert(balance.gt(0));
+  });
+  it("Returns 0 when a user has none of the specified token", async () => {
+    const balance = await sdk.zauction.getUserBalanceForPaymentToken(
+      mainAccount,
+      lootToken
+    );
+    assert(balance.eq(0));
+  });
   it("Gets the spend allowance", async () => {
     // By paymentTokenAddress
-    const  params: TokenAllowanceParams = {
+    const params: TokenAllowanceParams = {
       paymentTokenAddress: wildToken,
     };
     let allowance = await sdk.zauction.getZAuctionSpendAllowance(
       astroAccount,
       params
     );
+    
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
-    });
-    it("gets allowance by tokenId", async () => {
-          // By tokenId
+  });
+  it("gets allowance by tokenId", async () => {
+    // By tokenId
     const params = {
       tokenId: wilderPancakesDomain,
     };
     const allowance = await sdk.zauction.getZAuctionSpendAllowance(
       astroAccount,
-      params,
+      params
     );
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
-    
   });
   it("get allowance by bid", async () => {
     // By Bid
@@ -86,16 +109,15 @@ describe("SDK test", () => {
     };
     const allowance = await sdk.zauction.getZAuctionSpendAllowance(
       astroAccount,
-      params,
+      params
     );
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
   });
   it("gets legacy allowance", async () => {
-
     const params = {};
     const allowance = await sdk.zauction.getZAuctionSpendAllowance(
       astroAccount,
-      params,
+      params
     );
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
   });
@@ -106,7 +128,7 @@ describe("SDK test", () => {
     };
     let allowance = await sdk.zauction.getZAuctionSpendAllowance(
       accountThatNeverApproved,
-      params,
+      params
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
 
@@ -116,7 +138,7 @@ describe("SDK test", () => {
     };
     allowance = await sdk.zauction.getZAuctionSpendAllowance(
       accountThatNeverApproved,
-      params,
+      params
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
 
@@ -128,14 +150,14 @@ describe("SDK test", () => {
     };
     allowance = await sdk.zauction.getZAuctionSpendAllowance(
       accountThatNeverApproved,
-      params,
+      params
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
 
     params = {};
     allowance = await sdk.zauction.getZAuctionSpendAllowance(
       accountThatNeverApproved,
-      params,
+      params
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
   });
