@@ -329,7 +329,7 @@ export interface Instance {
      */
     getUserBalanceForPaymentToken: (
       account: string,
-      erc20TokenAddress: string
+      paymentToken: string
     ) => Promise<ethers.BigNumber>;
 
     /**

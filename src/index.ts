@@ -233,11 +233,11 @@ export const createInstance = (config: Config): Instance => {
       },
       getUserBalanceForPaymentToken: async (
         account: string,
-        erc20TokenAddress: string
+        paymentToken: string
       ) => {
         const contract = await getERC20Contract(
           config.provider,
-          erc20TokenAddress
+          paymentToken
         );
         const balance = await contract.balanceOf(account);
         return balance;
