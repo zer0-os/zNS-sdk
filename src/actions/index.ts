@@ -12,3 +12,4 @@ export * from "./setPaymentTokenForDomain";
 export * from "./setDomainRoyalty";
 export * from "./transferOwnership";
 export * from "./getZAuctionSpendAllowance";
+export * from './generateDefaultMetadata';

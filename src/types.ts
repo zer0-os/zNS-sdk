@@ -615,15 +615,21 @@ export interface Domain {
 export interface DomainMetadata {
   [key: string]: unknown | undefined;
   image: string;
-  animation_url: string | undefined;
   name: string;
   description: string;
-  stakingRequests: "disabled" | "enabled" | undefined;
+  image_full?: string;
+  animation_url?: string;
+  stakingRequests?: StakingRequests;
   isBiddable?: boolean;
   gridViewByDefault?: boolean;
   customDomainHeader?: boolean;
   previewImage?: string;
   customDomainHeaderValue?: string;
+}
+
+export enum StakingRequests {
+  Enabled,
+  Disabled
 }
 
 export enum IPFSGatewayUri {
