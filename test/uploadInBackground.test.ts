@@ -1,9 +1,9 @@
 import { assert } from "chai";
 import { ImportMock } from "ts-mock-imports";
 import { UploadJobStatus, UrlToJobId } from "../src/types";
-import * as uploadInBackgroundFunctions from "../src/api/actions/uploadInBackground";
-import * as checkBulkUploadJob from "../src/api/actions/checkBulkUploadJob";
-import * as startBulkUpload from "../src/api/actions/startBulkUpload";
+import * as uploadInBackgroundFunctions from "../src/api/znsApi/actions/uploadInBackground";
+import * as checkBulkUploadJob from "../src/api/znsApi/actions/checkBulkUploadJob";
+import * as startBulkUpload from "../src/api/znsApi/actions/startBulkUpload";
 
 describe("uploadInBackground", async () => {
   const fakeApiUri = "";

@@ -19,8 +19,9 @@ export const mainnetConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
-    apiUri: "https://zns.api.zero.tech/api",
+    znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
+    dataStoreUri: "",
     zAuction: {
       ...configuration(mainnetConfig),
     },
@@ -48,8 +49,9 @@ export const kovanConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
-    apiUri: "https://zns.api.zero.tech/api",
+    znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
+    dataStoreUri: "",
     zAuction: {
       ...configuration(kovanConfig),
     },
@@ -76,8 +78,9 @@ export const rinkebyConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
-    apiUri: "https://zns.api.zero.tech/api",
+    znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
+    dataStoreUri: "https://apim-data-store-api-rinkeby.azure-api.net/",
     zAuction: {
       ...configuration(rinkebyConfig),
     },

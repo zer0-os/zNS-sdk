@@ -1,6 +1,6 @@
-import { Maybe } from "../../utilities";
-import { UploadJobStatus } from "../../types";
-import { makeApiCall } from "./helpers";
+import { Maybe } from "../../../utilities";
+import { UploadJobStatus } from "../../../types";
+import { makeApiCall } from "../../helpers";
 
 export const checkBulkUploadJob = async (
   apiUri: string,

@@ -1,6 +1,6 @@
-import { UrlToJobId } from "../../types";
-import { Maybe } from "../../utilities";
-import { makeApiCall } from "./helpers";
+import { UrlToJobId } from "../../../types";
+import { Maybe } from "../../../utilities";
+import { makeApiCall } from "../../helpers";
 
 export const startBulkUpload = async (
   apiUri: string,

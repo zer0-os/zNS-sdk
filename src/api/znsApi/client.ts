@@ -1,11 +1,11 @@
-import { DomainMetadata, UploadJobStatus, UrlToJobId } from "../types";
+import { DomainMetadata, UploadJobStatus, UrlToJobId } from "../../types";
 import * as actions from "./actions";
 
-import { getLogger } from "../utilities";
+import { getLogger } from "../../utilities";
 
 const logger = getLogger("api:client");
 
-export interface ApiClient {
+export interface znsApiClient {
   uploadMetadata: (metadata: DomainMetadata) => Promise<string>;
   uploadMedia: (media: Buffer) => Promise<string>;
   uploadObject: (object: Record<string, unknown>) => Promise<string>;
@@ -13,8 +13,8 @@ export interface ApiClient {
   checkBulkUploadJob: (urls: string[]) => Promise<UploadJobStatus>;
 }
 
-export const createClient = (apiUri: string): ApiClient => {
-  const apiClient: ApiClient = {
+export const createZnsApiClient = (apiUri: string): znsApiClient => {
+  const apiClient: znsApiClient = {
     uploadMetadata: (metadata: DomainMetadata) => {
       logger.debug(`Upload domain metadata for ${metadata.name}`);
       const metadataUri = actions.uploadMetadata(apiUri, metadata);

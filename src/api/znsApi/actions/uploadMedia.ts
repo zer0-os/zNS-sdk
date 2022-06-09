@@ -1,6 +1,6 @@
-import { Maybe } from "../../utilities";
-import { UploadedFileDto } from "../types";
-import { ipfsHashToUrl, makeApiCall } from "./helpers";
+import { Maybe } from "../../../utilities";
+import { UploadedFileDto } from "../../types";
+import { ipfsHashToUrl, makeApiCall } from "../../helpers";
 
 export const uploadMedia = async (
   apiUri: string,

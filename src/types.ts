@@ -12,7 +12,9 @@ export interface Config {
   /** The Metrics server api URL */
   metricsUri: string;
   /** The zNS backend api URL */
-  apiUri: string;
+  znsUri: string;
+  /** The zNS Data Store API URI */
+  dataStoreUri: string;
   /** Addresses of zAuction, legacy zAuction, and the $WILD token */
   zAuction: zAuction.Config;
   /** Address of the zNS Basic controller to use */
@@ -610,6 +612,11 @@ export interface Domain {
   contract: string;
   isRoot?: boolean;
   metadataName?: string;
+}
+
+export interface DomainCollection {
+  numResults: number;
+  result: Domain[]
 }
 
 export interface DomainMetadata {

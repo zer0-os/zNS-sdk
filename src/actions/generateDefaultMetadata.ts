@@ -1,5 +1,5 @@
 import { DomainMetadata } from "../types";
-import { ApiClient } from "../api";
+import { znsApiClient } from "../api";
 import { getLogger } from "../utilities";
 
 const logger = getLogger("actions:generateDefaultMetadata");
@@ -7,7 +7,7 @@ const DEFAULT_IMAGE = "ipfs://QmP3uXEBuuJQwWWwLAxGqBAa2sviKCnexyuWKyk6i8NnLJ";
 const DEFAULT_IMAGE_FULL = "ipfs://QmS6DZzG6pTdWszubmDXzJ7vcEWsPNMGJZuviDaCMc7beB";
 const DEFAULT_ANIMATION_URL = "ipfs://QmY11GVZDjFjqYKDYur4Z64QCyXGSbgovHXEZzDPYjFNxr";
 export const generateDefaultMetadata = async (
-  apiClient: ApiClient,
+  apiClient: znsApiClient,
   name: string
 ): Promise<string> => {
     const domainMetaData: DomainMetadata = {
