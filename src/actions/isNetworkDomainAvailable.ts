@@ -1,19 +1,24 @@
-import { getLogger } from "../utilities";
-import { ethers } from "ethers";
+import { domainNameToId, getLogger } from "../utilities";
 import { ZNSHub } from "../contracts/types";
+import { checkContentModeration } from "../api/actions";
 
 const logger = getLogger("actions:getDomainMetadata");
 
 export const isNetworkDomainAvailable = async (
   name: string,
-  signer: ethers.Signer,
-  hub: ZNSHub
+  hub: ZNSHub,
+  apiUri: string
 ): Promise<boolean> => {
-    logger.trace(`Get price of network domain for: ${name}`);
-    // const tx = await hub
-    //   .connect(signer)
-    //   .getDomainPrice(0, name);
-    // const price = ethers.utils.formatEther(tx);
-    // Naughty Check
-    return true;
+    logger.trace(`Checking network domain availability for: ${name}`);
+    // Check if name passes validation
+    let moderation = await checkContentModeration(apiUri, name);
+    if (moderation?.flagged)
+    {
+        logger.trace(`${name}: was flagged for review, with reson: ${moderation?.reason}`);
+        return false;
+    }
+    //Check domain availability
+    let id = domainNameToId(name);
+    const available = await hub.domainExists(id)
+    return available;
 };

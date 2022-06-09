@@ -522,13 +522,13 @@ export const createInstance = (config: Config): Instance => {
       },
     },
     minting: {
-      getPriceOfNetworkDomain: async (name: string, signer: ethers.Signer): Promise<string> => {
+      getPriceOfNetworkDomain: async (name: string): Promise<string> => {
         const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
-        return actions.getPriceOfNetworkDomain(name, purchaser, signer);
+        return actions.getPriceOfNetworkDomain(name, purchaser);
       },
-      isNetworkDomainAvailable: async (name: string, signer: ethers.Signer): Promise<boolean> => {
+      isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
-        return actions.isNetworkDomainAvailable(name, signer, hub);
+        return actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri);
       },
       mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<number> => {
         return 1;
