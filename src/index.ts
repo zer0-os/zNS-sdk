@@ -498,8 +498,9 @@ export const createInstance = (config: Config): Instance => {
         const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
         return actions.getPriceOfNetworkDomain(name, purchaser, signer);
       },
-      isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
-        return true;
+      isNetworkDomainAvailable: async (name: string, signer: ethers.Signer): Promise<boolean> => {
+        const hub: ZNSHub = await getHubContract(config.provider, config.hub);
+        return actions.isNetworkDomainAvailable(name, signer, hub);
       },
       mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<number> => {
         return 1;

@@ -570,7 +570,7 @@ export interface Instance {
   };
   minting: {
     getPriceOfNetworkDomain(name: string, signer: ethers.Signer): Promise<string>;
-    isNetworkDomainAvailable(name: string): Promise<boolean>;
+    isNetworkDomainAvailable(name: string, signer: ethers.Signer): Promise<boolean>;
     mintNetworkDomain(name: string, signer: ethers.Signer): Promise<number>;
   };
 }

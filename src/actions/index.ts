@@ -13,3 +13,4 @@ export * from "./setDomainRoyalty";
 export * from "./transferOwnership";
 export * from "./getZAuctionSpendAllowance";
 export * from "./getPriceOfNetworkDomain";
+export * from "./isNetworkDomainAvailable";
