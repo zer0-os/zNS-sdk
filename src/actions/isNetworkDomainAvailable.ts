@@ -14,7 +14,7 @@ export const isNetworkDomainAvailable = async (
     let moderation = await checkContentModeration(apiUri, name);
     if (moderation?.flagged ?? false)
     {
-        logger.trace(`${name}: was flagged for review, with reson: ${moderation?.reason}`);
+        logger.trace(`${name}: was flagged for review, with reason: ${moderation?.reason}`);
         return false;
     }
     //Check domain availability
