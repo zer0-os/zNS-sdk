@@ -2,7 +2,6 @@ import * as zAuction from "./zAuction";
 import { Maybe } from "./utilities";
 import { ethers } from "ethers";
 import { Bid } from "./zAuction";
-import { ContentModerationResponse } from "./api/types";
 
 /**
  * Configuration for a zNS sdk instance
@@ -66,6 +65,12 @@ interface TokenAllowanceLegacy {
   tokenId?: undefined;
   paymentTokenAddress?: undefined;
   bid?: undefined;
+}
+
+export interface ContentModerationResponse {
+  flagged: boolean;
+  reason: string;
+  offendingTerms: string[];
 }
 
 /**

@@ -4,12 +4,6 @@ export interface UploadedFileDto {
   url: string;
 }
 
-export interface ContentModerationResponse {
-  flagged: boolean;
-  reason: string;
-  offendingTerms: string[];
-}
-
 export interface ContentModeration {
   Classification: ContentClassification; //Content Moderation output
   OriginalText: string; //Input text

@@ -1,4 +1,5 @@
 import {
+  ContentModerationResponse,
   DomainMetadata,
   UploadJobStatus,
   UrlToJobId,
@@ -6,7 +7,6 @@ import {
 import * as actions from "./actions";
 
 import { getLogger } from "../utilities";
-import { ContentModerationResponse } from "./types";
 
 const logger = getLogger("api:client");
 
