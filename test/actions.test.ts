@@ -6,6 +6,7 @@ import * as zAuction from "@zero-tech/zauction-sdk";
 
 import * as zNSSDK from "../src/index";
 import * as subgraph from "../src/subgraph";
+import * as api from "../src/api";
 import * as actions from "../src/actions";
 import { Config, IPFSGatewayUri, Listing, } from "../src/types";
 import { Registrar } from "../src/contracts/types";
@@ -14,6 +15,7 @@ import { getHubContract, getRegistrar } from "../src/contracts";
 import { rinkebyConfiguration } from "../src/configuration";
 import { BuyNowListing } from "@zero-tech/zauction-sdk";
 import { assert } from "console";
+import { generateDefaultMetadata } from "../src/actions";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -51,7 +53,7 @@ describe("Test Custom SDK Logic", () => {
   // Rinkeby
   const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-
+  const apiClient = api.createClient(config.apiUri);
   const domainIdToDomainName = async (domainId: string) => {
     const domainData = await subgraphClient.getDomainById(domainId);
     return domainData.name;
@@ -110,7 +112,7 @@ describe("Test Custom SDK Logic", () => {
       expect(metadata);
     });
   });
-  describe("setDomainMetadata", () => {
+  describe("Domain Metadata", () => {
     // Keep as an example call, but comment it
     // it("runs setDomainMetadata", async () => {
     //   const registrar: Registrar = await getRegistrar(
@@ -146,7 +148,16 @@ describe("Test Custom SDK Logic", () => {
     //   );
     //   expect(metadata).deep.equal(retrievedMetadata);
     // });
+    
+    it("generates default metadata", async () => {
+      const metadata = await generateDefaultMetadata(
+        apiClient,
+        'test'       
+        );
+      expect(metadata).contains('ipfs://Qm');
+    });
   });
+
   describe("(get|set)buyNowPrice", () => {
     it("runs as expected", async () => {
       
@@ -203,6 +214,31 @@ describe("Test Custom SDK Logic", () => {
     it("cannot get over 5000 most recent subdomains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
       expect (sdkInstance.getMostRecentSubdomainsById(wilderDogsDomainId, 5000, 0)).to.eventually.throw(Error);
+    });
+  });
+
+  describe("content moderator", () => {
+    it("flags inappropriate content", async () => {
+      var sample = `booty`
+      const sdkInstance = zNSSDK.createInstance(config);
+      const moderation = await sdkInstance.utility.checkContentModeration(sample);
+      expect(moderation.flagged).to.be.true;
+      expect(moderation.reason).to.equal('Contains explicit content.')
+    });
+
+    it("flags special characters", async () => {
+      var sample = `2 Chainz!`
+      const sdkInstance = zNSSDK.createInstance(config);
+      const moderation = await sdkInstance.utility.checkContentModeration(sample);
+      expect(moderation.flagged).to.be.true;
+      expect(moderation.reason).to.equal('Contains special characters.')
+    });
+
+    it("does not flag acceptable content", async () => {
+      var sample = `2Chains`
+      const sdkInstance = zNSSDK.createInstance(config);
+      const moderation = await sdkInstance.utility.checkContentModeration(sample);
+      expect(moderation.flagged).to.be.false;
     });
   });
 });

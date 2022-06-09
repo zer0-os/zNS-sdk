@@ -3,4 +3,5 @@ export * from "./uploadMetadata";
 export * from "./uploadObject";
 export * from "./checkBulkUploadJob";
 export * from "./startBulkUpload";
+export * from "./checkContentModeration";
 export * from "./uploadInBackground";

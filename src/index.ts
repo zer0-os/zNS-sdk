@@ -27,8 +27,7 @@ import {
   UrlToJobId,
 } from "./types";
 import { Registrar, ZNSHub } from "./contracts/types";
-import { getBasicController, getDomainPurchaserContract, getHubContract } from "./contracts";
-
+import { getBasicController, getDomainPurchaserContract, getHubContract, getERC20Contract } from "./contracts";
 import * as domains from "./utilities/domains";
 export { domains };
 
@@ -37,6 +36,7 @@ import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
 import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
+import { ContentModerationResponse } from "./types";
 
 export * from "./types";
 export { configuration };
@@ -49,7 +49,7 @@ export const createInstance = (config: Config): Instance => {
   logger.debug(config);
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const apiClient = api.createClient(config.apiUri);
+  const apiClient = api.createClient(config.apiUri, config.utilitiesUri);
 
   const zAuctionConfig: zAuction.Config = {
     ...config.zAuction,
@@ -228,6 +228,28 @@ export const createInstance = (config: Config): Instance => {
         );
         return info;
       },
+      getUserBalanceForPaymentToken: async (
+        account: string,
+        paymentToken: string
+      ) => {
+        const contract = await getERC20Contract(
+          config.provider,
+          paymentToken
+        );
+        const balance = await contract.balanceOf(account);
+        return balance;
+      },
+      getUserBalanceForPaymentTokenByDomain: async (
+        account: string,
+        domainId: string
+      ) => {
+        const paymentToken = await zAuctionSdkInstance.getPaymentTokenForDomain(
+          domainId
+        );
+        const contract = await getERC20Contract(config.provider, paymentToken);
+        const balance = await contract.balanceOf(account);
+        return balance;
+      },
       setPaymentTokenForDomain: async (
         networkId: string,
         paymentTokenAddress: string,
@@ -291,7 +313,7 @@ export const createInstance = (config: Config): Instance => {
       ): Promise<boolean> => {
         const allowance = await zAuctionSdkInstance.getZAuctionSpendAllowance(
           account,
-          paymentTokenAddress,
+          paymentTokenAddress
         );
         const needsToApprove = allowance.lt(amount);
         return needsToApprove;
@@ -428,7 +450,9 @@ export const createInstance = (config: Config): Instance => {
         return tx;
       },
       getBuyNowPrice: async (tokenId: string): Promise<string> => {
-        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(tokenId);
+        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(
+          tokenId
+        );
         return ethers.utils.formatEther(buyNowListing.price);
       },
       setBuyNowPrice: async (
@@ -480,6 +504,10 @@ export const createInstance = (config: Config): Instance => {
 
       checkUploadJob: (jobId: string): Promise<UploadJobStatus> => {
         return apiClient.checkBulkUploadJob([jobId]);
+      },
+
+      checkContentModeration: (text: string): Promise<ContentModerationResponse> => {
+        return apiClient.checkContentModeration(text);
       },
 
       getMetadataFromUri: (

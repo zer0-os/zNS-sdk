@@ -14,3 +14,4 @@ export * from "./transferOwnership";
 export * from "./getZAuctionSpendAllowance";
 export * from "./getPriceOfNetworkDomain";
 export * from "./isNetworkDomainAvailable";
+export * from './generateDefaultMetadata';

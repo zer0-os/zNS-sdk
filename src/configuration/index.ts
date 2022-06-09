@@ -21,6 +21,7 @@ export const mainnetConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
+    utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(mainnetConfig),
     },
@@ -50,6 +51,7 @@ export const kovanConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
+    utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(kovanConfig),
     },
@@ -78,6 +80,7 @@ export const rinkebyConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
+    utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(rinkebyConfig),
     },

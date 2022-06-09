@@ -1,4 +1,9 @@
-import { DomainMetadata, UploadJobStatus, UrlToJobId } from "../types";
+import {
+  ContentModerationResponse,
+  DomainMetadata,
+  UploadJobStatus,
+  UrlToJobId,
+} from "../types";
 import * as actions from "./actions";
 
 import { getLogger } from "../utilities";
@@ -11,9 +16,10 @@ export interface ApiClient {
   uploadObject: (object: Record<string, unknown>) => Promise<string>;
   startBulkUpload: (urls: string[]) => Promise<UrlToJobId>;
   checkBulkUploadJob: (urls: string[]) => Promise<UploadJobStatus>;
+  checkContentModeration: (text: string) => Promise<ContentModerationResponse>;
 }
 
-export const createClient = (apiUri: string): ApiClient => {
+export const createClient = (apiUri: string, utilityUri: string): ApiClient => {
   const apiClient: ApiClient = {
     uploadMetadata: (metadata: DomainMetadata) => {
       logger.debug(`Upload domain metadata for ${metadata.name}`);
@@ -39,6 +45,14 @@ export const createClient = (apiUri: string): ApiClient => {
       logger.debug(`Check bulk upload status for ${jobIds.length} jobs`);
       const status = actions.checkBulkUploadJob(apiUri, jobIds);
       return status;
+    },
+    checkContentModeration: (text: string) => {
+      logger.debug(`Checking content moderation for: ${text}`);
+      const contentModeration = actions.checkContentModeration(
+        utilityUri,
+        text
+      );
+      return contentModeration;
     },
   };
 
