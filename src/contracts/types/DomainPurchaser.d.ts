@@ -21,6 +21,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface DomainPurchaserInterface extends ethers.utils.Interface {
   functions: {
+    "getDomainPrice(uint256,string)": FunctionFragment;
     "initialize(address,address,address,tuple,uint256)": FunctionFragment;
     "owner()": FunctionFragment;
     "paymentToken()": FunctionFragment;
@@ -38,6 +39,10 @@ interface DomainPurchaserInterface extends ethers.utils.Interface {
     "zNSHub()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "getDomainPrice",
+    values: [BigNumberish, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "initialize",
     values: [
@@ -104,6 +109,10 @@ interface DomainPurchaserInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "zNSHub", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "getDomainPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
@@ -215,6 +224,12 @@ export class DomainPurchaser extends BaseContract {
   interface: DomainPurchaserInterface;
 
   functions: {
+    getDomainPrice(
+      parentId: BigNumberish,
+      name: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     initialize(
       _paymentToken: string,
       _zNSHub: string,
@@ -314,6 +329,12 @@ export class DomainPurchaser extends BaseContract {
     zNSHub(overrides?: CallOverrides): Promise<[string]>;
   };
 
+  getDomainPrice(
+    parentId: BigNumberish,
+    name: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   initialize(
     _paymentToken: string,
     _zNSHub: string,
@@ -409,6 +430,12 @@ export class DomainPurchaser extends BaseContract {
   zNSHub(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
+    getDomainPrice(
+      parentId: BigNumberish,
+      name: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _paymentToken: string,
       _zNSHub: string,
@@ -557,6 +584,12 @@ export class DomainPurchaser extends BaseContract {
   };
 
   estimateGas: {
+    getDomainPrice(
+      parentId: BigNumberish,
+      name: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _paymentToken: string,
       _zNSHub: string,
@@ -637,6 +670,12 @@ export class DomainPurchaser extends BaseContract {
   };
 
   populateTransaction: {
+    getDomainPrice(
+      parentId: BigNumberish,
+      name: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     initialize(
       _paymentToken: string,
       _zNSHub: string,
