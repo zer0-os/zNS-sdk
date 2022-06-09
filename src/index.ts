@@ -1,4 +1,4 @@
-import { ContractTransaction, ethers } from "ethers";
+import { BigNumber, ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 import CoinGecko from "coingecko-api";
 
@@ -27,7 +27,12 @@ import {
   UrlToJobId,
 } from "./types";
 import { Registrar, ZNSHub } from "./contracts/types";
-import { getBasicController, getDomainPurchaserContract, getHubContract } from "./contracts";
+import {
+  getBasicController,
+  getDomainPurchaserContract,
+  getERC20Contract,
+  getHubContract,
+} from "./contracts";
 
 import * as domains from "./utilities/domains";
 export { domains };
@@ -291,7 +296,7 @@ export const createInstance = (config: Config): Instance => {
       ): Promise<boolean> => {
         const allowance = await zAuctionSdkInstance.getZAuctionSpendAllowance(
           account,
-          paymentTokenAddress,
+          paymentTokenAddress
         );
         const needsToApprove = allowance.lt(amount);
         return needsToApprove;
@@ -428,7 +433,9 @@ export const createInstance = (config: Config): Instance => {
         return tx;
       },
       getBuyNowPrice: async (tokenId: string): Promise<string> => {
-        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(tokenId);
+        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(
+          tokenId
+        );
         return ethers.utils.formatEther(buyNowListing.price);
       },
       setBuyNowPrice: async (
@@ -495,16 +502,95 @@ export const createInstance = (config: Config): Instance => {
     },
     minting: {
       getPriceOfNetworkDomain: async (name: string): Promise<number> => {
-          const hub: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
-          return 1;
+        const hub: DomainPurchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        return 1;
       },
       isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
         return true;
       },
-      mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<number> => {
+      mintNetworkDomain: async (
+        name: string,
+        signer: ethers.Signer
+      ): Promise<number> => {
         return 1;
-      }
-    }
+      },
+      isMinterApprovedToSpendTokens: async (
+        user: string,
+        required?: string
+      ): Promise<boolean> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+        const allowance = await actions.getApprovedSpendTokenAmount(
+          paymentToken,
+          config.domainPurchaser,
+          user
+        );
+
+        if (!required) {
+          // Default to 10^10 if user doesn't provide a value
+          required = Math.pow(10, 10).toString();
+        }
+
+        const requiredAmount = BigNumber.from(required);
+        const allowanceAsNumber = BigNumber.from(allowance);
+        const approved = allowanceAsNumber.gte(requiredAmount);
+
+        return approved;
+      },
+      approveMinterToSpendTokens: async (
+        signer: ethers.Signer,
+        amount?: string
+      ): Promise<ethers.ContractTransaction> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+
+        let approvalAmount = ethers.constants.MaxUint256;
+        if (amount) {
+          approvalAmount = ethers.utils.parseEther(amount);
+        }
+
+        const tx = await paymentToken
+          .connect(signer)
+          .approve(config.domainPurchaser, approvalAmount);
+
+        return tx;
+      },
+      getSpendTokenApprovedAmount: async (user: string): Promise<string> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+        const allowance = await actions.getApprovedSpendTokenAmount(
+          paymentToken,
+          config.domainPurchaser,
+          user
+        );
+
+        return allowance;
+      },
+    },
   };
 
   return instance;
