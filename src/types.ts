@@ -11,6 +11,8 @@ export interface Config {
   subgraphUri: string;
   /** The Metrics server api URL */
   metricsUri: string;
+  /** The utilities api URL */
+  utilitiesUri: string;
   /** The zNS backend api URL */
   apiUri: string;
   /** Addresses of zAuction, legacy zAuction, and the $WILD token */
@@ -63,6 +65,12 @@ interface TokenAllowanceLegacy {
   tokenId?: undefined;
   paymentTokenAddress?: undefined;
   bid?: undefined;
+}
+
+export interface ContentModerationResponse {
+  flagged: boolean;
+  reason: string;
+  offendingTerms: string[];
 }
 
 /**
@@ -580,6 +588,8 @@ export interface Instance {
     checkBulkUploadJob(jobIds: string[]): Promise<UploadJobStatus>; // return status of the jobs
 
     checkUploadJob(jobId: string): Promise<UploadJobStatus>;
+
+    checkContentModeration(text: string): Promise<ContentModerationResponse>; // Checks if content meets moderation standards
 
     /**
      * Uploads an object to IPFS as JSON
