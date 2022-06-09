@@ -1,5 +1,4 @@
 import * as zAuction from "./zAuction";
-import { Maybe } from "./utilities";
 import { ethers } from "ethers";
 import { Bid } from "./zAuction";
 
@@ -131,13 +130,17 @@ export interface Instance {
    * Finds all recent subdomains of a given domain
    * @param domainId (parent) domain id
    */
-  getMostRecentSubdomainsById(domainId: string, count: number, skip: number): Promise<Domain[]>;
+  getMostRecentSubdomainsById(
+    domainId: string,
+    count: number,
+    skip: number
+  ): Promise<Domain[]>;
 
   /**
    * Gets the n most recent domains
    * @param count Number of results to retrieve
    */
-  getMostRecentDomains(count: number, skip: number): Promise<Domain[]>
+  getMostRecentDomains(count: number, skip: number): Promise<Domain[]>;
 
   /**
    * Gets all domain events for a domain
@@ -612,11 +615,6 @@ export interface Domain {
   contract: string;
   isRoot?: boolean;
   metadataName?: string;
-}
-
-export interface DomainCollection {
-  numResults: number;
-  result: Domain[]
 }
 
 export interface DomainMetadata {

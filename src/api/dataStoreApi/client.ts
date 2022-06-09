@@ -1,10 +1,8 @@
-import * as dotenv from "dotenv";
 import * as env from "env-var";
 import { Domain } from "../../types";
 import * as actions from "./actions";
 import { getLogger } from "../../utilities";
 
-dotenv.config();
 const logger = getLogger("api:client");
 
 export interface DataStoreApiClient {
@@ -21,10 +19,10 @@ export const createDataStoreApiClient = (
 
   const apiClient: DataStoreApiClient = {
     getSubdomainsById: async (tokenId: string) => {
-      logger.debug("Calling to getSubdomainsById")
+      logger.debug("Calling to getSubdomainsById");
       let domains: Domain[] = await actions.getSubdomainsById(
-        tokenId,
         apiUri,
+        tokenId,
         apimHeader
       );
 

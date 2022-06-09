@@ -48,9 +48,7 @@ export const createInstance = (config: Config): Instance => {
   logger.debug(config);
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const znsApiClient: api.znsApiClient = api.createZnsApiClient(
-    config.znsUri
-  );
+  const znsApiClient: api.znsApiClient = api.createZnsApiClient(config.znsUri);
   const dataStoreApiClient: api.DataStoreApiClient =
     api.createDataStoreApiClient(config.dataStoreUri);
 
