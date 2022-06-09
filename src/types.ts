@@ -569,7 +569,7 @@ export interface Instance {
     ): Promise<DomainMetadata>;
   };
   minting: {
-    getPriceOfNetworkDomain(name: string): Promise<number>;
+    getPriceOfNetworkDomain(name: string, signer: ethers.Signer): Promise<string>;
     isNetworkDomainAvailable(name: string): Promise<boolean>;
     mintNetworkDomain(name: string, signer: ethers.Signer): Promise<number>;
   };

@@ -8,7 +8,7 @@ const instance = sdk.createInstance(
 );
 
 const main = async () => {
-  const domains = await instance.setAndLockDomainMetadataUri("", "", wallet);
+  const domains = await instance.minting.getPriceOfNetworkDomain("wildercats", wallet);
 };
 
 main().catch(console.error);
