@@ -27,7 +27,7 @@ import {
   UrlToJobId,
 } from "./types";
 import { Registrar, ZNSHub } from "./contracts/types";
-import { getBasicController, getHubContract } from "./contracts";
+import { getBasicController, getDomainPurchaserContract, getHubContract } from "./contracts";
 
 import * as domains from "./utilities/domains";
 export { domains };
@@ -36,6 +36,7 @@ import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
+import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
 
 export * from "./types";
 export { configuration };
@@ -492,6 +493,18 @@ export const createInstance = (config: Config): Instance => {
         );
       },
     },
+    minting: {
+      getPriceOfNetworkDomain: async (name: string): Promise<number> => {
+          const hub: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
+          return 1;
+      },
+      isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
+        return true;
+      },
+      mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<number> => {
+        return 1;
+      }
+    }
   };
 
   return instance;

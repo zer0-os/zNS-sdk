@@ -568,6 +568,11 @@ export interface Instance {
       ipfsGatewayOverride?: string
     ): Promise<DomainMetadata>;
   };
+  minting: {
+    getPriceOfNetworkDomain(name: string): Promise<number>;
+    isNetworkDomainAvailable(name: string): Promise<boolean>;
+    mintNetworkDomain(name: string, signer: ethers.Signer): Promise<number>;
+  };
 }
 
 export interface UploadJobStatus {
