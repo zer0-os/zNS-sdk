@@ -1,6 +1,5 @@
 import { ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
-import CoinGecko from "coingecko-api";
 
 import { getLogger } from "./utilities";
 export const logger = getLogger().withTag("zns-sdk");
@@ -27,7 +26,11 @@ import {
   UrlToJobId,
 } from "./types";
 import { Registrar, ZNSHub } from "./contracts/types";
-import { getBasicController, getHubContract } from "./contracts";
+import {
+  getBasicController,
+  getERC20Contract,
+  getHubContract,
+} from "./contracts";
 
 import * as domains from "./utilities/domains";
 export { domains };
@@ -36,6 +39,7 @@ import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
+import { ContentModerationResponse } from "./types";
 
 export * from "./types";
 export { configuration };
@@ -48,7 +52,7 @@ export const createInstance = (config: Config): Instance => {
   logger.debug(config);
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const znsApiClient: api.znsApiClient = api.createZnsApiClient(config.znsUri);
+  const znsApiClient: api.znsApiClient = api.createZnsApiClient(config.znsUri, config.utilitiesUri);
   const dataStoreApiClient: api.DataStoreApiClient =
     api.createDataStoreApiClient(config.dataStoreUri);
 
@@ -228,6 +232,28 @@ export const createInstance = (config: Config): Instance => {
           config
         );
         return info;
+      },
+      getUserBalanceForPaymentToken: async (
+        account: string,
+        paymentToken: string
+      ) => {
+        const contract = await getERC20Contract(
+          config.provider,
+          paymentToken
+        );
+        const balance = await contract.balanceOf(account);
+        return balance;
+      },
+      getUserBalanceForPaymentTokenByDomain: async (
+        account: string,
+        domainId: string
+      ) => {
+        const paymentToken = await zAuctionSdkInstance.getPaymentTokenForDomain(
+          domainId
+        );
+        const contract = await getERC20Contract(config.provider, paymentToken);
+        const balance = await contract.balanceOf(account);
+        return balance;
       },
       setPaymentTokenForDomain: async (
         networkId: string,
@@ -483,6 +509,10 @@ export const createInstance = (config: Config): Instance => {
 
       checkUploadJob: (jobId: string): Promise<UploadJobStatus> => {
         return znsApiClient.checkBulkUploadJob([jobId]);
+      },
+
+      checkContentModeration: (text: string): Promise<ContentModerationResponse> => {
+        return znsApiClient.checkContentModeration(text);
       },
 
       getMetadataFromUri: (

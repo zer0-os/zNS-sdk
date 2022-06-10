@@ -1,6 +1,6 @@
 import { DomainMetadata } from "../../../types";
 import { Maybe } from "../../../utilities";
-import { UploadedFileDto } from "../../types";
+import { UploadedFileDto } from "../types";
 import { ipfsHashToUrl, makeApiCall } from "../../helpers";
 
 export const uploadMetadata = async (
