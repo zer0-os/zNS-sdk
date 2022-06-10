@@ -21,6 +21,7 @@ export const mainnetConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
+    utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(mainnetConfig),
     },
@@ -50,6 +51,7 @@ export const kovanConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
+    utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(kovanConfig),
     },
@@ -65,7 +67,7 @@ const rinkebyRegistrar = "0xa4F6C921f914ff7972D7C55c15f015419326e0Ca";
 const rinkebyHub = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
 const rinkebyStaking = "0x7FDd24f30fB8a3E0021e85Fdb737a3483D3C8135";
 const rinkebyBasicController = "0x1188dD1a0F42BA4a117EF1c09D884f5183D40B28";
-const rinkebyDomainPurchaser = ethers.constants.AddressZero;
+const rinkebyDomainPurchaser = "0x2C2535D45C1EC97774fD61935D116e40a2A05ff5";
 export const rinkebyConfiguration = (
   provider: ethers.providers.Provider
 ): Config => {
@@ -78,6 +80,7 @@ export const rinkebyConfiguration = (
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
     apiUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
+    utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(rinkebyConfig),
     },

@@ -1,6 +1,6 @@
 import * as zAuction from "./zAuction";
 import { Maybe } from "./utilities";
-import { ethers } from "ethers";
+import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
 
 /**
@@ -11,6 +11,8 @@ export interface Config {
   subgraphUri: string;
   /** The Metrics server api URL */
   metricsUri: string;
+  /** The utilities api URL */
+  utilitiesUri: string;
   /** The zNS backend api URL */
   apiUri: string;
   /** Addresses of zAuction, legacy zAuction, and the $WILD token */
@@ -63,6 +65,12 @@ interface TokenAllowanceLegacy {
   tokenId?: undefined;
   paymentTokenAddress?: undefined;
   bid?: undefined;
+}
+
+export interface ContentModerationResponse {
+  flagged: boolean;
+  reason: string;
+  offendingTerms: string[];
 }
 
 /**
@@ -322,6 +330,31 @@ export interface Instance {
     getPaymentTokenForDomain: (domainId: string) => Promise<string>;
 
     /**
+     * Get a user's balance for a specific ERC20 token;
+     *
+     * @param account The user to get the balance for
+     * @param erc20TokenAddress The token to get a users balance of
+     */
+    getUserBalanceForPaymentToken: (
+      account: string,
+      paymentToken: string
+    ) => Promise<ethers.BigNumber>;
+
+    /**
+     * Get a user's balance of the ERC20 token used in a domain's network
+     * e.g. 0://wilder.kitty is in the Wilder World network and will
+     * use the payment token specified by that network and return the user's
+     * balance for that token.
+     * 
+     * @param account The user to get the balance for
+     * @param domainId The domain to get the payment token of
+     */
+    getUserBalanceForPaymentTokenByDomain: (
+      account: string,
+      domainId: string
+    ) => Promise<ethers.BigNumber>;
+
+    /**
      * Returns the amount that zAuction has been approved to spend on behalf
      * of the given account.
      *
@@ -556,6 +589,8 @@ export interface Instance {
 
     checkUploadJob(jobId: string): Promise<UploadJobStatus>;
 
+    checkContentModeration(text: string): Promise<ContentModerationResponse>; // Checks if content meets moderation standards
+
     /**
      * Uploads an object to IPFS as JSON
      * @param object Some object
@@ -573,10 +608,8 @@ export interface Instance {
     ): Promise<DomainMetadata>;
   };
   minting: {
-    getPriceOfNetworkDomain(name: string): Promise<number>;
+    getPriceOfNetworkDomain(name: string): Promise<string>;
     isNetworkDomainAvailable(name: string): Promise<boolean>;
-    mintNetworkDomain(name: string, signer: ethers.Signer): Promise<number>;
-
     /**
      * Checks whether the subdomain minter contract is approved to spend tokens
      * @param user The user to check approval for
@@ -605,6 +638,7 @@ export interface Instance {
      * @returns The amount of tokens
      */
     getSpendTokenApprovedAmount(user: string): Promise<string>;
+    mintNetworkDomain(name: string, signer: ethers.Signer): Promise<ContractTransaction>;
   };
 }
 
@@ -653,15 +687,21 @@ export interface Domain {
 export interface DomainMetadata {
   [key: string]: unknown | undefined;
   image: string;
-  animation_url: string | undefined;
   name: string;
   description: string;
-  stakingRequests: "disabled" | "enabled" | undefined;
+  image_full?: string;
+  animation_url?: string;
+  stakingRequests?: StakingRequests;
   isBiddable?: boolean;
   gridViewByDefault?: boolean;
   customDomainHeader?: boolean;
   previewImage?: string;
   customDomainHeaderValue?: string;
+}
+
+export enum StakingRequests {
+  Enabled,
+  Disabled,
 }
 
 export enum IPFSGatewayUri {

@@ -33,7 +33,6 @@ import {
   getERC20Contract,
   getHubContract,
 } from "./contracts";
-
 import * as domains from "./utilities/domains";
 export { domains };
 
@@ -42,6 +41,8 @@ import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
 import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
+import { ContentModerationResponse } from "./types";
+import { isNetworkDomainAvailable } from "./actions";
 
 export * from "./types";
 export { configuration };
@@ -49,12 +50,15 @@ export { configuration };
 const invalidInputMessage =
   "Please only make requests of up to 100 URLs at a time.";
 
+const networkDomainNotAvailable =
+  "The requested network domain is not available.";
+
 export const createInstance = (config: Config): Instance => {
   logger.debug(`Creating instance of zNS SDK`);
   logger.debug(config);
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const apiClient = api.createClient(config.apiUri);
+  const apiClient = api.createClient(config.apiUri, config.utilitiesUri);
 
   const zAuctionConfig: zAuction.Config = {
     ...config.zAuction,
@@ -232,6 +236,28 @@ export const createInstance = (config: Config): Instance => {
           config
         );
         return info;
+      },
+      getUserBalanceForPaymentToken: async (
+        account: string,
+        paymentToken: string
+      ) => {
+        const contract = await getERC20Contract(
+          config.provider,
+          paymentToken
+        );
+        const balance = await contract.balanceOf(account);
+        return balance;
+      },
+      getUserBalanceForPaymentTokenByDomain: async (
+        account: string,
+        domainId: string
+      ) => {
+        const paymentToken = await zAuctionSdkInstance.getPaymentTokenForDomain(
+          domainId
+        );
+        const contract = await getERC20Contract(config.provider, paymentToken);
+        const balance = await contract.balanceOf(account);
+        return balance;
       },
       setPaymentTokenForDomain: async (
         networkId: string,
@@ -489,6 +515,10 @@ export const createInstance = (config: Config): Instance => {
         return apiClient.checkBulkUploadJob([jobId]);
       },
 
+      checkContentModeration: (text: string): Promise<ContentModerationResponse> => {
+        return apiClient.checkContentModeration(text);
+      },
+
       getMetadataFromUri: (
         metadataUri: string,
         gatewayOverride?: string
@@ -501,21 +531,13 @@ export const createInstance = (config: Config): Instance => {
       },
     },
     minting: {
-      getPriceOfNetworkDomain: async (name: string): Promise<number> => {
-        const hub: DomainPurchaser = await getDomainPurchaserContract(
-          config.provider,
-          config.domainPurchaser
-        );
-        return 1;
+      getPriceOfNetworkDomain: async (name: string): Promise<string> => {
+        const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
+        return actions.getPriceOfNetworkDomain(name, purchaser);
       },
       isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
-        return true;
-      },
-      mintNetworkDomain: async (
-        name: string,
-        signer: ethers.Signer
-      ): Promise<number> => {
-        return 1;
+        const hub: ZNSHub = await getHubContract(config.provider, config.hub);
+        return actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri);
       },
       isMinterApprovedToSpendTokens: async (
         user: string,
@@ -591,6 +613,19 @@ export const createInstance = (config: Config): Instance => {
         return allowance;
       },
     },
+      mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<ContractTransaction> => {
+        const hub: ZNSHub = await getHubContract(config.provider, config.hub);
+        const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
+        if (await actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri)){
+          const metadata = await actions.generateDefaultMetadata(
+            apiClient,
+            name       
+            );
+          return actions.mintNetworkDomain(name, metadata, signer, purchaser);
+        }
+        throw new Error(networkDomainNotAvailable);
+      }
+    }
   };
 
   return instance;
