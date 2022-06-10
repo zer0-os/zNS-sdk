@@ -1,4 +1,4 @@
-import { ContractTransaction, ethers } from "ethers";
+import { BigNumber, ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 import CoinGecko from "coingecko-api";
 
@@ -27,7 +27,12 @@ import {
   UrlToJobId,
 } from "./types";
 import { Registrar, ZNSHub } from "./contracts/types";
-import { getBasicController, getDomainPurchaserContract, getHubContract, getERC20Contract } from "./contracts";
+import {
+  getBasicController,
+  getDomainPurchaserContract,
+  getERC20Contract,
+  getHubContract,
+} from "./contracts";
 import * as domains from "./utilities/domains";
 export { domains };
 
@@ -534,6 +539,80 @@ export const createInstance = (config: Config): Instance => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
         return actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri);
       },
+      isMinterApprovedToSpendTokens: async (
+        user: string,
+        required?: string
+      ): Promise<boolean> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+        const allowance = await actions.getApprovedSpendTokenAmount(
+          paymentToken,
+          config.domainPurchaser,
+          user
+        );
+
+        if (!required) {
+          // Default to 10^10 if user doesn't provide a value
+          required = Math.pow(10, 10).toString();
+        }
+
+        const requiredAmount = BigNumber.from(required);
+        const allowanceAsNumber = BigNumber.from(allowance);
+        const approved = allowanceAsNumber.gte(requiredAmount);
+
+        return approved;
+      },
+      approveMinterToSpendTokens: async (
+        signer: ethers.Signer,
+        amount?: string
+      ): Promise<ethers.ContractTransaction> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+
+        let approvalAmount = ethers.constants.MaxUint256;
+        if (amount) {
+          approvalAmount = ethers.utils.parseEther(amount);
+        }
+
+        const tx = await paymentToken
+          .connect(signer)
+          .approve(config.domainPurchaser, approvalAmount);
+
+        return tx;
+      },
+      getSpendTokenApprovedAmount: async (user: string): Promise<string> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+        const allowance = await actions.getApprovedSpendTokenAmount(
+          paymentToken,
+          config.domainPurchaser,
+          user
+        );
+
+        return allowance;
+      },
+    },
       mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<ContractTransaction> => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
         const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    

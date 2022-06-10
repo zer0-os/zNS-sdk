@@ -610,6 +610,34 @@ export interface Instance {
   minting: {
     getPriceOfNetworkDomain(name: string): Promise<string>;
     isNetworkDomainAvailable(name: string): Promise<boolean>;
+    /**
+     * Checks whether the subdomain minter contract is approved to spend tokens
+     * @param user The user to check approval for
+     * @param required *Optional* How many tokens of allowance the minter contract needs to be considered approved
+     * @returns True if the minter contract is approved
+     */
+    isMinterApprovedToSpendTokens(
+      user: string,
+      required?: string
+    ): Promise<boolean>;
+
+    /**
+     * Approves the subdomain minter contract to spend tokens on behalf of the signer
+     * @param signer The signer for the user to approve the tokens for
+     * @param amount *Optional* The amount of tokens to approve the minter contract to spend. Defaults to MaxUInt256. This value should be in human readable format, NOT prefixed by 18 decimals.
+     * @returns The contract transaction to approve
+     */
+    approveMinterToSpendTokens(
+      signer: ethers.Signer,
+      amount?: string
+    ): Promise<ethers.ContractTransaction>;
+
+    /**
+     * Gets the current allowance the subdomain minter contract has for spending the users tokens
+     * @param user The user to check
+     * @returns The amount of tokens
+     */
+    getSpendTokenApprovedAmount(user: string): Promise<string>;
     mintNetworkDomain(name: string, signer: ethers.Signer): Promise<ContractTransaction>;
   };
 }

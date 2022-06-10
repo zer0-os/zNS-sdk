@@ -14,6 +14,7 @@ export * from "./setPaymentTokenForDomain";
 export * from "./setDomainRoyalty";
 export * from "./transferOwnership";
 export * from "./getZAuctionSpendAllowance";
+export * from "./minting";
 export * from "./getPriceOfNetworkDomain";
 export * from "./isNetworkDomainAvailable";
 export * from './generateDefaultMetadata';
