@@ -12,10 +12,6 @@ export interface DataStoreApiClient {
 export const createDataStoreApiClient = (
   apiUri: string
 ): DataStoreApiClient => {
-  const APIM_KEY = env.get("OCP_APIM_SUBSCRIPTION_KEY").required().asString();
-  const apimHeader: Record<string, string> = {
-    "Ocp-Apim-Subscription-Key": APIM_KEY,
-  };
 
   const apiClient: DataStoreApiClient = {
     getSubdomainsById: async (tokenId: string) => {
@@ -23,7 +19,6 @@ export const createDataStoreApiClient = (
       let domains: Domain[] = await actions.getSubdomainsById(
         apiUri,
         tokenId,
-        apimHeader
       );
 
       return domains;

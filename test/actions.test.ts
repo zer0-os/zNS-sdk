@@ -169,7 +169,7 @@ describe("Test Custom SDK Logic", () => {
   });
 
   describe("getSubdomainsById", () => {
-    it("Returns the correct number of subdomains", async () => {
+    it("Returns a number of subdomains that isn't 0", async () => {
       const domains: Domain[] = await dataStoreApiClient.getSubdomainsById(
         domainThatHasSubdomains
       );

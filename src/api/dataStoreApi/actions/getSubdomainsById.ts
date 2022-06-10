@@ -1,22 +1,26 @@
 import { Maybe } from "../../../utilities";
 import { Domain } from "../../../types";
-import { DomainCollection } from "../types";
+import { DomainCollection, RequestBody } from "../types";
 import { makeApiCall } from "../../helpers";
 import { ethers } from "ethers";
 
 export const getSubdomainsById = async (
   apiUri: string,
   tokenId: string,
-  header: Record<string, string>
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
-
+  const body: RequestBody = {
+    options: {
+      projection: {
+        _id: 0,
+      },
+    },
+  };
   try {
     response = await makeApiCall<DomainCollection>(
       `${apiUri}domains/subdomains/${tokenId}`,
       "POST",
-      undefined,
-      header
+      JSON.stringify(body)
     );
   } catch (e) {
     throw Error(`Failed to get subdomains for ${tokenId}: ${e}`);

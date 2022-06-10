@@ -35,7 +35,33 @@ export interface DataStoreDomain {
   lockedBy?: DomainProperty<string>;
 }
 
+type Show = 1;
+type Hide = 0;
+type OptionsValue = Show | Hide;
+
+type Ascending = 1;
+type Descending = -1;
+type SortOrder = Ascending | Descending;
+
 export interface DomainCollection {
   numResults: number;
   result: DataStoreDomain[];
+}
+
+interface RequestBodyOptionsSort {
+  [domainProperty: string]: SortOrder
+}
+
+interface RequestBodyOptionsProjection {
+  [domainProperty: string]: OptionsValue
+}
+
+interface RequestBodyOptions {
+  sort?: RequestBodyOptionsSort;
+  projection?: RequestBodyOptionsProjection;
+}
+export interface RequestBody {
+  options?: RequestBodyOptions;
+  skip?: number;
+  limit?: number;
 }
