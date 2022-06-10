@@ -1,20 +1,20 @@
-import { Maybe } from "../../utilities";
+import { Maybe } from "../../../utilities";
 import { UploadedFileDto } from "../types";
-import { ipfsHashToUrl, makeApiCall } from "./helpers";
+import { makeApiCall } from "../../helpers";
 
-export const uploadMedia = async (
+export const uploadObject = async (
   apiUri: string,
-  media: Buffer
+  object: Record<string, unknown>
 ): Promise<string> => {
   let response: Maybe<UploadedFileDto>;
   try {
     response = await makeApiCall<UploadedFileDto>(
-      `${apiUri}/uploadCloudinary`,
+      `${apiUri}/upload`,
       "POST",
-      media
+      object
     );
   } catch (e) {
-    throw Error(`Failed to upload metadata: ${e}`);
+    throw Error(`Failed to upload object: ${e}`);
   }
 
   const url = response.url;

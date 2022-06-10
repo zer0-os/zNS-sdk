@@ -1,5 +1,5 @@
 import * as ethers from "ethers";
-import { Registrar, ZNSHub } from "../contracts/types";
+import { ZNSHub } from "../contracts/types";
 import { getRegistrarForDomain } from "../helpers";
 import { validateUserOwnsDomain } from "./helpers";
 import { getLogger } from "../utilities";

@@ -1,7 +1,7 @@
-import { Registrar, ZNSHub } from "../contracts/types";
+import { ZNSHub } from "../contracts/types";
 import { validateOwnerAndStatus } from "./helpers";
 import { ethers } from "ethers";
-import { ApiClient } from "../api";
+import { znsApiClient } from "../api";
 import { DomainMetadata } from "..";
 import { getRegistrarForDomain } from "../helpers";
 import { getLogger } from "../utilities";
@@ -11,7 +11,7 @@ const logger = getLogger("actions:setDomainMetadata");
 export const setDomainMetadata = async (
   domainId: string,
   metadata: DomainMetadata,
-  client: ApiClient,
+  client: znsApiClient,
   signer: ethers.Signer,
   hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {

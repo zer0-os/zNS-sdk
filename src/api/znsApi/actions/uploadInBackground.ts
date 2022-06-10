@@ -5,7 +5,7 @@ import {
   UploadJobStatus,
   UrlToIPFS,
   UrlToJobId,
-} from "../../types";
+} from "../../../types";
 import * as fs from "fs";
 
 const URLS_PER_CHUNK_START = 100;

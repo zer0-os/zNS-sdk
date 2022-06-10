@@ -17,7 +17,9 @@ export interface Config {
   /** The utilities api URL */
   utilitiesUri: string;
   /** The zNS backend api URL */
-  apiUri: string;
+  znsUri: string;
+  /** The zNS Data Store API URI */
+  dataStoreUri: string;
   /** Addresses of zAuction, legacy zAuction, and the $WILD token */
   zAuction: zAuction.Config;
   /** Address of the zNS Basic controller to use */
@@ -147,8 +149,10 @@ export interface Instance {
   /**
    * Finds all subdomains of a given domain
    * @param domainId (parent) domain id
+   * @param useDataStoreApi Optional, indicate whether to query with 
+   * the DataStore or the Subgraph. Default is to use the DataStore
    */
-  getSubdomainsById(domainId: string): Promise<Domain[]>;
+  getSubdomainsById(domainId: string, useDataStoreAPI?: boolean): Promise<Domain[]>;
 
   /**
    * Finds all recent subdomains of a given domain

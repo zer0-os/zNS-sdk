@@ -12,6 +12,7 @@ import {
 } from "./zAuction";
 import {
   Config,
+  Domain,
   DomainMetadata,
   DomainPurchaserConfig,
   Instance,
@@ -56,7 +57,12 @@ export const createInstance = (config: Config): Instance => {
   logger.debug(config);
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const apiClient = api.createClient(config.apiUri, config.utilitiesUri);
+  const znsApiClient: api.znsApiClient = api.createZnsApiClient(
+    config.znsUri,
+    config.utilitiesUri
+  );
+  const dataStoreApiClient: api.DataStoreApiClient =
+    api.createDataStoreApiClient(config.dataStoreUri);
 
   const zAuctionConfig: zAuction.Config = {
     ...config.zAuction,
@@ -69,7 +75,18 @@ export const createInstance = (config: Config): Instance => {
     getDomainById: subgraphClient.getDomainById,
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
-    getSubdomainsById: subgraphClient.getSubdomainsById,
+    getSubdomainsById: async (
+      domainId: string,
+      useDataStoreAPI: boolean = true
+    ): Promise<Domain[]> => {
+      let domains: Domain[];
+      if (useDataStoreAPI) {
+        domains = await dataStoreApiClient.getSubdomainsById(domainId);
+      } else {
+        domains = await subgraphClient.getSubdomainsById(domainId);
+      }
+      return domains;
+    },
     getMostRecentSubdomainsById: subgraphClient.getMostRecentSubdomainsById,
     getMostRecentDomains: subgraphClient.getMostRecentDomains,
     getDomainEvents: async (domainId: string) => {
@@ -99,8 +116,8 @@ export const createInstance = (config: Config): Instance => {
         params,
         owner,
         basicController.registerSubdomainExtended,
-        apiClient.uploadMedia,
-        apiClient.uploadMetadata,
+        znsApiClient.uploadMedia,
+        znsApiClient.uploadMetadata,
         statusCallback
       );
 
@@ -154,7 +171,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setDomainMetadata(
         domainId,
         metadata,
-        apiClient,
+        znsApiClient,
         signer,
         hub
       );
@@ -184,7 +201,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setAndLockDomainMetadata(
         domainId,
         metadata,
-        apiClient,
+        znsApiClient,
         signer,
         hub
       );
@@ -481,10 +498,10 @@ export const createInstance = (config: Config): Instance => {
         return domain.contract;
       },
       uploadMedia: async (media: Buffer): Promise<string> =>
-        apiClient.uploadMedia(media),
+        znsApiClient.uploadMedia(media),
       uploadObjectAsJson: async (
         object: Record<string, unknown>
-      ): Promise<string> => apiClient.uploadObject(object),
+      ): Promise<string> => znsApiClient.uploadObject(object),
 
       startUrlUploadJob: (urls: string[]): Promise<UrlToJobId> => {
         if (urls.length > 100) {
@@ -493,7 +510,7 @@ export const createInstance = (config: Config): Instance => {
         if (urls.length == 0) {
           return Promise.resolve<UrlToJobId>({});
         }
-        return apiClient.startBulkUpload(urls);
+        return znsApiClient.startBulkUpload(urls);
       },
 
       checkBulkUploadJob: (jobIds: string[]): Promise<UploadJobStatus> => {
@@ -503,11 +520,11 @@ export const createInstance = (config: Config): Instance => {
         if (jobIds.length == 0) {
           throw new Error(`no jobs`);
         }
-        return apiClient.checkBulkUploadJob(jobIds);
+        return znsApiClient.checkBulkUploadJob(jobIds);
       },
 
       checkUploadJob: (jobId: string): Promise<UploadJobStatus> => {
-        return apiClient.checkBulkUploadJob([jobId]);
+        return znsApiClient.checkBulkUploadJob([jobId]);
       },
 
       checkContentModeration: (

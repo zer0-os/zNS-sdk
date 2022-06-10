@@ -1,5 +1,5 @@
 import { DomainMetadata, IPFSGatewayUri } from "../types";
-import { makeApiCall } from "../api/actions/helpers";
+import { makeApiCall } from "../api/helpers";
 import { getLogger } from "../utilities";
 
 const logger = getLogger("actions:getMetadataFromUri");
