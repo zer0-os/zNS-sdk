@@ -1,14 +1,14 @@
 import fetch from "cross-fetch";
-import { getLogger } from "../../utilities";
+import { getLogger } from "../utilities";
 
 const logger = getLogger("api:actions:helpers");
 
 export const makeApiCall = async <T>(
   url: string,
   method: "GET" | "POST",
-  body?: string | Record<string, unknown> | Buffer
+  body?: string | Record<string, unknown> | Buffer,
+  headers: Record<string, string> = {}
 ): Promise<T> => {
-  const headers: Record<string, string> = {};
   logger.trace(`Calling to API with URL or ${url}`);
   if (body) {
     if (typeof body !== "string" && !Buffer.isBuffer(body)) {

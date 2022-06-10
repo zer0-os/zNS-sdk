@@ -1,4 +1,4 @@
-import { makeApiCall } from "../api/actions/helpers";
+import { makeApiCall } from "../api/helpers";
 import { DomainMetricsCollection } from "../types";
 import { getLogger } from "../utilities";
 

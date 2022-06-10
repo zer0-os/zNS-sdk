@@ -14,7 +14,7 @@ const main = async () => {
     ) as Web3Provider
   );
 
-  sdkConfig.apiUri = "https://zns-backend-dev.herokuapp.com/api";
+  sdkConfig.znsUri = "https://zns-backend-dev.herokuapp.com/api";
 
   const instance = createInstance(sdkConfig);
 

@@ -1,7 +1,7 @@
-import { ContentModerationResponse } from "../../types";
-import { Maybe } from "../../utilities";
 import { ContentModeration } from "../types";
-import { makeApiCall } from "./helpers";
+import { Maybe } from "../../../utilities";
+import { makeApiCall } from "../../helpers";
+import { ContentModerationResponse } from "../../../types";
 
 const regex = /^[a-zA-Z0-9]+$/; //Matches whitespace and alphanumeric characters
 const reasons = {
@@ -22,11 +22,12 @@ export const checkContentModeration = async (
       response.flagged = true;
       response.reason = reasons.specialCharacters;
     } else {
-      const moderation: Maybe<ContentModeration> = await makeApiCall<ContentModeration>(
-        `${apiUri}/content/moderator`,
-        "POST",
-        text
-      );
+      const moderation: Maybe<ContentModeration> =
+        await makeApiCall<ContentModeration>(
+          `${apiUri}/content/moderator`,
+          "POST",
+          text
+        );
       if (moderation?.Classification?.ReviewRecommended ?? true) {
         response.flagged = true;
         response.reason = reasons.explicitContent;
