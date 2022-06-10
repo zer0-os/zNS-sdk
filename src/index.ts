@@ -1,10 +1,7 @@
-import { BigNumber, ContractTransaction, ethers } from "ethers";
+import { ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
-import CoinGecko from "coingecko-api";
-
 import { getLogger } from "./utilities";
 export const logger = getLogger().withTag("zns-sdk");
-
 import * as subgraph from "./subgraph";
 import * as api from "./api";
 import * as actions from "./actions";
@@ -16,9 +13,11 @@ import {
 import {
   Config,
   DomainMetadata,
+  DomainPurchaserConfig,
   Instance,
   IPFSGatewayUri,
   MintSubdomainStatusCallback,
+  NetworkDomainMintableConfig,
   PlaceBidParams,
   SubdomainParams,
   TokenAllowanceParams,
@@ -42,7 +41,6 @@ import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
 import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
 import { ContentModerationResponse } from "./types";
-import { isNetworkDomainAvailable } from "./actions";
 
 export * from "./types";
 export { configuration };
@@ -241,10 +239,7 @@ export const createInstance = (config: Config): Instance => {
         account: string,
         paymentToken: string
       ) => {
-        const contract = await getERC20Contract(
-          config.provider,
-          paymentToken
-        );
+        const contract = await getERC20Contract(config.provider, paymentToken);
         const balance = await contract.balanceOf(account);
         return balance;
       },
@@ -515,7 +510,9 @@ export const createInstance = (config: Config): Instance => {
         return apiClient.checkBulkUploadJob([jobId]);
       },
 
-      checkContentModeration: (text: string): Promise<ContentModerationResponse> => {
+      checkContentModeration: (
+        text: string
+      ): Promise<ContentModerationResponse> => {
         return apiClient.checkContentModeration(text);
       },
 
@@ -532,42 +529,33 @@ export const createInstance = (config: Config): Instance => {
     },
     minting: {
       getPriceOfNetworkDomain: async (name: string): Promise<string> => {
-        const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
+        const purchaser: DomainPurchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
         return actions.getPriceOfNetworkDomain(name, purchaser);
       },
       isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
-        return actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri);
+        return actions.isNetworkDomainAvailable(name, hub, apiClient);
       },
       isMinterApprovedToSpendTokens: async (
         user: string,
         required?: string
       ): Promise<boolean> => {
-        const purchaser = await getDomainPurchaserContract(
-          config.provider,
-          config.domainPurchaser
+        const purchaserConfig: DomainPurchaserConfig = {
+          domainPurchaser: await getDomainPurchaserContract(
+            config.provider,
+            config.domainPurchaser
+          ),
+          provider: config.provider,
+          contractAddress: config.domainPurchaser,
+        };
+        return await actions.isMinterApprovedToSpendTokens(
+          user,
+          purchaserConfig,
+          required
         );
-        const tokenAddress = await purchaser.paymentToken();
-        const paymentToken = await getERC20Contract(
-          config.provider,
-          tokenAddress
-        );
-        const allowance = await actions.getApprovedSpendTokenAmount(
-          paymentToken,
-          config.domainPurchaser,
-          user
-        );
-
-        if (!required) {
-          // Default to 10^10 if user doesn't provide a value
-          required = Math.pow(10, 10).toString();
-        }
-
-        const requiredAmount = BigNumber.from(required);
-        const allowanceAsNumber = BigNumber.from(allowance);
-        const approved = allowanceAsNumber.gte(requiredAmount);
-
-        return approved;
       },
       approveMinterToSpendTokens: async (
         signer: ethers.Signer,
@@ -612,20 +600,35 @@ export const createInstance = (config: Config): Instance => {
 
         return allowance;
       },
-    },
-      mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<ContractTransaction> => {
+      mintNetworkDomain: async (
+        name: string,
+        signer: ethers.Signer
+      ): Promise<ContractTransaction> => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
-        const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
-        if (await actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri)){
-          const metadata = await actions.generateDefaultMetadata(
-            apiClient,
-            name       
-            );
-          return actions.mintNetworkDomain(name, metadata, signer, purchaser);
-        }
-        throw new Error(networkDomainNotAvailable);
-      }
-    }
+        const purchaserConfig: DomainPurchaserConfig = {
+          domainPurchaser: await getDomainPurchaserContract(
+            config.provider,
+            config.domainPurchaser
+          ),
+          provider: config.provider,
+          contractAddress: config.domainPurchaser,
+        };
+        const mintableConfig: NetworkDomainMintableConfig = {
+          znsHub: hub,
+          domainPurchaser: purchaserConfig,
+          services: {
+            apiClient: apiClient,
+          },
+        };
+        const metadata = await actions.generateDefaultMetadata(apiClient, name);
+        return await actions.mintNetworkDomain(
+          name,
+          mintableConfig,
+          metadata,
+          signer
+        );
+      },
+    },
   };
 
   return instance;
