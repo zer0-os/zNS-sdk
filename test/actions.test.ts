@@ -60,7 +60,6 @@ describe("Test Custom SDK Logic", () => {
   // Rinkeby
   const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const apiClient = api.createClient(config.apiUri, config.utilitiesUri);
   const znsApiClient = api.createZnsApiClient(
     config.znsUri,
     config.utilitiesUri

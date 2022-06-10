@@ -4,7 +4,7 @@ import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
 import { ZNSHub } from "./contracts/types";
 import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
-import { ApiClient } from "./api";
+import { znsApiClient } from "./api/znsApi/client";
 
 /**
  * Configuration for a zNS sdk instance
@@ -38,7 +38,7 @@ export interface NetworkDomainMintableConfig {
   znsHub: ZNSHub;
   domainPurchaser: DomainPurchaserConfig;
   services: {
-    apiClient: ApiClient;
+    apiClient: znsApiClient;
   };
 }
 
@@ -149,10 +149,13 @@ export interface Instance {
   /**
    * Finds all subdomains of a given domain
    * @param domainId (parent) domain id
-   * @param useDataStoreApi Optional, indicate whether to query with 
+   * @param useDataStoreApi Optional, indicate whether to query with
    * the DataStore or the Subgraph. Default is to use the DataStore
    */
-  getSubdomainsById(domainId: string, useDataStoreAPI?: boolean): Promise<Domain[]>;
+  getSubdomainsById(
+    domainId: string,
+    useDataStoreAPI?: boolean
+  ): Promise<Domain[]>;
 
   /**
    * Finds all recent subdomains of a given domain

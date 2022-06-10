@@ -1,13 +1,13 @@
 import { domainNameToId, getLogger } from "../../utilities";
 import { ZNSHub } from "../../contracts/types";
-import { ApiClient } from "../../api";
+import { znsApiClient } from "../../api";
 
 const logger = getLogger("actions:getDomainMetadata");
 
 export const isNetworkDomainAvailable = async (
   name: string,
   hub: ZNSHub,
-  apiClient: ApiClient
+  apiClient: znsApiClient
 ): Promise<boolean> => {
   logger.trace(`Checking network domain availability for: ${name}`);
   // Check if name passes validation
