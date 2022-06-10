@@ -530,7 +530,7 @@ export const createInstance = (config: Config): Instance => {
       checkContentModeration: (
         text: string
       ): Promise<ContentModerationResponse> => {
-        return apiClient.checkContentModeration(text);
+        return znsApiClient.checkContentModeration(text);
       },
 
       getMetadataFromUri: (
@@ -554,7 +554,7 @@ export const createInstance = (config: Config): Instance => {
       },
       isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
-        return actions.isNetworkDomainAvailable(name, hub, apiClient);
+        return actions.isNetworkDomainAvailable(name, hub, znsApiClient);
       },
       isMinterApprovedToSpendTokens: async (
         user: string,
@@ -634,10 +634,13 @@ export const createInstance = (config: Config): Instance => {
           znsHub: hub,
           domainPurchaser: purchaserConfig,
           services: {
-            apiClient: apiClient,
+            apiClient: znsApiClient,
           },
         };
-        const metadata = await actions.generateDefaultMetadata(apiClient, name);
+        const metadata = await actions.generateDefaultMetadata(
+          znsApiClient,
+          name
+        );
         return await actions.mintNetworkDomain(
           name,
           mintableConfig,
