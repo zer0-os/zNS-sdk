@@ -14,6 +14,7 @@ import {
 } from "./zAuction";
 import {
   Config,
+  Domain,
   DomainMetadata,
   Instance,
   IPFSGatewayUri,
@@ -52,7 +53,10 @@ export const createInstance = (config: Config): Instance => {
   logger.debug(config);
 
   const subgraphClient = subgraph.createClient(config.subgraphUri);
-  const znsApiClient: api.znsApiClient = api.createZnsApiClient(config.znsUri, config.utilitiesUri);
+  const znsApiClient: api.znsApiClient = api.createZnsApiClient(
+    config.znsUri,
+    config.utilitiesUri
+  );
   const dataStoreApiClient: api.DataStoreApiClient =
     api.createDataStoreApiClient(config.dataStoreUri);
 
@@ -67,7 +71,18 @@ export const createInstance = (config: Config): Instance => {
     getDomainById: subgraphClient.getDomainById,
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: subgraphClient.getDomainsByOwner,
-    getSubdomainsById: dataStoreApiClient.getSubdomainsById,
+    getSubdomainsById: async (
+      domainId: string,
+      useDataStoreAPI: boolean = true
+    ): Promise<Domain[]> => {
+      let domains: Domain[];
+      if (useDataStoreAPI) {
+        domains = await dataStoreApiClient.getSubdomainsById(domainId);
+      } else {
+        domains = await subgraphClient.getSubdomainsById(domainId);
+      }
+      return domains;
+    },
     getMostRecentSubdomainsById: subgraphClient.getMostRecentSubdomainsById,
     getMostRecentDomains: subgraphClient.getMostRecentDomains,
     getDomainEvents: async (domainId: string) => {
@@ -237,10 +252,7 @@ export const createInstance = (config: Config): Instance => {
         account: string,
         paymentToken: string
       ) => {
-        const contract = await getERC20Contract(
-          config.provider,
-          paymentToken
-        );
+        const contract = await getERC20Contract(config.provider, paymentToken);
         const balance = await contract.balanceOf(account);
         return balance;
       },
@@ -511,7 +523,9 @@ export const createInstance = (config: Config): Instance => {
         return znsApiClient.checkBulkUploadJob([jobId]);
       },
 
-      checkContentModeration: (text: string): Promise<ContentModerationResponse> => {
+      checkContentModeration: (
+        text: string
+      ): Promise<ContentModerationResponse> => {
         return znsApiClient.checkContentModeration(text);
       },
 

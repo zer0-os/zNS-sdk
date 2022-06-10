@@ -131,8 +131,10 @@ export interface Instance {
   /**
    * Finds all subdomains of a given domain
    * @param domainId (parent) domain id
+   * @param useDataStoreApi Optional, indicate whether to query with 
+   * the DataStore or the Subgraph. Default is to use the DataStore
    */
-  getSubdomainsById(domainId: string): Promise<Domain[]>;
+  getSubdomainsById(domainId: string, useDataStoreAPI?: boolean): Promise<Domain[]>;
 
   /**
    * Finds all recent subdomains of a given domain
