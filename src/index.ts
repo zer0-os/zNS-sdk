@@ -37,12 +37,16 @@ import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
 import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
 import { ContentModerationResponse } from "./types";
+import { isNetworkDomainAvailable } from "./actions";
 
 export * from "./types";
 export { configuration };
 
 const invalidInputMessage =
   "Please only make requests of up to 100 URLs at a time.";
+
+const networkDomainNotAvailable =
+  "The requested network domain is not available.";
 
 export const createInstance = (config: Config): Instance => {
   logger.debug(`Creating instance of zNS SDK`);
@@ -530,8 +534,17 @@ export const createInstance = (config: Config): Instance => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
         return actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri);
       },
-      mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<number> => {
-        return 1;
+      mintNetworkDomain: async(name: string, signer: ethers.Signer): Promise<ContractTransaction> => {
+        const hub: ZNSHub = await getHubContract(config.provider, config.hub);
+        const purchaser: DomainPurchaser = await getDomainPurchaserContract(config.provider, config.domainPurchaser);    
+        if (await actions.isNetworkDomainAvailable(name, hub, config.utilitiesUri)){
+          const metadata = await actions.generateDefaultMetadata(
+            apiClient,
+            name       
+            );
+          return actions.mintNetworkDomain(name, metadata, signer, purchaser);
+        }
+        throw new Error(networkDomainNotAvailable);
       }
     }
   };

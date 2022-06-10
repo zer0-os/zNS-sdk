@@ -11,7 +11,7 @@ export const isNetworkDomainAvailable = async (
 ): Promise<boolean> => {
     logger.trace(`Checking network domain availability for: ${name}`);
     // Check if name passes validation
-    let moderation = await checkContentModeration(apiUri, name);
+    const moderation = await checkContentModeration(apiUri, name);
     if (moderation?.flagged ?? false)
     {
         logger.trace(`${name}: was flagged for review, with reason: ${moderation?.reason}`);
@@ -19,6 +19,6 @@ export const isNetworkDomainAvailable = async (
     }
     //Check domain availability
     let id = domainNameToId(name);
-    const available = await hub.domainExists(id)
+    const available = !(await hub.domainExists(id))
     return available;
 };

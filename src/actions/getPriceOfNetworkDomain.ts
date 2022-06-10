@@ -9,8 +9,8 @@ export const getPriceOfNetworkDomain = async (
   domainPurchaser: DomainPurchaser
 ): Promise<string> => {
     logger.trace(`Get price of network domain for: ${name}`);
-    const tx = await domainPurchaser
+    const price = await domainPurchaser
       .getDomainPrice(0, name);
-    const price = ethers.utils.formatEther(tx);
-    return price;
+    const formattedPrice = ethers.utils.formatEther(price);
+    return formattedPrice;
 };

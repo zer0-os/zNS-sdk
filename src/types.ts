@@ -1,6 +1,6 @@
 import * as zAuction from "./zAuction";
 import { Maybe } from "./utilities";
-import { ethers } from "ethers";
+import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
 
 /**
@@ -610,7 +610,7 @@ export interface Instance {
   minting: {
     getPriceOfNetworkDomain(name: string): Promise<string>;
     isNetworkDomainAvailable(name: string): Promise<boolean>;
-    mintNetworkDomain(name: string, signer: ethers.Signer): Promise<number>;
+    mintNetworkDomain(name: string, signer: ethers.Signer): Promise<ContractTransaction>;
   };
 }
 

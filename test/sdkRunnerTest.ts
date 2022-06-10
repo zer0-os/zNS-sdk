@@ -9,8 +9,10 @@ const instance = sdk.createInstance(
 
 const main = async () => {
   const domains = await instance.minting.getPriceOfNetworkDomain("wildercats");
-  const available = await instance.minting.isNetworkDomainAvailable("wildercats");
-  const notAvailable = await instance.minting.isNetworkDomainAvailable("booty");
+  //const available = await instance.minting.isNetworkDomainAvailable("wildercats");
+  //const notAvailable = await instance.minting.isNetworkDomainAvailable("booty");
+  const MintSubdomainStep = await instance.minting.mintNetworkDomain("civilizedglobe", wallet);
 };
 
 main().catch(console.error);
+
