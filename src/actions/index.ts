@@ -1,3 +1,5 @@
+import exp from "constants";
+
 export * from "./getDomainEvents";
 export * from "./getDomainMetadata";
 export * from "./getMetadataFromUri";
@@ -12,4 +14,8 @@ export * from "./setPaymentTokenForDomain";
 export * from "./setDomainRoyalty";
 export * from "./transferOwnership";
 export * from "./getZAuctionSpendAllowance";
-export * from './generateDefaultMetadata';
+export * from "./minting";
+export * from "./getPriceOfNetworkDomain";
+export * from "./minting/isNetworkDomainAvailable";
+export * from "./generateDefaultMetadata";
+export * from "./minting/mintNetworkDomain";

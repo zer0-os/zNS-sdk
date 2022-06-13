@@ -11,6 +11,8 @@ import {
   ZNSHub,
   ZNSHub__factory,
 } from "./types";
+import { DomainPurchaser } from "./types/DomainPurchaser";
+import { DomainPurchaser__factory } from "./types/factories/DomainPurchaser__factory";
 
 export const getRegistrar = async (
   web3Provider: ethers.providers.Provider | ethers.Signer,
@@ -49,5 +51,13 @@ export const getHubContract = async (
   address: string
 ): Promise<ZNSHub> => {
   const contract = ZNSHub__factory.connect(address, web3Provider);
+  return contract;
+};
+
+export const getDomainPurchaserContract = async (
+  web3Provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<DomainPurchaser> => {
+  const contract = DomainPurchaser__factory.connect(address, web3Provider);
   return contract;
 };

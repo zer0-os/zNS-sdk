@@ -1,9 +1,7 @@
 import { ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
-
 import { getLogger } from "./utilities";
 export const logger = getLogger().withTag("zns-sdk");
-
 import * as subgraph from "./subgraph";
 import * as api from "./api";
 import * as actions from "./actions";
@@ -29,10 +27,10 @@ import {
 import { Registrar, ZNSHub } from "./contracts/types";
 import {
   getBasicController,
+  getDomainPurchaserContract,
   getERC20Contract,
   getHubContract,
 } from "./contracts";
-
 import * as domains from "./utilities/domains";
 export { domains };
 
@@ -40,13 +38,21 @@ import * as configuration from "./configuration";
 import { getDomainMetrics } from "./actions/getDomainMetrics";
 import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
+import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
 import { ContentModerationResponse } from "./types";
+import {
+  DomainPurchaserConfig,
+  NetworkDomainMintableConfig,
+} from "./actions/minting/types";
 
 export * from "./types";
 export { configuration };
 
 const invalidInputMessage =
   "Please only make requests of up to 100 URLs at a time.";
+
+const networkDomainNotAvailable =
+  "The requested network domain is not available.";
 
 export const createInstance = (config: Config): Instance => {
   logger.debug(`Creating instance of zNS SDK`);
@@ -537,6 +543,104 @@ export const createInstance = (config: Config): Instance => {
           metadataUri,
           IPFSGatewayUri.ipfs,
           gatewayOverride
+        );
+      },
+    },
+    minting: {
+      getPriceOfNetworkDomain: async (name: string): Promise<string> => {
+        const purchaser: DomainPurchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        return actions.getPriceOfNetworkDomain(name, purchaser);
+      },
+      isNetworkDomainAvailable: async (name: string): Promise<boolean> => {
+        const hub: ZNSHub = await getHubContract(config.provider, config.hub);
+        return actions.isNetworkDomainAvailable(name, hub, znsApiClient);
+      },
+      isMinterApprovedToSpendTokens: async (
+        user: string,
+        amount?: string
+      ): Promise<boolean> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const result = await actions.isMinterApprovedToSpendTokens(
+          user,
+          purchaser,
+          amount
+        );
+        return result;
+      },
+      approveMinterToSpendTokens: async (
+        signer: ethers.Signer,
+        amount?: string
+      ): Promise<ethers.ContractTransaction> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+
+        let approvalAmount = ethers.constants.MaxUint256;
+        if (amount) {
+          approvalAmount = ethers.utils.parseEther(amount);
+        }
+
+        const tx = await paymentToken
+          .connect(signer)
+          .approve(config.domainPurchaser, approvalAmount);
+
+        return tx;
+      },
+      getTokenSpendAllowance: async (user: string): Promise<string> => {
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
+        const tokenAddress = await purchaser.paymentToken();
+        const paymentToken = await getERC20Contract(
+          config.provider,
+          tokenAddress
+        );
+        const allowance = await actions.getTokenSpendAllowance(
+          paymentToken,
+          config.domainPurchaser,
+          user
+        );
+
+        return allowance;
+      },
+      mintNetworkDomain: async (
+        name: string,
+        signer: ethers.Signer
+      ): Promise<ContractTransaction> => {
+        const hub: ZNSHub = await getHubContract(config.provider, config.hub);
+        const purchaserConfig: DomainPurchaserConfig = {
+          provider: config.provider,
+          contractAddress: config.domainPurchaser,
+        };
+        const mintableConfig: NetworkDomainMintableConfig = {
+          znsHub: hub,
+          domainPurchaser: purchaserConfig,
+          services: {
+            apiClient: znsApiClient,
+          },
+        };
+        const metadata = await actions.generateDefaultMetadata(
+          znsApiClient,
+          name
+        );
+        return await actions.mintNetworkDomain(
+          name,
+          mintableConfig,
+          metadata,
+          signer
         );
       },
     },

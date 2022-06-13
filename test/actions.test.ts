@@ -66,7 +66,6 @@ describe("Test Custom SDK Logic", () => {
   );
 
   const dataStoreApiClient = api.createDataStoreApiClient(config.dataStoreUri);
-
   const domainIdToDomainName = async (domainId: string) => {
     const domainData = await subgraphClient.getDomainById(domainId);
     return domainData.name;
