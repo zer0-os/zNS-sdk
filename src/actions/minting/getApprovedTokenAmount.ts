@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { IERC20 } from "../../contracts/types";
 
-export const getApprovedSpendTokenAmount = async (
+export const getTokenSpendAllowance = async (
   token: IERC20,
   minter: string,
   user: string

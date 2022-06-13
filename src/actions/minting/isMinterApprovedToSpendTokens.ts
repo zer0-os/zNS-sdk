@@ -1,27 +1,22 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { getERC20Contract } from "../../contracts";
-import { getApprovedSpendTokenAmount } from "./getApprovedTokenAmount";
-import { DomainPurchaserConfig } from "./types";
+import { DomainPurchaser } from "../../contracts/types/DomainPurchaser";
+import { getTokenSpendAllowance } from "./getApprovedTokenAmount";
 
 export const isMinterApprovedToSpendTokens = async (
   user: string,
-  purchaser: DomainPurchaserConfig,
-  required?: string
+  purchaser: DomainPurchaser,
+  amount = Math.pow(10, 10).toString() // Default to 10^10 if user doesn't provide a value
 ): Promise<boolean> => {
-  const tokenAddress = await purchaser.domainPurchaser.paymentToken();
+  const tokenAddress = await purchaser.paymentToken();
   const paymentToken = await getERC20Contract(purchaser.provider, tokenAddress);
-  const allowance = await getApprovedSpendTokenAmount(
+  const allowance = await getTokenSpendAllowance(
     paymentToken,
-    purchaser.contractAddress,
+    purchaser.address,
     user
   );
 
-  if (!required) {
-    // Default to 10^10 if user doesn't provide a value
-    required = Math.pow(10, 10).toString();
-  }
-
-  const requiredAmount = ethers.utils.parseEther(required);
+  const requiredAmount = ethers.utils.parseEther(amount);
   const allowanceAsNumber = ethers.utils.parseEther(allowance);
   const approved = allowanceAsNumber.gte(requiredAmount);
 

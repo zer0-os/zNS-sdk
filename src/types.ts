@@ -659,7 +659,7 @@ export interface Instance {
      * @param user The user to check
      * @returns The amount of tokens
      */
-    getSpendTokenApprovedAmount(user: string): Promise<string>;
+    getTokenSpendAllowance(user: string): Promise<string>;
 
     /**
      * Mints a network domain with for a given domain, with the default metadata

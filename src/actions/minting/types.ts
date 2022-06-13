@@ -12,7 +12,6 @@ export interface NetworkDomainMintableConfig {
 }
 
 export interface DomainPurchaserConfig {
-  domainPurchaser: DomainPurchaser;
   provider: ethers.providers.Provider;
   contractAddress: string;
 }

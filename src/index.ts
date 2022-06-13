@@ -560,20 +560,16 @@ export const createInstance = (config: Config): Instance => {
       },
       isMinterApprovedToSpendTokens: async (
         user: string,
-        required?: string
+        amount?: string
       ): Promise<boolean> => {
-        const purchaserConfig: DomainPurchaserConfig = {
-          domainPurchaser: await getDomainPurchaserContract(
-            config.provider,
-            config.domainPurchaser
-          ),
-          provider: config.provider,
-          contractAddress: config.domainPurchaser,
-        };
+        const purchaser = await getDomainPurchaserContract(
+          config.provider,
+          config.domainPurchaser
+        );
         return await actions.isMinterApprovedToSpendTokens(
           user,
-          purchaserConfig,
-          required
+          purchaser,
+          amount
         );
       },
       approveMinterToSpendTokens: async (
@@ -601,7 +597,7 @@ export const createInstance = (config: Config): Instance => {
 
         return tx;
       },
-      getSpendTokenApprovedAmount: async (user: string): Promise<string> => {
+      getTokenSpendAllowance: async (user: string): Promise<string> => {
         const purchaser = await getDomainPurchaserContract(
           config.provider,
           config.domainPurchaser
@@ -611,7 +607,7 @@ export const createInstance = (config: Config): Instance => {
           config.provider,
           tokenAddress
         );
-        const allowance = await actions.getApprovedSpendTokenAmount(
+        const allowance = await actions.getTokenSpendAllowance(
           paymentToken,
           config.domainPurchaser,
           user
@@ -625,10 +621,6 @@ export const createInstance = (config: Config): Instance => {
       ): Promise<ContractTransaction> => {
         const hub: ZNSHub = await getHubContract(config.provider, config.hub);
         const purchaserConfig: DomainPurchaserConfig = {
-          domainPurchaser: await getDomainPurchaserContract(
-            config.provider,
-            config.domainPurchaser
-          ),
           provider: config.provider,
           contractAddress: config.domainPurchaser,
         };
