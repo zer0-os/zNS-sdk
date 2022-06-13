@@ -12,7 +12,7 @@ export const isNetworkDomainAvailable = async (
   logger.trace(`Checking network domain availability for: ${name}`);
   // Check if name passes validation
   const moderation = await apiClient.checkContentModeration(name);
-  if (moderation?.flagged ?? false) {
+  if (moderation.flagged) {
     logger.trace(
       `${name}: was flagged for review, with reason: ${moderation?.reason}`
     );
