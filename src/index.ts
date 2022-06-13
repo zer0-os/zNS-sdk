@@ -566,11 +566,12 @@ export const createInstance = (config: Config): Instance => {
           config.provider,
           config.domainPurchaser
         );
-        return await actions.isMinterApprovedToSpendTokens(
+        const result = await actions.isMinterApprovedToSpendTokens(
           user,
           purchaser,
           amount
         );
+        return result;
       },
       approveMinterToSpendTokens: async (
         signer: ethers.Signer,
