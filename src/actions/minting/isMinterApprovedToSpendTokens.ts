@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { getERC20Contract } from "../../contracts";
 import { DomainPurchaser } from "../../contracts/types/DomainPurchaser";
-import { getTokenSpendAllowance } from "./getApprovedTokenAmount";
+import { getTokenSpendAllowance } from "./getTokenSpendAllowance";
 
 export const isMinterApprovedToSpendTokens = async (
   user: string,
