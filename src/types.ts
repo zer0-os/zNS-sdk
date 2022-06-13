@@ -154,7 +154,7 @@ export interface Instance {
    */
   getSubdomainsById(
     domainId: string,
-    useDataStoreAPI?: boolean
+    useDataStoreApi?: boolean
   ): Promise<Domain[]>;
 
   /**
