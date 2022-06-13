@@ -34,20 +34,6 @@ export interface Config {
   provider: ethers.providers.Provider;
 }
 
-export interface NetworkDomainMintableConfig {
-  znsHub: ZNSHub;
-  domainPurchaser: DomainPurchaserConfig;
-  services: {
-    apiClient: znsApiClient;
-  };
-}
-
-export interface DomainPurchaserConfig {
-  domainPurchaser: DomainPurchaser;
-  provider: ethers.providers.Provider;
-  contractAddress: string;
-}
-
 export interface Listing {
   price: number;
   holder: string;
@@ -149,7 +135,7 @@ export interface Instance {
   /**
    * Finds all subdomains of a given domain
    * @param domainId (parent) domain id
-   * @param useDataStoreApi Optional, indicate whether to query with
+   * @param useDataStoreAPI Optional, indicate whether to query with
    * the DataStore or the Subgraph. Default is to use the DataStore
    */
   getSubdomainsById(
@@ -678,8 +664,8 @@ export interface Instance {
     /**
      * Mints a network domain with for a given domain, with the default metadata
      * @param name The name of a network domain to be created
-     * @param signer The signer for the user to approve the tokens for
-     * @returns the contract transaction to approve
+     * @param signer The signer of the user who is minting the domain
+     * @returns returns the contract transaction to mint the domain
      */
     mintNetworkDomain(
       name: string,

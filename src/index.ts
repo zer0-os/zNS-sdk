@@ -14,11 +14,9 @@ import {
   Config,
   Domain,
   DomainMetadata,
-  DomainPurchaserConfig,
   Instance,
   IPFSGatewayUri,
   MintSubdomainStatusCallback,
-  NetworkDomainMintableConfig,
   PlaceBidParams,
   SubdomainParams,
   TokenAllowanceParams,
@@ -42,6 +40,10 @@ import { getRegistrarForDomain } from "./helpers";
 import { Bid } from "./zAuction";
 import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
 import { ContentModerationResponse } from "./types";
+import {
+  DomainPurchaserConfig,
+  NetworkDomainMintableConfig,
+} from "./actions/minting/types";
 
 export * from "./types";
 export { configuration };

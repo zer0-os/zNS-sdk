@@ -24,8 +24,11 @@ const main = async () => {
   //const notAvailable = await instance.minting.isNetworkDomainAvailable("booty");
 
   //Should mint a network domain
-  //const res = await instance.minting.approveMinterToSpendTokens(wallet, "0");
-  //const MintSubdomainStep = await instance.minting.mintNetworkDomain("civilizedglobe", wallet);
+  //const res = await instance.minting.approveMinterToSpendTokens(wallet, "2500");
+  //const MintSubdomainStep = await instance.minting.mintNetworkDomain(
+  //  "civilizedglobe",
+  //  wallet
+  //);
 };
 
 main().catch(console.error);

@@ -1,10 +1,10 @@
 import { getLogger, Maybe } from "../../utilities";
 import { ContractTransaction, ethers } from "ethers";
-import { NetworkDomainMintableConfig } from "../../types";
 import { isNetworkDomainAvailable } from "./isNetworkDomainAvailable";
 import { getPriceOfNetworkDomain } from "../getPriceOfNetworkDomain";
 import { isMinterApprovedToSpendTokens } from ".";
 import { getERC20Contract } from "../../contracts";
+import { NetworkDomainMintableConfig } from "./types";
 
 const logger = getLogger("actions:getDomainMetadata");
 
@@ -24,7 +24,8 @@ export const mintNetworkDomain = async (
   if (
     !(await isMinterApprovedToSpendTokens(user, config.domainPurchaser, price))
   ) {
-    throw Error(`${user} is not approved to spend ${price}`);
+    logger.debug(`${user} is not approved to spend ${price}`);
+    throw Error(`User has not approved contract to spend ZERO tokens.`);
   }
 
   //Verify purchaser has correct amount of tokens
@@ -36,7 +37,8 @@ export const mintNetworkDomain = async (
   );
   const balance = await paymentToken.balanceOf(user);
   if (balance.lt(ethers.utils.parseEther(price))) {
-    throw Error(`${user} does not have required balance of ${price}`);
+    logger.debug(`${user} does not have required balance of ${price}`);
+    throw Error(`User does not have enough ZERO tokens.`);
   }
 
   if (
