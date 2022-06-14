@@ -1,8 +1,8 @@
 import { ApolloClient } from "@apollo/client/core";
-import { DomainEventType, DomainMintEvent } from "../../types";
+import { DomainEventType, DomainMintEvent } from "../../../types";
 import * as queries from "../queries";
 import { AccountDto } from "../types";
-import { performQuery } from "./helpers";
+import { performQuery } from "../../helpers";
 
 interface DomainMintedDto {
   timestamp: string;

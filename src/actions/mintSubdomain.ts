@@ -5,7 +5,6 @@ import {
   MintSubdomainStatusCallback,
   MintSubdomainStep,
 } from "../types";
-import { Maybe } from "../utilities";
 
 type RegisterSubdomainFunction = (
   parentId: string,

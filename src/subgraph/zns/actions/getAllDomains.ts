@@ -1,10 +1,10 @@
 import { ApolloClient } from "@apollo/client/core";
 
-import { Domain } from "../../types";
-import { getLogger } from "../../utilities";
+import { Domain } from "../../../types";
+import { getLogger } from "../../../utilities";
 import * as queries from "../queries";
 import { DomainsQueryDto } from "../types";
-import { convertDomainDtoToDomain, performQuery } from "./helpers";
+import { convertDomainDtoToDomain, performQuery } from "../../helpers";
 
 const logger = getLogger().withTag("subgraph:actions:getAllDomains");
 

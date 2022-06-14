@@ -19,6 +19,9 @@ describe("SDK test", () => {
   let sdk: Instance;
   let hub: ZNSHub;
 
+  const zeroTokenMainnet = "0x0ec78ed49c2d27b315d462d43b5bab94d2c79bf8"
+  const wildTokenMainnet = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
+  const randomToken = "0x02b7031e808dbed9b934e8e43beeef0922386ef4"
   const ZNSHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
   const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
   const lootToken = "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2";
@@ -161,10 +164,14 @@ describe("SDK test", () => {
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
   });
-  it("Ges ERC20 token name and price", async () => {
-    const info = await sdk.zauction.getPaymentTokenInfo(wildToken);
-    expect(info.name).to.eq("WILD");
+  it("Gets ERC20 token name, symbol, price, and decimals", async () => {
+    const info = await sdk.zauction.getPaymentTokenInfo(wildTokenMainnet);
+    expect(info.symbol).to.eq("WILD");
   });
+  it("Fails when token is not found", async () => {
+    const info = sdk.zauction.getPaymentTokenInfo(randomToken);
+    await expect(info).to.be.rejectedWith(`Token with address ${randomToken} could not be resolved`)
+  })
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
       wilderPancakesDomain

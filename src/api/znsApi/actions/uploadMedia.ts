@@ -1,6 +1,6 @@
-import { Maybe } from "../../../utilities";
 import { UploadedFileDto } from "../types";
 import { makeApiCall } from "../../helpers";
+import { Maybe } from "graphql/jsutils/Maybe";
 
 export const uploadMedia = async (
   apiUri: string,

@@ -1,79 +1,50 @@
-import CoinGecko from "coingecko-api";
-import { Config, TokenPriceInfo } from "../types";
-import { Maybe } from "../utilities";
+import { createDexClient } from "../subgraph";
+import { Config, Maybe, TokenInfo, ConvertedTokenInfo } from "../types";
 import { getLogger } from "../utilities";
+import { getTokenPrice } from "./helpers";
 
 const logger = getLogger("actions:getPaymentTokenInfo");
 
-interface NetworksToPaymentTokens {
-  [network: string]: Maybe<PaymentTokensToTokenApiInfo>;
-}
-
-interface PaymentTokensToTokenApiInfo {
-  [address: string]: Maybe<TokenApiInfo>
-}
-
-interface TokenApiInfo {
-  id: string,
-  name:string
-}
-
-// ID must be the given ID from CoinGecko API.
-// You can get this value from a token's page under "API ID"
-// https://www.coingecko.com/en/coins/zero-tech
-const tokenAddressToFriendlyName: NetworksToPaymentTokens = {
-  mainnet: {
-    "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34": {
-      id: "wilder-world",
-      name: "WILD"
-    } as TokenApiInfo,
-    "0x0ec78ed49c2d27b315d462d43b5bab94d2c79bf8": {
-      id: "zero-tech",
-      name: "ZERO"
-    } as TokenApiInfo
-  } as PaymentTokensToTokenApiInfo,
-  rinkeby: {
-    "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79": {
-      id: "wilder-world",
-      name: "WILD"
-    } as TokenApiInfo,
-    "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2": {
-      id: "zero-tech",
-      name: "ZERO"
-    } as TokenApiInfo
-  } as PaymentTokensToTokenApiInfo
-}
-
+/**
+ * Get a specific ERC20 token's info such as price, name, symbol, and number of decimals
+ * @param paymentTokenAddress The address of the token
+ * @param config The configuration object used in instantiating this SDK
+ * @returns The token info, if found
+ */
 export const getPaymentTokenInfo = async (
   paymentTokenAddress: string,
   config: Config
-): Promise<TokenPriceInfo> => {
-  const network = await config.provider.getNetwork();
-  logger.trace(`Getting paymentToken info for ${paymentTokenAddress} on network ${network}`);
-  
-  const addresses = tokenAddressToFriendlyName[network.name]
-  if (!addresses) {
-    throw Error("Network not supported")
-  }
-  
-  const tokenInfo = addresses[paymentTokenAddress]
-  if (!tokenInfo) {
-    throw Error("Token not found")
+): Promise<ConvertedTokenInfo> => {
+  logger.trace(`Getting paymentToken info for ${paymentTokenAddress}`);
+
+  let token: Maybe<TokenInfo>;
+
+  // Check each given DEX protocol
+  for (const uri of config.dexSubgraphUris) {
+    const client = await createDexClient(uri);
+
+    token = await client.getTokenInfo(paymentTokenAddress);
+    if (token) {
+      break;
+    }
   }
 
-  const client = new CoinGecko();
-  const tokenData = await client.coins.fetch(tokenInfo.id, {
-    market_data: true,
-  });
-
-  if(!tokenData) {
-    throw Error("Can't find information about that token")
+  // If we checked all the DEX protocols and still didn't find a token, error
+  if (!token) {
+    throw Error(
+      `Token with address ${paymentTokenAddress} could not be resolved`
+    );
   }
 
-  const tokenPriceUsd = tokenData.data.market_data.current_price.usd;
-  const info: TokenPriceInfo = {
-    price: tokenPriceUsd,
-    name: tokenInfo.name
-  }
-  return info;
+  const tokenPriceUsd = await getTokenPrice(paymentTokenAddress);
+
+  const returnedTokenInfo: ConvertedTokenInfo = {
+    id: token.id,
+    name: token.name,
+    symbol: token.symbol,
+    priceInUsd: tokenPriceUsd.toString(),
+    decimals: token.decimals,
+  };
+
+  return returnedTokenInfo;
 };

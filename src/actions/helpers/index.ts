@@ -1,3 +1,4 @@
+import CoinGecko from "coingecko-api";
 import { Registrar } from "../../contracts/types";
 
 import { getLogger } from "../../utilities";
@@ -41,4 +42,21 @@ export const validateOwnerAndStatus = async (
   );
   await validateUserOwnsDomain(domainId, potentialOwner, registrar);
   await validateStatus(domainId, registrar, desiredLock, potentialOwner);
+};
+
+/**
+ * Get a token's price using it's derived ETH ratio given by a DEX subgraph
+ * @param derivedETH The derived ETH ratio
+ * @returns The price of that token in USD
+ */
+export const getTokenPrice = async (derivedETH: string): Promise<number> => {
+  const client = new CoinGecko();
+
+  const ethData = await client.coins.fetch("ethereum", {
+    market_data: true,
+  });
+
+  const ethPriceUsd = ethData.data.market_data.current_price.usd;
+  const derivedETHAsFloat = parseFloat(derivedETH);
+  return derivedETHAsFloat * ethPriceUsd;
 };

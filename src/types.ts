@@ -8,6 +8,8 @@ import { Bid } from "./zAuction";
 export interface Config {
   /** The zNS Subgraph URL */
   subgraphUri: string;
+  /** Subgraph URIs for any DEX we check in the resolver process */
+  dexSubgraphUris: string[];
   /** The Metrics server api URL */
   metricsUri: string;
   /** The utilities api URL */
@@ -30,6 +32,8 @@ export interface Config {
   provider: ethers.providers.Provider;
 }
 
+export type Maybe<T> = T | undefined;
+
 export interface Listing {
   price: number;
   holder: string;
@@ -42,6 +46,22 @@ export interface ZAuctionInstances {
 export interface TokenPriceInfo {
   price: number;
   name: string;
+}
+
+export interface TokenInfo {
+  id: string;
+  name: string;
+  symbol: string;
+  derivedETH: string;
+  decimals: string; // e.g. 18
+}
+
+export interface ConvertedTokenInfo {
+  id: string;
+  name: string;
+  symbol: string;
+  priceInUsd: string; // converted from ETH price
+  decimals: string; // e.g. 18
 }
 
 export interface TokenAllowanceByBid {
@@ -307,12 +327,12 @@ export interface Instance {
    */
   zauction: {
     /**
-     * Get information about a payment token like price in USD and friendly name
-     * @param domainId The domain to get the payment token for
+     * Get information about a payment token like price in USD, name, and symbol
+     * @param paymentTokenAddress The domain to get the payment token for
      */
     getPaymentTokenInfo: (
       paymentTokenAddress: string
-    ) => Promise<TokenPriceInfo>;
+    ) => Promise<ConvertedTokenInfo>;
     /**
      * Sets the payment token used within a network for sales
      * @param networkId The domain network to set a payment token for e.g. Wilder

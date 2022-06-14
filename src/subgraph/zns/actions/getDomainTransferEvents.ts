@@ -1,8 +1,8 @@
 import { ApolloClient } from "@apollo/client/core";
-import { DomainEventType, DomainTransferEvent } from "../../types";
+import { DomainEventType, DomainTransferEvent } from "../../../types";
 import * as queries from "../queries";
 import { AccountDto } from "../types";
-import { performQuery } from "./helpers";
+import { performQuery } from "../../helpers";
 
 interface DomainTransferDto {
   timestamp: string;

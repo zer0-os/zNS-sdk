@@ -18,6 +18,9 @@ export const mainnetConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
+    dexSubgraphUris: [
+      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+    ],
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
     dataStoreUri: "",
@@ -29,7 +32,7 @@ export const mainnetConfiguration = (
     registrar: mainnetRegistrar,
     hub: mainnetHub,
     provider: provider,
-    domainPurchaser: mainnetDomainPurchaser
+    domainPurchaser: mainnetDomainPurchaser,
   };
 };
 
@@ -49,6 +52,7 @@ export const kovanConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
+    dexSubgraphUris: [""],
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
     dataStoreUri: "",
@@ -60,7 +64,7 @@ export const kovanConfiguration = (
     registrar: kovanRegistrar,
     hub: kovanHub,
     provider: provider,
-    domainPurchaser: kovanDomainPurchaser
+    domainPurchaser: kovanDomainPurchaser,
   };
 };
 
@@ -79,6 +83,9 @@ export const rinkebyConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
+    dexSubgraphUris: [
+      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+    ],
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
     dataStoreUri: "https://apim-data-store-api-rinkeby.azure-api.net/",
@@ -90,6 +97,6 @@ export const rinkebyConfiguration = (
     registrar: rinkebyRegistrar,
     hub: rinkebyHub,
     provider: provider,
-    domainPurchaser: rinkebyDomainPurchaser
+    domainPurchaser: rinkebyDomainPurchaser,
   };
 };
