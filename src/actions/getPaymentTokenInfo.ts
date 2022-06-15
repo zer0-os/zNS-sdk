@@ -32,11 +32,14 @@ export const getPaymentTokenInfo = async (
   // If we checked all the DEX protocols and still didn't find a token, error
   if (!token) {
     throw Error(
-      `Token with address ${paymentTokenAddress} could not be resolved`
+      `Token with address ${paymentTokenAddress} could not be found`
     );
   }
 
-  const tokenPriceUsd = await getTokenPrice(token.derivedETH);
+  const tokenPriceUsd = await getTokenPrice(
+    paymentTokenAddress,
+    token.derivedETH
+  );
 
   const returnedTokenInfo: ConvertedTokenInfo = {
     id: token.id,

@@ -19,7 +19,6 @@ describe("SDK test", () => {
   let sdk: Instance;
   let hub: ZNSHub;
 
-  const zeroTokenMainnet = "0x0ec78ed49c2d27b315d462d43b5bab94d2c79bf8"
   const wildTokenMainnet = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
   const randomToken = "0x02b7031e808dbed9b934e8e43beeef0922386ef4"
   const ZNSHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
@@ -170,7 +169,7 @@ describe("SDK test", () => {
   });
   it("Fails when token is not found", async () => {
     const info = sdk.zauction.getPaymentTokenInfo(randomToken);
-    await expect(info).to.be.rejectedWith(`Token with address ${randomToken} could not be resolved`)
+    await expect(info).to.be.rejectedWith(`Token with address ${randomToken} could not be found`)
   })
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
