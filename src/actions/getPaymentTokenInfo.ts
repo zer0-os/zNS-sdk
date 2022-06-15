@@ -36,7 +36,7 @@ export const getPaymentTokenInfo = async (
     );
   }
 
-  const tokenPriceUsd = await getTokenPrice(paymentTokenAddress);
+  const tokenPriceUsd = await getTokenPrice(token.derivedETH);
 
   const returnedTokenInfo: ConvertedTokenInfo = {
     id: token.id,
