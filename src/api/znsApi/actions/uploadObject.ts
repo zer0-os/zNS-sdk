@@ -1,6 +1,6 @@
 import { UploadedFileDto } from "../types";
 import { makeApiCall } from "../../helpers";
-import { Maybe } from "graphql/jsutils/Maybe";
+import { Maybe } from "../../../types";
 
 export const uploadObject = async (
   apiUri: string,

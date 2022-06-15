@@ -52,7 +52,7 @@ export const kovanConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
-    dexSubgraphUris: [""],
+    dexSubgraphUris: [],
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
     dataStoreUri: "",
