@@ -19,12 +19,11 @@ export const getPaymentTokenInfo = async (
 
   let token: Maybe<TokenInfo>;
 
-  // Check each given DEX protocol
+  // Check Uniswap DEX protocol
   const client = await createUniswapClient(config.uniswapSubgraphUri);
 
   token = await client.getTokenInfo(paymentTokenAddress);
 
-  // If we checked all the DEX protocols and still didn't find a token, error
   if (!token) {
     throw Error(
       `Token pricing info with address ${paymentTokenAddress} could not be found`

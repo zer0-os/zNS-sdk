@@ -55,7 +55,7 @@ export interface ConvertedTokenInfo {
   id: string;
   name: string;
   symbol: string;
-  priceInUsd: string; // converted from ETH price
+  priceInUsd: string;
   decimals: string; // e.g. 18
 }
 
