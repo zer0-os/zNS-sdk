@@ -1,0 +1,467 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "DomainPurchaser",
+  "sourceName": "contracts/controllers/DomainPurchaser.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "domainId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "enabled",
+          "type": "bool"
+        }
+      ],
+      "name": "AllowSubdomainsToMintSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "networkDomainId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "NetworkPurchased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "domainId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "enabled",
+          "type": "bool"
+        }
+      ],
+      "name": "SubdomainMintingSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "domainId",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "short",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "medium",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "long",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IDomainPurchaser.PricingData",
+          "name": "pricing",
+          "type": "tuple"
+        }
+      ],
+      "name": "SubdomainPricingSet",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "parentId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "getDomainPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_paymentToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_zNSHub",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_platformWallet",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "short",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "medium",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "long",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IDomainPurchaser.PricingData",
+          "name": "_rootPrices",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_platformFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paymentToken",
+      "outputs": [
+        {
+          "internalType": "contract IERC20Upgradeable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "platformFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "platformWallet",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "purchaseData",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "subdomainMintingEnabled",
+          "type": "bool"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "short",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "medium",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "long",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IDomainPurchaser.PricingData",
+          "name": "prices",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bool",
+          "name": "allowSubdomainsToMint",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "wasAllowedToSubdomainMintOnCreation",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "parentId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataUri",
+          "type": "string"
+        }
+      ],
+      "name": "purchaseSubdomain",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "domainId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "subdomainMintingEnabled",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "allowSubdomainsToMint",
+          "type": "bool"
+        }
+      ],
+      "name": "setDomainMintingStatus",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "domainId",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "short",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "medium",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "long",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IDomainPurchaser.PricingData",
+          "name": "pricing",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bool",
+          "name": "subdomainMintingEnabled",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "allowSubdomainsToMint",
+          "type": "bool"
+        }
+      ],
+      "name": "setDomainPricing",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "allowed",
+          "type": "bool"
+        }
+      ],
+      "name": "setNonNetworkDomainMinting",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "fee",
+          "type": "uint256"
+        }
+      ],
+      "name": "setPlatformFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "wallet",
+          "type": "address"
+        }
+      ],
+      "name": "setPlatformWallet",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "zNSHub",
+      "outputs": [
+        {
+          "internalType": "contract IZNSHub",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

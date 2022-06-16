@@ -18,6 +18,7 @@ interface DomainProperty<T> {
 }
 export interface DataStoreDomain {
   domainId: string;
+  isRoot: boolean;
   children: string[];
   history: DomainHistory;
   owner: DomainProperty<string>;

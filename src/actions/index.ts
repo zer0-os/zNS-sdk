@@ -1,6 +1,7 @@
 export * from "./getDomainEvents";
 export * from "./getDomainMetadata";
 export * from "./getMetadataFromUri";
+export * from "./getPriceOfNetworkDomain";
 export * from "./lockDomainMetadata";
 export * from "./mintSubdomain";
 export * from "./setDomainMetadata";
@@ -9,6 +10,6 @@ export * from "./setAndLockDomainMetadata";
 export * from "./setAndLockDomainMetadataUri";
 export * from "./setDomainRoyalty";
 export * from "./transferOwnership";
-export * from "./zauction/getZAuctionSpendAllowance";
-export * from "./generateDefaultMetadata";
 export * from "./zauction";
+export * from "./minting";
+export * from "./generateDefaultMetadata";

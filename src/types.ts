@@ -1,6 +1,9 @@
 import * as zAuction from "./zAuction";
-import { ethers } from "ethers";
+import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
+import { ZNSHub } from "./contracts/types";
+import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
+import { znsApiClient } from "./api/znsApi/client";
 
 /**
  * Configuration for a zNS sdk instance
@@ -146,10 +149,13 @@ export interface Instance {
   /**
    * Finds all subdomains of a given domain
    * @param domainId (parent) domain id
-   * @param useDataStoreApi Optional, indicate whether to query with 
+   * @param useDataStoreAPI Optional, indicate whether to query with
    * the DataStore or the Subgraph. Default is to use the DataStore
    */
-  getSubdomainsById(domainId: string, useDataStoreAPI?: boolean): Promise<Domain[]>;
+  getSubdomainsById(
+    domainId: string,
+    useDataStoreApi?: boolean
+  ): Promise<Domain[]>;
 
   /**
    * Finds all recent subdomains of a given domain
@@ -363,7 +369,7 @@ export interface Instance {
      * e.g. 0://wilder.kitty is in the Wilder World network and will
      * use the payment token specified by that network and return the user's
      * balance for that token.
-     * 
+     *
      * @param account The user to get the balance for
      * @param domainId The domain to get the payment token of
      */
@@ -624,6 +630,61 @@ export interface Instance {
       metadataUri: string,
       ipfsGatewayOverride?: string
     ): Promise<DomainMetadata>;
+  };
+  minting: {
+    /**
+     * Gets the price of a network domain
+     * @param name The name of a network domain
+     * @returns The price of a network domain in ether
+     */
+    getPriceOfNetworkDomain(name: string): Promise<string>;
+
+    /**
+     * Checks if a given name is available to register as a network domain
+     * @param name The name of a network domain
+     * @returns True if the nework domain is available
+     */
+    isNetworkDomainAvailable(name: string): Promise<boolean>;
+
+    /**
+     * Checks whether the subdomain minter contract is approved to spend tokens
+     * @param user The user to check approval for
+     * @param required *Optional* How many tokens of allowance the minter contract needs to be considered approved
+     * @returns True if the minter contract is approved
+     */
+    isMinterApprovedToSpendTokens(
+      user: string,
+      required?: string
+    ): Promise<boolean>;
+
+    /**
+     * Approves the subdomain minter contract to spend tokens on behalf of the signer
+     * @param signer The signer for the user to approve the tokens for
+     * @param amount *Optional* The amount of tokens to approve the minter contract to spend. Defaults to MaxUInt256. This value should be in human readable format, NOT prefixed by 18 decimals.
+     * @returns The contract transaction to approve
+     */
+    approveMinterToSpendTokens(
+      signer: ethers.Signer,
+      amount?: string
+    ): Promise<ethers.ContractTransaction>;
+
+    /**
+     * Gets the current allowance the subdomain minter contract has for spending the users tokens
+     * @param user The user to check
+     * @returns The amount of tokens
+     */
+    getTokenSpendAllowance(user: string): Promise<string>;
+
+    /**
+     * Mints a network domain with for a given domain, with the default metadata
+     * @param name The name of a network domain to be created
+     * @param signer The signer of the user who is minting the domain
+     * @returns returns the contract transaction to mint the domain
+     */
+    mintNetworkDomain(
+      name: string,
+      signer: ethers.Signer
+    ): Promise<ContractTransaction>;
   };
 }
 

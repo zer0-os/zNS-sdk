@@ -71,7 +71,7 @@ const rinkebyRegistrar = "0xa4F6C921f914ff7972D7C55c15f015419326e0Ca";
 const rinkebyHub = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
 const rinkebyStaking = "0x7FDd24f30fB8a3E0021e85Fdb737a3483D3C8135";
 const rinkebyBasicController = "0x1188dD1a0F42BA4a117EF1c09D884f5183D40B28";
-const rinkebyDomainPurchaser = ethers.constants.AddressZero;
+const rinkebyDomainPurchaser = "0x2C2535D45C1EC97774fD61935D116e40a2A05ff5";
 export const rinkebyConfiguration = (
   provider: ethers.providers.Provider
 ): Config => {
