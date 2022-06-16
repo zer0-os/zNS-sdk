@@ -1,9 +1,9 @@
-import { createUniswapClient } from "../subgraph";
-import { Config, Maybe, TokenInfo, ConvertedTokenInfo } from "../types";
-import { getLogger } from "../utilities";
-import { getTokenPrice } from "./helpers";
+import { createUniswapClient } from "../../subgraph";
+import { Config, Maybe, TokenInfo, ConvertedTokenInfo } from "../../types";
+import { getLogger } from "../../utilities";
+import { getTokenPrice } from "../helpers";
 
-const logger = getLogger("actions:getPaymentTokenInfo");
+const logger = getLogger("actions:zauction:getPaymentTokenInfo");
 
 /**
  * Get a specific ERC20 token's info such as price, name, symbol, and number of decimals
