@@ -172,6 +172,7 @@ describe("SDK test", () => {
   it("Gets ERC20 token price when not on CoinGecko using derivedEth from Uniswap", async () => {
     const info = await sdk.zauction.getPaymentTokenInfo(tokenOnUniNotCG);
     expect(info.symbol).to.eq("SHKOOBYSHNAX");
+    assert(info.priceInUsd)
   });
   it("Fails when token is not found", async () => {
     const info = sdk.zauction.getPaymentTokenInfo(randomToken);
