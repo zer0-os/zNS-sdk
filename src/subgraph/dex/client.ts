@@ -6,19 +6,24 @@ import { createApolloClient } from "../helpers";
 
 const logger = getLogger("subgraph:dexClient");
 
-export interface DexSubgraphClient {
+export interface UniswapSubgraphClient {
   getTokenInfo(tokenId: string): Promise<Maybe<TokenInfo>>;
 }
 
-export const createDexClient = (dexSubgraphUri: string): DexSubgraphClient => {
+export const createUniswapClient = (
+  dexSubgraphUri: string
+): UniswapSubgraphClient => {
   const apolloClient = createApolloClient(dexSubgraphUri);
 
-  const client: DexSubgraphClient = {
+  const client: UniswapSubgraphClient = {
     getTokenInfo: async (paymentTokenId: string): Promise<Maybe<TokenInfo>> => {
-      logger.debug(`Getting payment token info for token ${paymentTokenId}`)
-      const tokenInfo = await actions.getTokenInfo(apolloClient, paymentTokenId);
+      logger.debug(`Getting payment token info for token ${paymentTokenId}`);
+      const tokenInfo = await actions.getTokenInfo(
+        apolloClient,
+        paymentTokenId
+      );
       return tokenInfo;
     },
-  }
+  };
   return client;
 };

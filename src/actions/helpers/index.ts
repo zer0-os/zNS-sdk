@@ -6,25 +6,20 @@ import {
   ETHEREUM_PRICE_ENDPOINT,
   ERC20_PRICE_ENDPOINT,
 } from "./constants";
-import { 
-  CoinGeckoRequestOptions,
-  CoinGeckoResponse,
-  CoinGeckoPrice
-} from "../../types";
+import { CoinGeckoRequestOptions, CoinGeckoResponse } from "../types";
 
 const logger = getLogger("actions:helpers");
 
 const createUri = (tokenAddress?: string): string => {
-  const options: CoinGeckoRequestOptions = {
-    ids: tokenAddress ?? "ethereum",
-    vs_currencies: "usd",
-  };
-
   if (tokenAddress) {
+    const options: CoinGeckoRequestOptions = {
+      ids: tokenAddress,
+      vs_currencies: "usd",
+    };
     return `${ERC20_PRICE_ENDPOINT}contract_addresses=${options.ids}&vs_currencies=${options.vs_currencies}`;
   }
 
-  return `${ETHEREUM_PRICE_ENDPOINT}ids=${options.ids}&vs_currencies=${options.vs_currencies}`;
+  return ETHEREUM_PRICE_ENDPOINT;
 };
 
 export const validateUserOwnsDomain = async (
@@ -76,13 +71,19 @@ export const validateOwnerAndStatus = async (
  */
 export const getTokenPrice = async (
   paymentTokenAddress: string,
-  derivedETH: string
+  derivedETH?: string
 ): Promise<number> => {
   let uri = createUri(paymentTokenAddress);
   let response = await makeApiCall<CoinGeckoResponse>(uri, "GET");
 
   if (Object.keys(response).length > 0) {
-    return response[paymentTokenAddress.toLowerCase()].usd
+    return response[paymentTokenAddress.toLowerCase()].usd;
+  }
+
+  if (!derivedETH) {
+    throw Error(
+      `Unable to determine the price for token with address ${paymentTokenAddress}`
+    );
   }
 
   // If the price isn't found directly on CoinGecko we instead compare

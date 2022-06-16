@@ -1,4 +1,4 @@
-import { createDexClient } from "../subgraph";
+import { createUniswapClient } from "../subgraph";
 import { Config, Maybe, TokenInfo, ConvertedTokenInfo } from "../types";
 import { getLogger } from "../utilities";
 import { getTokenPrice } from "./helpers";
@@ -20,19 +20,14 @@ export const getPaymentTokenInfo = async (
   let token: Maybe<TokenInfo>;
 
   // Check each given DEX protocol
-  for (const uri of config.dexSubgraphUris) {
-    const client = await createDexClient(uri);
+  const client = await createUniswapClient(config.uniswapSubgraphUri);
 
-    token = await client.getTokenInfo(paymentTokenAddress);
-    if (token) {
-      break;
-    }
-  }
+  token = await client.getTokenInfo(paymentTokenAddress);
 
   // If we checked all the DEX protocols and still didn't find a token, error
   if (!token) {
     throw Error(
-      `Token with address ${paymentTokenAddress} could not be found`
+      `Token pricing info with address ${paymentTokenAddress} could not be found`
     );
   }
 

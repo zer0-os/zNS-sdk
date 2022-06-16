@@ -19,8 +19,10 @@ describe("SDK test", () => {
   let sdk: Instance;
   let hub: ZNSHub;
 
-  const wildTokenMainnet = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
-  const randomToken = "0x02b7031e808dbed9b934e8e43beeef0922386ef4"
+  // shkoobyinushnax
+  const tokenOnUniNotCG = "0x000000000427e37c32b2be749610c5e4dd7b6d18";
+  const wildTokenMainnet = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34";
+  const randomToken = "0x02b7031e808dbed9b934e8e43beeef0922386ef4";
   const ZNSHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
   const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
   const lootToken = "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2";
@@ -53,7 +55,7 @@ describe("SDK test", () => {
   let mainAccount: string;
   before(async () => {
     astroAccount = await astroWallet.getAddress();
-    mainAccount = "0xaE3153c9F5883FD2E78031ca2716520748c521dB"
+    mainAccount = "0xaE3153c9F5883FD2E78031ca2716520748c521dB";
     config = rinkebyConfiguration(provider);
     hub = await getHubContract(provider, ZNSHubAddress);
     sdk = await createInstance(config);
@@ -88,7 +90,7 @@ describe("SDK test", () => {
       astroAccount,
       params
     );
-    
+
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
   });
   it("gets allowance by tokenId", async () => {
@@ -167,10 +169,16 @@ describe("SDK test", () => {
     const info = await sdk.zauction.getPaymentTokenInfo(wildTokenMainnet);
     expect(info.symbol).to.eq("WILD");
   });
+  it("Gets ERC20 token price when not on CoinGecko using derivedEth from Uniswap", async () => {
+    const info = await sdk.zauction.getPaymentTokenInfo(tokenOnUniNotCG);
+    expect(info.symbol).to.eq("SHKOOBYSHNAX");
+  });
   it("Fails when token is not found", async () => {
     const info = sdk.zauction.getPaymentTokenInfo(randomToken);
-    await expect(info).to.be.rejectedWith(`Token with address ${randomToken} could not be found`)
-  })
+    await expect(info).to.be.rejectedWith(
+      `Token pricing info with address ${randomToken} could not be found`
+    );
+  });
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
       wilderPancakesDomain

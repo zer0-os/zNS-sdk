@@ -8,8 +8,8 @@ import { Bid } from "./zAuction";
 export interface Config {
   /** The zNS Subgraph URL */
   subgraphUri: string;
-  /** Subgraph URIs for any DEX we check in the resolver process */
-  dexSubgraphUris: string[];
+  /** Subgraph URI for the Uniswap DEX Protocol */
+  uniswapSubgraphUri: string;
   /** The Metrics server api URL */
   metricsUri: string;
   /** The utilities api URL */
@@ -41,19 +41,6 @@ export interface Listing {
 
 export interface ZAuctionInstances {
   [registrarAddress: string]: zAuction.Instance;
-}
-
-export interface CoinGeckoPrice {
-  usd: number;
-}
-
-export interface CoinGeckoResponse {
-  [tokenId: string]: CoinGeckoPrice;
-}
-
-export interface CoinGeckoRequestOptions {
-  ids?: string;
-  vs_currencies: string;
 }
 
 export interface TokenInfo {
