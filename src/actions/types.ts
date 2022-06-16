@@ -1,10 +1,9 @@
+import { Map } from "../types"
 export interface CoinGeckoPrice {
   usd: number;
 }
 
-export interface CoinGeckoResponse {
-  [tokenId: string]: CoinGeckoPrice;
-}
+export interface CoinGeckoResponse extends Map<CoinGeckoPrice>{}
 
 export interface CoinGeckoRequestOptions {
   ids?: string;

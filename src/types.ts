@@ -1,9 +1,6 @@
 import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
-import { ZNSHub } from "./contracts/types";
-import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
-import { znsApiClient } from "./api/znsApi/client";
 
 /**
  * Configuration for a zNS sdk instance
@@ -42,8 +39,8 @@ export interface Listing {
   holder: string;
 }
 
-export interface ZAuctionInstances {
-  [registrarAddress: string]: zAuction.Instance;
+export interface Map<T> {
+  [key: string]: T;
 }
 
 export interface TokenInfo {
@@ -59,7 +56,7 @@ export interface ConvertedTokenInfo {
   name: string;
   symbol: string;
   priceInUsd: string;
-  decimals: string; // e.g. 18
+  decimals: string; // e.g. 18   
 }
 
 export interface TokenAllowanceByBid {
