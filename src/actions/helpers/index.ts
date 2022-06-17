@@ -10,7 +10,7 @@ import { CoinGeckoRequestOptions, CoinGeckoResponse } from "../types";
 
 const logger = getLogger("actions:helpers");
 
-const createUri = (tokenAddress?: string): string => {
+const createCoinGeckoUri = (tokenAddress?: string): string => {
   if (tokenAddress) {
     const options: CoinGeckoRequestOptions = {
       ids: tokenAddress,
@@ -63,8 +63,8 @@ export const validateOwnerAndStatus = async (
 
 /**
  * Get a token's price using the CoinGecko API.
- * If it can't be found on CoinGecko, that token's derived ETH ratio
- * given by a DEX subgraph is used instead
+ * If it can't be found on CoinGecko, then we use the derivedEth
+ * provided by the Uniswap subgraph
  * @param paymentTokenAddress The contract address of the ERC20 payment token
  * @param derivedETH The derived ETH ratio
  * @returns The price of the token in USD
@@ -73,7 +73,12 @@ export const getTokenPrice = async (
   paymentTokenAddress: string,
   derivedETH?: string
 ): Promise<number> => {
-  let uri = createUri(paymentTokenAddress);
+  const price = await getTokenPriceFromCoinGecko(paymentTokenAddress, derivedETH);
+  return price;
+};
+
+const getTokenPriceFromCoinGecko = async (paymentTokenAddress: string, derivedETH?: string): Promise<number> => {
+  let uri = createCoinGeckoUri(paymentTokenAddress);
   let response = await makeApiCall<CoinGeckoResponse>(uri, "GET");
 
   if (Object.keys(response).length > 0) {
@@ -88,10 +93,10 @@ export const getTokenPrice = async (
 
   // If the price isn't found directly on CoinGecko we instead compare
   // with the price of ETH using the derived ETH ratio
-  uri = createUri();
+  uri = createCoinGeckoUri();
   response = await makeApiCall<CoinGeckoResponse>(uri, "GET");
 
   const ethPriceUsd = response[ETHEREUM_API_ID].usd;
   const derivedETHAsFloat = parseFloat(derivedETH);
   return derivedETHAsFloat * ethPriceUsd;
-};
+}

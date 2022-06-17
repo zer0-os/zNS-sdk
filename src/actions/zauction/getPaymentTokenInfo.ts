@@ -1,5 +1,6 @@
 import { createUniswapClient } from "../../subgraph";
-import { Config, Maybe, TokenInfo, ConvertedTokenInfo } from "../../types";
+import { TokenDto } from "../../subgraph/dex/types";
+import { Config, Maybe, TokenInfo } from "../../types";
 import { getLogger } from "../../utilities";
 import { getTokenPrice } from "../helpers";
 
@@ -14,15 +15,13 @@ const logger = getLogger("actions:zauction:getPaymentTokenInfo");
 export const getPaymentTokenInfo = async (
   paymentTokenAddress: string,
   config: Config
-): Promise<ConvertedTokenInfo> => {
+): Promise<TokenInfo> => {
   logger.trace(`Getting paymentToken info for ${paymentTokenAddress}`);
-
-  let token: Maybe<TokenInfo>;
 
   // Check Uniswap DEX protocol
   const client = await createUniswapClient(config.uniswapSubgraphUri);
 
-  token = await client.getTokenInfo(paymentTokenAddress);
+  const token: Maybe<TokenDto> = await client.getTokenInfo(paymentTokenAddress);
 
   if (!token) {
     throw Error(
@@ -35,7 +34,7 @@ export const getPaymentTokenInfo = async (
     token.derivedETH
   );
 
-  const returnedTokenInfo: ConvertedTokenInfo = {
+  const returnedTokenInfo: TokenInfo = {
     id: token.id,
     name: token.name,
     symbol: token.symbol,

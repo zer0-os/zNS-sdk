@@ -1,16 +1,16 @@
 import { ApolloClient } from "@apollo/client/core";
 import { Maybe, TokenInfo } from "../../../types";
 import * as queries from "../queries";
-import { TokenInfoDto } from "../types";
+import { TokenDto, TokenInfoDto } from "../types";
 import { performQuery } from "../../helpers";
 import { getLogger } from "../../../utilities";
 
 const logger = getLogger().withTag("subgraph:dexClient:getTokenInfo");
 
-export const getTokenInfo = async <T>(
-  apolloClient: ApolloClient<T>,
+export const getTokenInfo = async <TCacheShape>(
+  apolloClient: ApolloClient<TCacheShape>,
   tokenAddress: string
-): Promise<Maybe<TokenInfo>> => {
+): Promise<Maybe<TokenDto>> => {
   const queryResult = await performQuery<TokenInfoDto>(
     apolloClient,
     queries.getTokenByAddress,
@@ -23,7 +23,7 @@ export const getTokenInfo = async <T>(
   }
 
   const token = queryResult.data.tokens[0];
-  const tokenInfo: TokenInfo = {
+  const tokenInfo: TokenDto = {
     id: token.id,
     name: token.name,
     symbol: token.symbol,

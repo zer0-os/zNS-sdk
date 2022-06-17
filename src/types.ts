@@ -47,14 +47,6 @@ export interface TokenInfo {
   id: string;
   name: string;
   symbol: string;
-  derivedETH: string;
-  decimals: string; // e.g. 18
-}
-
-export interface ConvertedTokenInfo {
-  id: string;
-  name: string;
-  symbol: string;
   priceInUsd: string;
   decimals: string; // e.g. 18   
 }
@@ -330,7 +322,7 @@ export interface Instance {
      */
     getPaymentTokenInfo: (
       paymentTokenAddress: string
-    ) => Promise<ConvertedTokenInfo>;
+    ) => Promise<TokenInfo>;
     /**
      * Sets the payment token used within a network for sales
      * @param networkId The domain network to set a payment token for e.g. Wilder
