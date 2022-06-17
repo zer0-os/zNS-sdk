@@ -1,11 +1,11 @@
-import { getLogger, Maybe } from "../../utilities";
+import { getLogger } from "../../utilities";
 import { ContractTransaction, ethers } from "ethers";
 import { isNetworkDomainAvailable } from "./isNetworkDomainAvailable";
 import { getPriceOfNetworkDomain } from "../getPriceOfNetworkDomain";
 import { isMinterApprovedToSpendTokens } from ".";
 import { getDomainPurchaserContract, getERC20Contract } from "../../contracts";
 import { NetworkDomainMintableConfig } from "./types";
-import { DomainPurchaser } from "../../contracts/types/DomainPurchaser";
+import { Maybe } from "../../types";
 
 const logger = getLogger("actions:getDomainMetadata");
 

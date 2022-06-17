@@ -1,10 +1,6 @@
 import * as zAuction from "./zAuction";
-import { Maybe } from "./utilities";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
-import { ZNSHub } from "./contracts/types";
-import { DomainPurchaser } from "./contracts/types/DomainPurchaser";
-import { znsApiClient } from "./api/znsApi/client";
 
 /**
  * Configuration for a zNS sdk instance
@@ -12,6 +8,8 @@ import { znsApiClient } from "./api/znsApi/client";
 export interface Config {
   /** The zNS Subgraph URL */
   subgraphUri: string;
+  /** Subgraph URI for the Uniswap DEX Protocol */
+  uniswapSubgraphUri: string;
   /** The Metrics server api URL */
   metricsUri: string;
   /** The utilities api URL */
@@ -34,18 +32,23 @@ export interface Config {
   provider: ethers.providers.Provider;
 }
 
+export type Maybe<T> = T | undefined;
+
 export interface Listing {
   price: number;
   holder: string;
 }
 
-export interface ZAuctionInstances {
-  [registrarAddress: string]: zAuction.Instance;
+export interface Map<T> {
+  [key: string]: T;
 }
 
-export interface TokenPriceInfo {
-  price: number;
+export interface TokenInfo {
+  id: string;
   name: string;
+  symbol: string;
+  priceInUsd: string;
+  decimals: string; // e.g. 18   
 }
 
 export interface TokenAllowanceByBid {
@@ -314,12 +317,12 @@ export interface Instance {
    */
   zauction: {
     /**
-     * Get information about a payment token like price in USD and friendly name
-     * @param domainId The domain to get the payment token for
+     * Get information about a payment token like price in USD, name, and symbol
+     * @param paymentTokenAddress The domain to get the payment token for
      */
     getPaymentTokenInfo: (
       paymentTokenAddress: string
-    ) => Promise<TokenPriceInfo>;
+    ) => Promise<TokenInfo>;
     /**
      * Sets the payment token used within a network for sales
      * @param networkId The domain network to set a payment token for e.g. Wilder

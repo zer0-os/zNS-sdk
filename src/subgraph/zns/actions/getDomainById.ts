@@ -1,8 +1,8 @@
 import { ApolloClient } from "@apollo/client/core";
-import { Domain } from "../../types";
+import { Domain } from "../../../types";
 import * as queries from "../queries";
 import { DomainQueryDto } from "../types";
-import { convertDomainDtoToDomain, performQuery } from "./helpers";
+import { convertDomainDtoToDomain, performQuery } from "../../helpers";
 
 export const getDomainById = async <T>(
   apolloClient: ApolloClient<T>,

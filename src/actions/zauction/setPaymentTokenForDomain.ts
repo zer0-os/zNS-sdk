@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
-import { Config } from "../types";
-import { getHubContract } from "../contracts";
+import { Config } from "../../types";
+import { getHubContract } from "../../contracts";
 import { Instance } from "@zero-tech/zauction-sdk";
-import { getLogger } from "../utilities";
+import { getLogger } from "../../utilities";
 
 const logger = getLogger("actions:setPaymentTokenForDomain");
 

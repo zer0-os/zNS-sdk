@@ -1,5 +1,4 @@
-import { Maybe } from "../../../utilities";
-import { Domain } from "../../../types";
+import { Domain, Maybe } from "../../../types";
 import { DomainCollection, RequestBody } from "../types";
 import { makeApiCall } from "../../helpers";
 import { ethers } from "ethers";

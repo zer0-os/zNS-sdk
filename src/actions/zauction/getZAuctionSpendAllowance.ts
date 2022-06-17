@@ -1,8 +1,8 @@
-import { TokenAllowanceParams } from "../types";
+import { TokenAllowanceParams } from "../../types";
 import * as zAuction from "@zero-tech/zauction-sdk";
 import { ethers } from "ethers";
 
-import { getLogger } from "../utilities";
+import { getLogger } from "../../utilities";
 
 const logger = getLogger("actions:getZAuctionSpendAllowance");
 

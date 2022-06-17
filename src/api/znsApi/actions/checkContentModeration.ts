@@ -1,7 +1,6 @@
 import { ContentModeration } from "../types";
-import { Maybe } from "../../../utilities";
 import { makeApiCall } from "../../helpers";
-import { ContentModerationResponse } from "../../../types";
+import { ContentModerationResponse, Maybe } from "../../../types";
 
 const regex = /^[a-zA-Z0-9]+$/; //Matches whitespace and alphanumeric characters
 const reasons = {

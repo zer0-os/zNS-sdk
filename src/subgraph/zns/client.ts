@@ -1,34 +1,29 @@
-import * as apollo from "@apollo/client/core";
-import fetch from "cross-fetch";
-import { Domain, DomainMintEvent, DomainTransferEvent } from "../types";
-import { getLogger } from "../utilities";
+import { Domain, DomainMintEvent, DomainTransferEvent, Maybe } from "../../types";
+import { getLogger } from "../../utilities";
 
 import * as actions from "./actions";
+import { createApolloClient } from "../helpers"
 
 const logger = getLogger().withTag("subgraph:client");
-type Maybe<T> = T | undefined;
+
 export interface SubgraphClient {
   getDomainById(domainId: string): Promise<Domain>;
   getDomainsByName(name: string): Promise<Domain[]>;
   getDomainsByOwner(owner: string): Promise<Domain[]>;
   getSubdomainsById(domainId: string): Promise<Domain[]>;
-  getMostRecentSubdomainsById(domainId: string, count: Maybe<number>, skip: Maybe<number>): Promise<Domain[]>;
+  getMostRecentSubdomainsById(
+    domainId: string,
+    count: Maybe<number>,
+    skip: Maybe<number>
+  ): Promise<Domain[]>;
   getDomainTransferEvents(domainId: string): Promise<DomainTransferEvent[]>;
   getDomainMintedEvent(domainId: string): Promise<DomainMintEvent>;
   getAllDomains(): Promise<Domain[]>;
-  getMostRecentDomains(count: Maybe<number>, skip: Maybe<number>): Promise<Domain[]>;
+  getMostRecentDomains(
+    count: Maybe<number>,
+    skip: Maybe<number>
+  ): Promise<Domain[]>;
 }
-
-const createApolloClient = (
-  subgraphUri: string
-): apollo.ApolloClient<apollo.NormalizedCacheObject> => {
-  const client = new apollo.ApolloClient({
-    link: new apollo.HttpLink({ uri: subgraphUri, fetch }),
-    cache: new apollo.InMemoryCache(),
-  });
-
-  return client;
-};
 
 export const createClient = (subgraphUri: string): SubgraphClient => {
   const apolloClient = createApolloClient(subgraphUri);
@@ -55,10 +50,10 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
       return domains;
     },
     getMostRecentSubdomainsById: async (
-      domainId: string, 
-      count: Maybe<number>, 
+      domainId: string,
+      count: Maybe<number>,
       skip: Maybe<number>
-      ): Promise<Domain[]> => {
+    ): Promise<Domain[]> => {
       logger.debug(`Get recent subdomains by id: ${domainId}`);
       const domains = await actions.getMostRecentSubdomainsById(
         apolloClient,
@@ -95,7 +90,11 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
       skip: Maybe<number>
     ): Promise<Domain[]> => {
       logger.debug(`Get recent domains (${count})`);
-      const domains = await actions.getMostRecentDomains(apolloClient, count, skip);
+      const domains = await actions.getMostRecentDomains(
+        apolloClient,
+        count,
+        skip
+      );
       return domains;
     },
   };

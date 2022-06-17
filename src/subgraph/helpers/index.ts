@@ -1,3 +1,17 @@
+import * as apollo from "@apollo/client/core";
+import fetch from "cross-fetch";
+
+export const createApolloClient = (
+  subgraphUri: string
+): apollo.ApolloClient<apollo.NormalizedCacheObject> => {
+  const client = new apollo.ApolloClient({
+    link: new apollo.HttpLink({ uri: subgraphUri, fetch }),
+    cache: new apollo.InMemoryCache(),
+  });
+
+  return client;
+};
+
 import {
   ApolloClient,
   ApolloQueryResult,
@@ -6,7 +20,7 @@ import {
 } from "@apollo/client/core";
 import { ethers } from "ethers";
 import { Domain } from "../../types";
-import { DomainDto } from "../types";
+import { DomainDto } from "../zns/types";
 
 /**
  * Helper function to perform a query on an apollo client.
