@@ -18,8 +18,10 @@ export const mainnetConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns",
-    uniswapSubgraphUri:
-      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+    dexSubgraphUris: {
+      uniswap: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+      sushiswap: "https://api.thegraph.com/subgraphs/name/steegecs/sushiswap-mainnet"
+    },
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
     dataStoreUri: "",
@@ -51,7 +53,10 @@ export const kovanConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-kovan",
-    uniswapSubgraphUri: "",
+    dexSubgraphUris: {
+      uniswap: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+      sushiswap: ""
+    },
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-kovan.herokuapp.com",
     dataStoreUri: "",
@@ -82,8 +87,10 @@ export const rinkebyConfiguration = (
   };
   return {
     subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-rinkeby",
-    uniswapSubgraphUri:
-      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+    dexSubgraphUris: {
+      uniswap: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+      sushiswap: ""
+    },
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
     dataStoreUri: "https://apim-data-store-api-rinkeby.azure-api.net/",

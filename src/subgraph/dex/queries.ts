@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const getTokenByAddress = gql`
+export const getTokenByAddressUniswap = gql`
   query Tokens($tokenAddress: ID!) {
     tokens(where: { id: $tokenAddress }) {
       id
@@ -9,5 +9,17 @@ export const getTokenByAddress = gql`
       decimals
       derivedETH
     }
+  }
+`
+
+export const getTokenByAddressSushiswap = gql`
+  query Tokens($tokenAddress: ID!) {
+    tokens(where: { id: $tokenAddress }) {
+    id
+    name
+    symbol
+    decimals
+    lastPriceUSD
+  }
   }
 `

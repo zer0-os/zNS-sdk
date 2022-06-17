@@ -1,21 +1,25 @@
-import { ApolloClient } from "@apollo/client/core";
+import { ApolloClient, DocumentNode } from "@apollo/client/core";
 import { Maybe, TokenInfo } from "../../../types";
 import * as queries from "../queries";
-import { TokenDto, TokenInfoDto } from "../types";
+import { UniswapTokenDto, QueryOptions, TokenCollectionBase, TokenDto } from "../types";
 import { performQuery } from "../../helpers";
 import { getLogger } from "../../../utilities";
 
 const logger = getLogger().withTag("subgraph:dexClient:getTokenInfo");
 
-export const getTokenInfo = async <TCacheShape>(
+export const getTokenInfo = async <TCacheShape, T extends TokenDto>(
   apolloClient: ApolloClient<TCacheShape>,
-  tokenAddress: string
-): Promise<Maybe<TokenDto>> => {
-  const queryResult = await performQuery<TokenInfoDto>(
+  tokenAddress: string,
+  query: DocumentNode,
+  options: QueryOptions
+): Promise<Maybe<T>> => {
+  const queryResult = await performQuery<TokenCollectionBase<T>>(
     apolloClient,
-    queries.getTokenByAddress,
-    { tokenAddress: tokenAddress.toLowerCase() }
+    query,
+    options
   );
+
+  console.log(queryResult.data)
 
   if (queryResult.data.tokens.length === 0) {
     logger.trace(`No token found with address ${tokenAddress}`);
@@ -23,14 +27,7 @@ export const getTokenInfo = async <TCacheShape>(
   }
 
   const token = queryResult.data.tokens[0];
-  const tokenInfo: TokenDto = {
-    id: token.id,
-    name: token.name,
-    symbol: token.symbol,
-    derivedETH: token.derivedETH,
-    decimals: token.decimals,
-  };
 
-  logger.trace(`Found token ${tokenInfo.symbol} at address ${tokenAddress}`)
-  return tokenInfo;
+  logger.trace(`Found token ${token.symbol} at address ${tokenAddress}`)
+  return token;
 };

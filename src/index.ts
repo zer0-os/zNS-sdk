@@ -16,6 +16,7 @@ import {
   DomainMetadata,
   Instance,
   IPFSGatewayUri,
+  Maybe,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
@@ -247,8 +248,8 @@ export const createInstance = (config: Config): Instance => {
     zauction: {
       getPaymentTokenInfo: async (
         paymentTokenAddress: string
-      ): Promise<TokenInfo> => {
-        const info: TokenInfo = await actions.getPaymentTokenInfo(
+      ): Promise<Maybe<TokenInfo>> => {
+        const info = await actions.getPaymentTokenInfo(
           paymentTokenAddress,
           config
         );
