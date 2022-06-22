@@ -1,12 +1,12 @@
-import { Maybe, TokenInfo, UniswapTokenInfo } from "../../types";
-export { TokenInfo };
+import { Maybe, TokenInfo } from "../../types";
 import { getLogger } from "../../utilities";
+// export { TokenInfo };
 
 import * as queries from "./queries";
 
 import * as actions from "./actions";
 import { createApolloClient } from "../helpers";
-import { DocumentNode, NormalizedCacheObject } from "@apollo/client";
+import { DocumentNode, NormalizedCacheObject } from "@apollo/client/core";
 
 const logger = getLogger("subgraph:dexClient");
 
