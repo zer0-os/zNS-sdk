@@ -19,8 +19,6 @@ export const getTokenInfo = async <TCacheShape, T extends TokenDto>(
     options
   );
 
-  console.log(queryResult.data)
-
   if (queryResult.data.tokens.length === 0) {
     logger.trace(`No token found with address ${tokenAddress}`);
     return undefined;

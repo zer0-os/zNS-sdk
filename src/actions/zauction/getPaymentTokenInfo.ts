@@ -1,16 +1,15 @@
-import { createUniswapClient } from "../../subgraph";
-import { TokenDto } from "../../subgraph/dex/types";
+import { createDexClient, DexSubgraphClient } from "../../subgraph";
+import { queries } from "../../subgraph/dex/queries";
 import {
   Config,
   Maybe,
-  TokenInfo,
   ConvertedTokenInfo,
   UniswapTokenInfo,
+  SushiswapTokenInfo,
+  DexProtocolsToCheck,
 } from "../../types";
 import { getLogger } from "../../utilities";
 import { getTokenPrice } from "../helpers";
-
-const dex_to_chex = ["uniswap", "sushiswap"];
 
 const logger = getLogger("actions:zauction:getPaymentTokenInfo");
 
@@ -23,45 +22,48 @@ const logger = getLogger("actions:zauction:getPaymentTokenInfo");
 export const getPaymentTokenInfo = async (
   paymentTokenAddress: string,
   config: Config
-): Promise<Maybe<TokenInfo>> => {
+): Promise<ConvertedTokenInfo> => {
   logger.trace(`Getting paymentToken info for ${paymentTokenAddress}`);
 
-  // Check Uniswap DEX protocol
-  const client = await createUniswapClient(config.dexSubgraphUris["uniswap"]);
+  let client: DexSubgraphClient;
 
-  const token = await client.getTokenInfo(
-    paymentTokenAddress
-  );
+  // Check each configured DEX protocol
+  for (const dex of Object.values(DexProtocolsToCheck)) {
+    const query = queries.get(dex);
 
-  if (token) {
-    const tokenPriceUsd = await getTokenPrice(
-      paymentTokenAddress,
-      // token.derivedETH
-    );
-    const returnedTokenInfo: ConvertedTokenInfo = {
-      id: token.id,
-      name: token.name,
-      symbol: token.symbol,
-      priceInUsd: tokenPriceUsd.toString(),
-      decimals: token.decimals,
-    };
+    if (!query) {
+      throw Error(`No configured query for DEX Protocol Subgraph: ${dex}`);
+    }
 
-    return returnedTokenInfo;
+    client = await createDexClient(config.dexSubgraphUris[dex]);
+
+    const token: Maybe<UniswapTokenInfo | SushiswapTokenInfo> =
+      await client.getTokenInfo(paymentTokenAddress, query);
+
+    if (token) {
+      const tokenPriceUsd = await getTokenPrice(
+        dex,
+        paymentTokenAddress,
+        token
+      );
+      const tokenInfo: ConvertedTokenInfo = {
+        id: token.id,
+        name: token.name,
+        symbol: token.symbol,
+        priceInUsd: tokenPriceUsd,
+        decimals: token.decimals,
+      };
+
+      logger.trace(
+        `Found token ${tokenInfo.name}, $${token.symbol} at given address`
+      );
+
+      return tokenInfo;
+    }
   }
 
-  // check sushiswap
-  // return undefined;
+  // If not found on any DEX, we return an error;
   throw Error(
-    `Token pricing info with address ${paymentTokenAddress} could not be found`
+    `Token info with address ${paymentTokenAddress} could not be found`
   );
-
-  // const returnedTokenInfo: TokenInfo = {
-  //   id: token.id,
-  //   name: token.name,
-  //   symbol: token.symbol,
-  //   priceInUsd: tokenPriceUsd.toString(),
-  //   decimals: token.decimals,
-  // };
-
-  // return returnedTokenInfo;
 };

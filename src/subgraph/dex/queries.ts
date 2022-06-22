@@ -1,25 +1,30 @@
-import { gql } from "@apollo/client/core";
+import { DocumentNode, gql } from "@apollo/client/core";
 
-export const getTokenByAddressUniswap = gql`
-  query Tokens($tokenAddress: ID!) {
-    tokens(where: { id: $tokenAddress }) {
-      id
-      symbol
-      name
-      decimals
-      derivedETH
+const internalQueries = {
+  Uniswap: gql`
+    query Tokens($tokenAddress: ID!) {
+      tokens(where: { id: $tokenAddress }) {
+        id
+        symbol
+        name
+        decimals
+        derivedETH
+      }
     }
-  }
-`
+  `,
+  Sushiswap: gql`
+    query Tokens($tokenAddress: ID!) {
+      tokens(where: { id: $tokenAddress }) {
+        id
+        name
+        symbol
+        decimals
+        lastPriceUSD
+      }
+    }
+  `,
+};
 
-export const getTokenByAddressSushiswap = gql`
-  query Tokens($tokenAddress: ID!) {
-    tokens(where: { id: $tokenAddress }) {
-    id
-    name
-    symbol
-    decimals
-    lastPriceUSD
-  }
-  }
-`
+export const queries = new Map<string, DocumentNode>(
+  Object.entries(internalQueries)
+);

@@ -1,92 +1,41 @@
 import { Maybe, TokenInfo, UniswapTokenInfo } from "../../types";
+export { TokenInfo };
 import { getLogger } from "../../utilities";
 
 import * as queries from "./queries";
 
 import * as actions from "./actions";
 import { createApolloClient } from "../helpers";
-import { TokenDto } from "./types";
-import { UniswapTokenDto } from "./types";
-import { NormalizedCacheObject } from "@apollo/client";
+import { DocumentNode, NormalizedCacheObject } from "@apollo/client";
 
 const logger = getLogger("subgraph:dexClient");
 
-export interface UniswapSubgraphClient {
-  getTokenInfo(tokenId: string): Promise<Maybe<TokenDto>>;
-  getTokenInfo(tokenId: string): Promise<Maybe<UniswapTokenInfo>>;
+export interface DexSubgraphClient {
+  getTokenInfo<T extends TokenInfo>(
+    paymentTokenAddress: string,
+    query: DocumentNode
+  ): Promise<Maybe<T>>;
 }
 
-export const createUniswapClient = (
-  dexSubgraphUri: string
-): UniswapSubgraphClient => {
+export const createDexClient = (dexSubgraphUri: string): DexSubgraphClient => {
   const apolloClient = createApolloClient(dexSubgraphUri);
-
-  const client: UniswapSubgraphClient = {
-    getTokenInfo: async (
-      paymentTokenId: string
-    ): Promise<Maybe<UniswapTokenInfo>> => {
+  const client = {
+    getTokenInfo: async <T extends TokenInfo>(
+      paymentTokenAddress: string,
+      query: DocumentNode
+    ): Promise<Maybe<T>> => {
       logger.debug(
-        `Calling to get payment token info for token ${paymentTokenId} on Uniswap`
+        `Calling to get payment token info for token ${paymentTokenAddress} using subgraph at ${dexSubgraphUri}`
       );
       const options = {
-        tokenAddress: paymentTokenId.toLowerCase(),
+        tokenAddress: paymentTokenAddress.toLowerCase(),
       };
-      const token = await actions.getTokenInfo<
+      const token: Maybe<T> = await actions.getTokenInfo<
         NormalizedCacheObject,
-        UniswapTokenDto
-      >(
-        apolloClient,
-        paymentTokenId,
-        queries.getTokenByAddressUniswap,
-        options
-      );
-      if (!token) {
-        return undefined;
-      }
-      const tokenInfo: UniswapTokenInfo = {
-        id: token.id,
-        name: token.name,
-        symbol: token.symbol,
-        derivedETH: token.derivedETH,
-        decimals: token.decimals,
-      };
-      return tokenInfo;
+        T
+      >(apolloClient, paymentTokenAddress, query, options);
+      return token;
     },
   };
-  return client;
+  return client as DexSubgraphClient;
 };
-
-// export const createSushiswapClient = (
-//   dexSubgraphUri: string
-// ): UniswapSubgraphClient => {
-//   const apolloClient = createApolloClient(dexSubgraphUri);
-
-//   const client: UniswapSubgraphClient = {
-//     getTokenInfo: async (paymentTokenId: string): Promise<Maybe<TokenInfo>> => {
-//       logger.debug(
-//         `Calling to get payment token info for token ${paymentTokenId} on Sushiswap`
-//       );
-//       const options = {
-//         tokenAddress: paymentTokenId.toLowerCase(),
-//       };
-//       const token = await actions.getTokenInfo(
-//         apolloClient,
-//         paymentTokenId,
-//         queries.getTokenByAddressUniswap,
-//         options
-//       );
-//       // Check the next DEX if not found
-//       if (!token) {
-//         return undefined;
-//       }
-//       // const tokenInfo = {
-//       //   id: token.id,
-//       //   name: token.name,
-//       //   symbol: token.symbol,
-//       //   decimals: token.decimals,
-//       // };
-//       // return token;
-//     },
-//   };
-//   return client;
-// };

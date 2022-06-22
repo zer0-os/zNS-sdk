@@ -2,11 +2,16 @@ import { makeApiCall } from "../../api/helpers";
 import { Registrar } from "../../contracts/types";
 import { getLogger } from "../../utilities";
 import {
-  ETHEREUM_API_ID,
+  ETHEREUM_ID,
   ETHEREUM_PRICE_ENDPOINT,
   ERC20_PRICE_ENDPOINT,
 } from "./constants";
 import { CoinGeckoRequestOptions, CoinGeckoResponse } from "../types";
+import {
+  DexProtocolsToCheck,
+  SushiswapTokenInfo,
+  UniswapTokenInfo,
+} from "../../types";
 
 const logger = getLogger("actions:helpers");
 
@@ -62,33 +67,51 @@ export const validateOwnerAndStatus = async (
 };
 
 /**
- * Get a token's price using the CoinGecko API.
- * If it can't be found on CoinGecko, then we use the derivedEth
- * provided by the Uniswap subgraph
- * @param paymentTokenAddress The contract address of the ERC20 payment token
- * @param derivedETH The derived ETH ratio
- * @returns The price of the token in USD
+ * Try to resolve the price information by checking which
+ * DEX protocol it was found on and then getting that information
+ * @param dex The DEX protocol used
+ * @param paymentTokenAddress The hex address of the ERC20 token
+ * @param tokenInfo The tokenInfo object
+ * @returns The price of the token
  */
 export const getTokenPrice = async (
+  dex: DexProtocolsToCheck,
   paymentTokenAddress: string,
-  derivedETH?: string
-): Promise<number> => {
-  const price = await getTokenPriceFromCoinGecko(paymentTokenAddress, derivedETH);
-  return price;
+  tokenInfo: UniswapTokenInfo | SushiswapTokenInfo
+): Promise<string> => {
+  let tokenPriceUsd: string;
+  if (dex === DexProtocolsToCheck.Uniswap) {
+    tokenPriceUsd = await getUniswapTokenPrice(
+      paymentTokenAddress,
+      (tokenInfo as UniswapTokenInfo).derivedETH
+    );
+  } else {
+    tokenPriceUsd = (tokenInfo as SushiswapTokenInfo).lastPriceUSD;
+  }
+
+  return tokenPriceUsd;
 };
 
-const getTokenPriceFromCoinGecko = async (paymentTokenAddress: string, derivedETH?: string): Promise<number> => {
+/**
+ * Try to find price information using a token found on Uniswap
+ * If not found on Coin Gecko, the derivedETH value is used to
+ * calculate the price instead
+ * @param paymentTokenAddress The contract address of the ERC20 payment token
+ * @param derivedETH The derived ETH ratio
+ * @returns The price of the token
+ */
+const getUniswapTokenPrice = async (
+  paymentTokenAddress: string,
+  derivedETH: string
+): Promise<string> => {
   let uri = createCoinGeckoUri(paymentTokenAddress);
   let response = await makeApiCall<CoinGeckoResponse>(uri, "GET");
 
   if (Object.keys(response).length > 0) {
-    return response[paymentTokenAddress.toLowerCase()].usd;
-  }
-
-  if (!derivedETH) {
-    throw Error(
-      `Unable to determine the price for token with address ${paymentTokenAddress}`
+    const priceAsString = String(
+      response[paymentTokenAddress.toLowerCase()].usd
     );
+    return priceAsString;
   }
 
   // If the price isn't found directly on CoinGecko we instead compare
@@ -96,7 +119,7 @@ const getTokenPriceFromCoinGecko = async (paymentTokenAddress: string, derivedET
   uri = createCoinGeckoUri();
   response = await makeApiCall<CoinGeckoResponse>(uri, "GET");
 
-  const ethPriceUsd = response[ETHEREUM_API_ID].usd;
+  const ethPriceUsd = response[ETHEREUM_ID].usd;
   const derivedETHAsFloat = parseFloat(derivedETH);
-  return derivedETHAsFloat * ethPriceUsd;
-}
+  return String(derivedETHAsFloat * ethPriceUsd);
+};

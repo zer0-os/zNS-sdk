@@ -45,6 +45,11 @@ export interface Map<T> {
   [key: string]: T;
 }
 
+export enum DexProtocolsToCheck {
+  Uniswap = "Uniswap",
+  Sushiswap = "Sushiswap",
+}
+
 export interface TokenInfo {
   id: string;
   name: string;
@@ -56,7 +61,7 @@ export interface UniswapTokenInfo extends TokenInfo {
   derivedETH: string;
 }
 
-export interface SushiswapTokenDto extends TokenInfo {
+export interface SushiswapTokenInfo extends TokenInfo {
   lastPriceUSD: string;
 }
 
@@ -339,7 +344,7 @@ export interface Instance {
      */
     getPaymentTokenInfo: (
       paymentTokenAddress: string
-    ) => Promise<Maybe<TokenInfo>>;
+    ) => Promise<ConvertedTokenInfo>;
     /**
      * Sets the payment token used within a network for sales
      * @param networkId The domain network to set a payment token for e.g. Wilder
