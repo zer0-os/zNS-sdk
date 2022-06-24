@@ -12,15 +12,16 @@ import {
 } from "./zAuction";
 import {
   Config,
+  ConvertedTokenInfo,
   Domain,
   DomainMetadata,
   Instance,
   IPFSGatewayUri,
+  Maybe,
   MintSubdomainStatusCallback,
   PlaceBidParams,
   SubdomainParams,
   TokenAllowanceParams,
-  TokenInfo,
   UploadJobStatus,
   UrlToJobId,
 } from "./types";
@@ -247,8 +248,8 @@ export const createInstance = (config: Config): Instance => {
     zauction: {
       getPaymentTokenInfo: async (
         paymentTokenAddress: string
-      ): Promise<TokenInfo> => {
-        const info: TokenInfo = await actions.getPaymentTokenInfo(
+      ): Promise<ConvertedTokenInfo> => {
+        const info = await actions.getPaymentTokenInfo(
           paymentTokenAddress,
           config
         );

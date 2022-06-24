@@ -2,6 +2,8 @@ import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
 
+export interface DexSubgraphUris extends Map<string> {}
+
 /**
  * Configuration for a zNS sdk instance
  */
@@ -9,7 +11,7 @@ export interface Config {
   /** The zNS Subgraph URL */
   subgraphUri: string;
   /** Subgraph URI for the Uniswap DEX Protocol */
-  uniswapSubgraphUri: string;
+  dexSubgraphUris: DexSubgraphUris;
   /** The Metrics server api URL */
   metricsUri: string;
   /** The utilities api URL */
@@ -43,12 +45,32 @@ export interface Map<T> {
   [key: string]: T;
 }
 
+export enum DexProtocolsToCheck {
+  Uniswap = "Uniswap",
+  Sushiswap = "Sushiswap",
+}
+
 export interface TokenInfo {
   id: string;
   name: string;
   symbol: string;
+  decimals: string; // e.g. 18
+}
+
+export interface UniswapTokenInfo extends TokenInfo {
+  derivedETH: string;
+}
+
+export interface SushiswapTokenInfo extends TokenInfo {
+  lastPriceUSD: string;
+}
+
+export interface ConvertedTokenInfo {
+  id: string;
+  name: string;
+  symbol: string;
   priceInUsd: string;
-  decimals: string; // e.g. 18   
+  decimals: string; // e.g. 18
 }
 
 export interface TokenAllowanceByBid {
@@ -322,7 +344,7 @@ export interface Instance {
      */
     getPaymentTokenInfo: (
       paymentTokenAddress: string
-    ) => Promise<TokenInfo>;
+    ) => Promise<ConvertedTokenInfo>;
     /**
      * Sets the payment token used within a network for sales
      * @param networkId The domain network to set a payment token for e.g. Wilder

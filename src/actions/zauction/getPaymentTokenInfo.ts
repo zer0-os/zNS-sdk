@@ -1,6 +1,13 @@
-import { createUniswapClient } from "../../subgraph";
-import { TokenDto } from "../../subgraph/dex/types";
-import { Config, Maybe, TokenInfo } from "../../types";
+import { createDexClient, DexSubgraphClient } from "../../subgraph";
+import { queries } from "../../subgraph/dex/queries";
+import {
+  Config,
+  Maybe,
+  ConvertedTokenInfo,
+  UniswapTokenInfo,
+  SushiswapTokenInfo,
+  DexProtocolsToCheck,
+} from "../../types";
 import { getLogger } from "../../utilities";
 import { getTokenPrice } from "../helpers";
 
@@ -15,32 +22,48 @@ const logger = getLogger("actions:zauction:getPaymentTokenInfo");
 export const getPaymentTokenInfo = async (
   paymentTokenAddress: string,
   config: Config
-): Promise<TokenInfo> => {
+): Promise<ConvertedTokenInfo> => {
   logger.trace(`Getting paymentToken info for ${paymentTokenAddress}`);
 
-  // Check Uniswap DEX protocol
-  const client = await createUniswapClient(config.uniswapSubgraphUri);
+  let client: DexSubgraphClient;
 
-  const token: Maybe<TokenDto> = await client.getTokenInfo(paymentTokenAddress);
+  // Check each configured DEX protocol
+  for (const dex of Object.values(DexProtocolsToCheck)) {
+    const query = queries.get(dex);
 
-  if (!token) {
-    throw Error(
-      `Token pricing info with address ${paymentTokenAddress} could not be found`
-    );
+    if (!query) {
+      throw Error(`No configured query for DEX Protocol Subgraph: ${dex}`);
+    }
+
+    client = await createDexClient(config.dexSubgraphUris[dex]);
+
+    const token: Maybe<UniswapTokenInfo | SushiswapTokenInfo> =
+      await client.getTokenInfo(paymentTokenAddress, query);
+
+    if (token) {
+      const tokenPriceUsd = await getTokenPrice(
+        dex,
+        paymentTokenAddress,
+        token
+      );
+      const tokenInfo: ConvertedTokenInfo = {
+        id: token.id,
+        name: token.name,
+        symbol: token.symbol,
+        priceInUsd: tokenPriceUsd,
+        decimals: token.decimals,
+      };
+
+      logger.trace(
+        `Found token ${tokenInfo.name}, $${token.symbol} at given address`
+      );
+
+      return tokenInfo;
+    }
   }
 
-  const tokenPriceUsd = await getTokenPrice(
-    paymentTokenAddress,
-    token.derivedETH
+  // If not found on any DEX, we return an error;
+  throw Error(
+    `Token info with address ${paymentTokenAddress} could not be found`
   );
-
-  const returnedTokenInfo: TokenInfo = {
-    id: token.id,
-    name: token.name,
-    symbol: token.symbol,
-    priceInUsd: tokenPriceUsd.toString(),
-    decimals: token.decimals,
-  };
-
-  return returnedTokenInfo;
 };

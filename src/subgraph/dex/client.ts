@@ -1,30 +1,41 @@
 import { Maybe, TokenInfo } from "../../types";
 import { getLogger } from "../../utilities";
+// export { TokenInfo };
+
+import * as queries from "./queries";
 
 import * as actions from "./actions";
 import { createApolloClient } from "../helpers";
-import { TokenDto } from "./types";
+import { DocumentNode, NormalizedCacheObject } from "@apollo/client/core";
 
 const logger = getLogger("subgraph:dexClient");
 
-export interface UniswapSubgraphClient {
-  getTokenInfo(tokenId: string): Promise<Maybe<TokenDto>>;
+export interface DexSubgraphClient {
+  getTokenInfo<T extends TokenInfo>(
+    paymentTokenAddress: string,
+    query: DocumentNode
+  ): Promise<Maybe<T>>;
 }
 
-export const createUniswapClient = (
-  dexSubgraphUri: string
-): UniswapSubgraphClient => {
+export const createDexClient = (dexSubgraphUri: string): DexSubgraphClient => {
   const apolloClient = createApolloClient(dexSubgraphUri);
-
-  const client: UniswapSubgraphClient = {
-    getTokenInfo: async (paymentTokenId: string): Promise<Maybe<TokenDto>> => {
-      logger.debug(`Getting payment token info for token ${paymentTokenId}`);
-      const tokenInfo = await actions.getTokenInfo(
-        apolloClient,
-        paymentTokenId
+  const client = {
+    getTokenInfo: async <T extends TokenInfo>(
+      paymentTokenAddress: string,
+      query: DocumentNode
+    ): Promise<Maybe<T>> => {
+      logger.debug(
+        `Calling to get payment token info for token ${paymentTokenAddress} using subgraph at ${dexSubgraphUri}`
       );
-      return tokenInfo;
+      const options = {
+        tokenAddress: paymentTokenAddress.toLowerCase(),
+      };
+      const token: Maybe<T> = await actions.getTokenInfo<
+        NormalizedCacheObject,
+        T
+      >(apolloClient, paymentTokenAddress, query, options);
+      return token;
     },
   };
-  return client;
+  return client as DexSubgraphClient;
 };
