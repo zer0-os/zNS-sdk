@@ -32,6 +32,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+      - run:
+          command: yarn run lint
   test:
     <<: *defaults
     steps:
