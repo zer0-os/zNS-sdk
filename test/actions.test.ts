@@ -183,43 +183,46 @@ describe("Test Custom SDK Logic", () => {
   });
 
   describe("(get|set)buyNowPrice", () => {
-    // it("runs as expected", async () => {
-    //   // Set to a new value every time it's run, loop is same as current price
-    //   let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowListing(
-    //     wilderPancakesDomain
-    //   );
-    //   let newBuyNowPrice = ethers.utils.parseEther(
-    //     Math.round(Math.random() * 100).toString()
-    //   );
-    //   while (listing.price.eq(newBuyNowPrice)) {
-    //     newBuyNowPrice = ethers.utils.parseEther(
-    //       Math.round(Math.random() * 100).toString()
-    //     );
-    //   }
-    //   const params: zAuction.BuyNowParams = {
-    //     amount: ethers.utils.parseEther(`${newBuyNowPrice}`).toString(),
-    //     tokenId: wilderPancakesDomain,
-    //     paymentToken: wildToken,
-    //   };
-    //   const address = await signer.getAddress();
-    //   const isApproved =
-    //     await zAuctionSdkInstance.isZAuctionApprovedToTransferNftByDomain(
-    //       address,
-    //       wilderPancakesDomain
-    //     );
-    //   if (!isApproved)
-    //     await zAuctionSdkInstance.approveZAuctionTransferNftByDomain(
-    //       wilderPancakesDomain,
-    //       signer
-    //     );
-    //   // const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
-    //   listing = await zAuctionSdkInstance.getBuyNowListing(
-    //     wilderPancakesDomain
-    //   );
-    //   assert(listing);
-    // });
-  });
+    it("runs as expected", async () => {
+      // Set to a new value every time it's run, loop is same as current price
+      let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowListing(
+        wilderPancakesDomain
+      );
+      let newBuyNowPrice = ethers.utils.parseEther(
+        Math.round(Math.random() * 100).toString()
+      );
+      while (listing.price.eq(newBuyNowPrice)) {
+        newBuyNowPrice = ethers.utils.parseEther(
+          Math.round(Math.random() * 100).toString()
+        );
+      }
+      const params: zAuction.BuyNowParams = {
+        amount: ethers.utils.parseEther(`${newBuyNowPrice}`).toString(),
+        tokenId: wilderPancakesDomain,
+        paymentToken: wildToken,
+      };
 
+      const address = await signer.getAddress();
+      const isApproved =
+        await zAuctionSdkInstance.isZAuctionApprovedToTransferNftByDomain(
+          address,
+          wilderPancakesDomain
+        );
+
+      if (!isApproved)
+        await zAuctionSdkInstance.approveZAuctionTransferNftByDomain(
+          wilderPancakesDomain,
+          signer
+        );
+
+      // const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
+
+      listing = await zAuctionSdkInstance.getBuyNowListing(
+        wilderPancakesDomain
+      );
+      assert(listing);
+    });
+  });
   describe("get domains", () => {
     it("gets most recent domains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
