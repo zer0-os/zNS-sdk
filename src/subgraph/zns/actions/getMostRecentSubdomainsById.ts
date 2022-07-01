@@ -44,7 +44,7 @@ export const getMostRecentSubdomainsById = async <T>(
     }
     yetUnreceived -= queriedDomains.length;
     skip = queriedDomains[queriedDomains.length - 1].indexId;
-  } while (yetUnreceived > 0 && queriedDomains.length != 0);
+  } while (yetUnreceived > 0 && queriedDomains.length >= count);
   logger.trace(`Found ${subDomains.length} recent subdomains of ${domainId}`);
 
   return subDomains;
