@@ -9,7 +9,7 @@ defaults: &defaults
     - image: circleci/node:14.17.5
 
 jobs:
-  test:
+  build:
     <<: *defaults
     steps:
       - checkout
@@ -27,18 +27,41 @@ jobs:
       - run:
           name: Publish to NPM
           command: yarn publish --access public --non-interactive
-
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          command: yarn run lint
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
 workflows:
   version: 2
   build:
     jobs:
+      - build:
+          filters:
+            branches:
+              ignore: master
+      - lint:
+          requires:
+            - build 
+          filters:
+            branches:
+              ignore: master
       - test:
+          requires:
+            - build
           filters:
             branches:
               ignore: master
   production:
     jobs:
-      - test:
+      - build:
           filters:
             &filters-production # this yaml anchor is setting these values to "filters-production"
             branches:
@@ -48,6 +71,6 @@ workflows:
       - publish:
           context: NPM_Publish
           requires:
-            - test
+            - build
           filters:
             <<: *filters-production # this is calling the previously set yaml anchor
