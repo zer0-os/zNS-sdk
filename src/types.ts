@@ -2,7 +2,7 @@ import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid } from "./zAuction";
 
-export interface DexSubgraphUris extends Map<string> {}
+export type DexSubgraphUris = Map<string>;
 
 /**
  * Configuration for a zNS sdk instance

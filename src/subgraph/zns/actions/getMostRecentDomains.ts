@@ -1,7 +1,7 @@
 import { ApolloClient } from "@apollo/client/core";
 import { Domain } from "../../../types";
 import * as queries from "../queries";
-import { DomainsQueryDto } from "../types";
+import { DomainsQueryDto, DomainDto } from "../types";
 import { convertDomainDtoToDomain, performQuery } from "../../helpers";
 
 const MAX_RECORDS = 5000;
@@ -12,6 +12,7 @@ export const getMostRecentDomains = async <T>(
   skip = 0
 ): Promise<Domain[]> => {
   const domains: Domain[] = [];
+  let queryResults: DomainDto[] = [];
   let yetUnreceived = count;
 
   if (count >= MAX_RECORDS) {
@@ -20,25 +21,21 @@ export const getMostRecentDomains = async <T>(
     );
   }
 
-  while (true) {
+  do {
     const queryResult = await performQuery<DomainsQueryDto>(
       apolloClient,
       queries.getPastNDomains,
       { count: yetUnreceived, startIndex: skip }
     );
 
-    const queryResults = queryResult.data.domains;
+    queryResults = queryResult.data.domains;
     for (const domain of queryResults) {
       domains.push(convertDomainDtoToDomain(domain));
     }
 
     skip += queryResults.length;
     yetUnreceived -= queryResults.length;
-
-    if (yetUnreceived <= 0 || queryResults.length == 0) {
-      break;
-    }
-  }
+  } while (yetUnreceived > 0 && queryResults.length != 0);
 
   return domains;
 };

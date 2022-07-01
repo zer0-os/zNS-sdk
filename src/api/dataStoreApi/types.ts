@@ -50,11 +50,11 @@ export interface DomainCollection {
 }
 
 interface RequestBodyOptionsSort {
-  [domainProperty: string]: SortOrder
+  [domainProperty: string]: SortOrder;
 }
 
 interface RequestBodyOptionsProjection {
-  [domainProperty: string]: OptionsValue
+  [domainProperty: string]: OptionsValue;
 }
 
 interface RequestBodyOptions {

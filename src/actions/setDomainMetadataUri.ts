@@ -12,9 +12,7 @@ export const setDomainMetadataUri = async (
   signer: ethers.Signer,
   hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
-  logger.trace(
-    `Calling to set domain metadata URI for domain ${domainId}`
-  );
+  logger.trace(`Calling to set domain metadata URI for domain ${domainId}`);
   const isLocked = true;
   const signerAddress = await signer.getAddress();
   const registrar = await getRegistrarForDomain(hub, domainId);

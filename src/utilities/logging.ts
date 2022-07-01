@@ -1,7 +1,7 @@
-import { Consola, LogLevel }  from "consola";
+import { Consola, LogLevel } from "consola";
 
 // Default level is Info
-const logger = new Consola({level: 3});
+const logger = new Consola({ level: 3 });
 
 export const getLogger = (tag?: string): Consola => {
   if (tag) {

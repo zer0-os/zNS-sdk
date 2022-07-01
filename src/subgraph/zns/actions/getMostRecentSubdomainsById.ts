@@ -2,7 +2,7 @@ import { ApolloClient } from "@apollo/client/core";
 import { Domain } from "../../../types";
 import { getLogger } from "../../../utilities";
 import * as queries from "../queries";
-import { DomainsQueryDto } from "../types";
+import { DomainDto, DomainsQueryDto } from "../types";
 import { convertDomainDtoToDomain, performQuery } from "../../helpers";
 
 const logger = getLogger().withTag("subgraph:actions:getRecentSubdomainsById");
@@ -16,12 +16,19 @@ export const getMostRecentSubdomainsById = async <T>(
 ): Promise<Domain[]> => {
   const subDomains: Domain[] = [];
   let yetUnreceived = count;
+  let queriedDomains: DomainDto[] = [];
   if (count >= MAX_RECORDS) {
     throw new Error(
       `Please request no more than ${MAX_RECORDS} records at a time.`
     );
   }
-  while (true) {
+
+  /**
+   * We will only get back up to `queryCount` # of domains
+   * So if we get that many there's probably more domains we need
+   * to fetch. If we got back less, we can stop querying
+   */
+  do {
     logger.trace(
       `Querying for ${yetUnreceived} recent subdomains of ${domainId} starting at indexId ${skip}`
     );
@@ -32,23 +39,13 @@ export const getMostRecentSubdomainsById = async <T>(
       { parent: domainId, count: yetUnreceived, startIndex: skip }
     );
 
-    const queriedDomains = queryResult.data.domains;
+    queriedDomains = queryResult.data.domains;
     for (const domain of queriedDomains) {
       subDomains.push(convertDomainDtoToDomain(domain));
     }
-
-    /**
-     * We will only get back up to `queryCount` # of domains
-     * So if we get that many there's probably more domains we need
-     * to fetch. If we got back less, we can stop querying
-     */
-     yetUnreceived -= queriedDomains.length;
-    if (queriedDomains.length < count || yetUnreceived <= 0) {
-      break;
-    }
+    yetUnreceived -= queriedDomains.length;
     skip = queriedDomains[queriedDomains.length - 1].indexId;
-  }
-
+  } while (yetUnreceived > 0 && queriedDomains.length != 0);
   logger.trace(`Found ${subDomains.length} recent subdomains of ${domainId}`);
 
   return subDomains;

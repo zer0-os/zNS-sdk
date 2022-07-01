@@ -11,10 +11,10 @@ export interface ContentModeration {
 }
 
 export interface ContentClassification {
-  ReviewRecommended: boolean,
-  SexuallyExplicitRating: ContentCategoryScore,
-  SexuallySuggestiveRating: ContentCategoryScore,
-  OffensiveRating: ContentCategoryScore
+  ReviewRecommended: boolean;
+  SexuallyExplicitRating: ContentCategoryScore;
+  SexuallySuggestiveRating: ContentCategoryScore;
+  OffensiveRating: ContentCategoryScore;
 }
 
 export interface ContentCategoryScore {
