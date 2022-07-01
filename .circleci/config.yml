@@ -39,6 +39,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+      - run:
+          command: yarn run test
 workflows:
   version: 2
   build:
