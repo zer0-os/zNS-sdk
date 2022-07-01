@@ -70,9 +70,20 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
+      - lint:
+          requires:
+            - build 
+          filters:
+            <<: *filters-production # this is calling the previously set yaml anchor
+      - test:
+          requires:
+            - build
+          filters:
+            <<: *filters-production # this is calling the previously set yaml anchor
       - publish:
           context: NPM_Publish
           requires:
-            - build
+            - test
+            - lint
           filters:
             <<: *filters-production # this is calling the previously set yaml anchor
