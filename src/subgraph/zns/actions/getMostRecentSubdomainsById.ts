@@ -22,7 +22,6 @@ export const getMostRecentSubdomainsById = async <T>(
       `Please request no more than ${MAX_RECORDS} records at a time.`
     );
   }
-  while (true) {}
   /**
    * We will only get back up to `queryCount` # of domains
    * So if we get that many there's probably more domains we need
