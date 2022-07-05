@@ -8,25 +8,17 @@ export const getSubdomainsById = async (
   tokenId: string,
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
-  const body: RequestBody = {
-    options: {
-      projection: {
-        _id: 0,
-      },
-    },
-  };
   try {
     response = await makeApiCall<DomainCollection>(
-      `${apiUri}domains/subdomains/${tokenId}`,
-      "POST",
-      JSON.stringify(body)
+      `${apiUri}/v1/domains/subdomains/${tokenId}?projection=false`,
+      "GET",
     );
   } catch (e) {
     throw Error(`Failed to get subdomains for ${tokenId}: ${e}`);
   }
 
   // Map from DataStoreDomain -> Domain for downstream consistency
-  const domains: Domain[] = response.result.map((d) => {
+  const domains: Domain[] = response.results.map((d) => {
     const domain: Domain = {
       id: d.domainId,
       name: d.name,

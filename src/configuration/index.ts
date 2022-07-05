@@ -95,7 +95,7 @@ export const rinkebyConfiguration = (
     },
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
-    dataStoreUri: "https://apim-data-store-api-rinkeby.azure-api.net/",
+    dataStoreUri: "https://apim-data-store-api-rinkeby-dev.azure-api.net/",
     utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(rinkebyConfig),
