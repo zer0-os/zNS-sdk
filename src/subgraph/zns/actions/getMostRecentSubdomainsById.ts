@@ -42,7 +42,7 @@ export const getMostRecentSubdomainsById = async <T>(
      * So if we get that many there's probably more domains we need
      * to fetch. If we got back less, we can stop querying
      */
-     yetUnreceived -= queriedDomains.length;
+    yetUnreceived -= queriedDomains.length;
     if (queriedDomains.length < count || yetUnreceived <= 0) {
       break;
     }

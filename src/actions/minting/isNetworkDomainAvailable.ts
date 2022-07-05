@@ -19,7 +19,7 @@ export const isNetworkDomainAvailable = async (
     return false;
   }
   //Check domain availability
-  let id = domainNameToId(name);
+  const id = domainNameToId(name);
   const available = !(await hub.domainExists(id));
   return available;
 };

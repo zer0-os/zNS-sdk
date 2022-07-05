@@ -44,7 +44,7 @@ describe("SDK test", () => {
   const domainFromBrett =
     "0xada136a490b49f140280941197b1c56cdc9668ec9c8b515c8f00d116b9942c09";
 
-  const pk = process.env.TESTNET_PRIVATE_KEY_ASTRO;
+  const pk = process.env.PRIVATE_KEY_ASTRO;
   if (!pk) throw Error("no private key");
 
   const provider = new ethers.providers.JsonRpcProvider(

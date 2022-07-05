@@ -51,8 +51,8 @@ export const getSaleEventsFunction = (
         amount: e.saleAmount,
         paymentToken: e.paymentToken,
         domainNetworkId: e.topLevelDomainId,
-      }
-      return saleEvent
+      };
+      return saleEvent;
     });
 
     return saleEvents;

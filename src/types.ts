@@ -1,8 +1,8 @@
 import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
-import { Bid } from "./zAuction";
+import { Bid, BuyNowListing } from "./zAuction";
 
-export interface DexSubgraphUris extends Map<string> {}
+export type DexSubgraphUris = Map<string>;
 
 /**
  * Configuration for a zNS sdk instance
@@ -578,10 +578,10 @@ export interface Instance {
     ): Promise<ethers.ContractTransaction>;
 
     /**
-     * Gets the buy now price of a domain
-     * @param domainId The token to get the price for
+     * Gets the buy now listing for a domain, if one exists
+     * @param tokenId The domain to get the price for
      */
-    getBuyNowPrice(domainId: string): Promise<string>;
+    getBuyNowListing(tokenId: string): Promise<Maybe<BuyNowListing>>;
 
     /**
      * Sets the buy now price for a domain

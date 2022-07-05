@@ -1,1 +1,1 @@
-export * from "./getTokenInfo"
+export * from "./getTokenInfo";

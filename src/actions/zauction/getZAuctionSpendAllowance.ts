@@ -48,7 +48,9 @@ export const getZauctionSpendAllowance = async (
   }
 
   if (params.tokenId) {
-    logger.trace(`Getting allowance for ${account} by tokenId ${params.tokenId}`);
+    logger.trace(
+      `Getting allowance for ${account} by tokenId ${params.tokenId}`
+    );
     allowance = await getAllowance<string>(
       sdk.getZAuctionSpendAllowanceByDomain,
       account,

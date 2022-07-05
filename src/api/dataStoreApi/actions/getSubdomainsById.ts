@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 
 export const getSubdomainsById = async (
   apiUri: string,
-  tokenId: string,
+  tokenId: string
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   const body: RequestBody = {

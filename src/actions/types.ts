@@ -1,9 +1,9 @@
-import { Map } from "../types"
+import { Map } from "../types";
 export interface CoinGeckoPrice {
   usd: number;
 }
 
-export interface CoinGeckoResponse extends Map<CoinGeckoPrice>{}
+export type CoinGeckoResponse = Map<CoinGeckoPrice>;
 
 export interface CoinGeckoRequestOptions {
   ids?: string;
