@@ -8,7 +8,7 @@ import * as zNSSDK from "../src/index";
 import * as subgraph from "../src/subgraph";
 import * as api from "../src/api";
 import * as actions from "../src/actions";
-import { Config, Domain, IPFSGatewayUri } from "../src/types";
+import { Config, Domain, IPFSGatewayUri, Maybe } from "../src/types";
 import { Registrar } from "../src/contracts/types";
 import { getHubContract, getRegistrar } from "../src/contracts";
 
@@ -28,12 +28,12 @@ const enum ChainId {
 }
 
 describe("Test Custom SDK Logic", () => {
-  const provider = new ethers.providers.JsonRpcProvider(
+  const provider = new ethers.providers.StaticJsonRpcProvider(
     process.env["INFURA_URL"],
     ChainId.rinkeby
   );
 
-  const pk = process.env["TESTNET_PRIVATE_KEY_MAIN"];
+  const pk = process.env.PRIVATE_KEY_ASTRO;
   if (!pk) throw Error("No private key");
   const signer = new ethers.Wallet(pk, provider);
 
@@ -109,7 +109,7 @@ describe("Test Custom SDK Logic", () => {
       const metadata = await actions.getDomainMetadata(
         wilderPancakesDomain,
         hub,
-        IPFSGatewayUri.fleek
+        IPFSGatewayUri.ipfs
       );
       expect(metadata);
     });
@@ -185,9 +185,12 @@ describe("Test Custom SDK Logic", () => {
   describe("(get|set)buyNowPrice", () => {
     it("runs as expected", async () => {
       // Set to a new value every time it's run, loop is same as current price
-      let listing: BuyNowListing = await zAuctionSdkInstance.getBuyNowListing(
+      let listing: Maybe<BuyNowListing> = await zAuctionSdkInstance.getBuyNowListing(
         wilderPancakesDomain
       );
+      if (!listing) {
+        throw Error(`No listing found for domain ${wilderPancakesDomain}, it may not be set by the owner or the owner has changed`)
+      }
       let newBuyNowPrice = ethers.utils.parseEther(
         Math.round(Math.random() * 100).toString()
       );

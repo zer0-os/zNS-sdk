@@ -9,6 +9,7 @@ import {
   getBidEventsFunction,
   getSaleEventsFunction,
   getBuyNowSaleEventsFunction,
+  BuyNowListing,
 } from "./zAuction";
 import {
   Config,
@@ -473,11 +474,12 @@ export const createInstance = (config: Config): Instance => {
         const tx = await zAuctionSdkInstance.buyNow(params, signer);
         return tx;
       },
-      getBuyNowPrice: async (tokenId: string): Promise<string> => {
-        const buyNowListing = await zAuctionSdkInstance.getBuyNowListing(
-          tokenId
-        );
-        return ethers.utils.formatEther(buyNowListing.price);
+      getBuyNowListing: async (
+        tokenId: string
+      ): Promise<Maybe<BuyNowListing>> => {
+        const buyNowListing: Maybe<BuyNowListing> =
+          await zAuctionSdkInstance.getBuyNowListing(tokenId);
+        return buyNowListing;
       },
       setBuyNowPrice: async (
         params: zAuction.BuyNowParams,
