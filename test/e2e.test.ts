@@ -258,11 +258,11 @@ describe("SDK test", () => {
     const config = rinkebyConfiguration(provider);
 
     // Create two wallets for transfer
-    const pk = process.env.TESTNET_PRIVATE_KEY_ASTRO;
+    const pk = process.env.PRIVATE_KEY_ASTRO;
     if (!pk) throw Error("Must provide a private key for a signer in .env");
     const walletAstro = new Wallet(pk, provider);
 
-    const pk2 = process.env.TESTNET_PRIVATE_KEY_MAIN;
+    const pk2 = process.env.PRIVATE_KEY_MAIN;
     if (!pk2) throw Error("Must provide private key");
     const walletMain = new Wallet(pk2, provider);
 
