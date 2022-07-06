@@ -46,7 +46,7 @@ type SortOrder = Ascending | Descending;
 
 export interface DomainCollection {
   numResults: number;
-  result: DataStoreDomain[];
+  results: DataStoreDomain[];
 }
 
 interface RequestBodyOptionsSort {
