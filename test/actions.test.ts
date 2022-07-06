@@ -204,28 +204,25 @@ describe("Test Custom SDK Logic", () => {
         tokenId: wilderPancakesDomain,
         paymentToken: wildToken,
       };
-
       const address = await signer.getAddress();
       const isApproved =
         await zAuctionSdkInstance.isZAuctionApprovedToTransferNftByDomain(
           address,
           wilderPancakesDomain
         );
-
       if (!isApproved)
         await zAuctionSdkInstance.approveZAuctionTransferNftByDomain(
           wilderPancakesDomain,
           signer
         );
-
       // const tx = await zAuctionSdkInstance.setBuyNowPrice(params, signer);
-
       listing = await zAuctionSdkInstance.getBuyNowListing(
         wilderPancakesDomain
       );
       assert(listing);
     });
   });
+
   describe("get domains", () => {
     it("gets most recent domains", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
