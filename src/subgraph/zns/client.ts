@@ -1,8 +1,13 @@
-import { Domain, DomainMintEvent, DomainTransferEvent, Maybe } from "../../types";
+import {
+  Domain,
+  DomainMintEvent,
+  DomainTransferEvent,
+  Maybe,
+} from "../../types";
 import { getLogger } from "../../utilities";
 
 import * as actions from "./actions";
-import { createApolloClient } from "../helpers"
+import { createApolloClient } from "../helpers";
 
 const logger = getLogger().withTag("subgraph:client");
 

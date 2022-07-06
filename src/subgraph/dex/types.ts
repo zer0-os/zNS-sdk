@@ -18,4 +18,4 @@ export interface TokenCollectionBase<T> {
   tokens: T[];
 }
 
-export interface QueryOptions extends Map<string> {}
+export type QueryOptions = Map<string>;

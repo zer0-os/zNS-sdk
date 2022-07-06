@@ -12,9 +12,7 @@ export interface zAuctionConfig {
   znsHubAddress?: string;
 }
 
-export const configuration = (
-  params: zAuctionConfig
-): zAuction.Config => {
+export const configuration = (params: zAuctionConfig): zAuction.Config => {
   let defaultApiUri;
   let defaultSubgraphUri;
   let defaultZAuctionAddress;

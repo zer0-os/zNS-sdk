@@ -14,7 +14,10 @@ export const createDataStoreApiClient = (
   const apiClient: DataStoreApiClient = {
     getSubdomainsById: async (tokenId: string) => {
       logger.debug("Calling to getSubdomainsById");
-      let domains: Domain[] = await actions.getSubdomainsById(apiUri, tokenId);
+      const domains: Domain[] = await actions.getSubdomainsById(
+        apiUri,
+        tokenId
+      );
 
       return domains;
     },
