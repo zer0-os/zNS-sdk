@@ -9,7 +9,6 @@ import * as subgraph from "../src/subgraph";
 import * as api from "../src/api";
 import * as actions from "../src/actions";
 import { Config, Domain, IPFSGatewayUri, Maybe } from "../src/types";
-import { Registrar } from "../src/contracts/types";
 import { getHubContract, getRegistrar } from "../src/contracts";
 
 import { rinkebyConfiguration } from "../src/configuration";

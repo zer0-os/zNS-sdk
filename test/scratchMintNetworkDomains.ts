@@ -6,7 +6,7 @@ const provider = new ethers.providers.JsonRpcProvider(
   "rinkeby"
 );
 const wallet = new ethers.Wallet(
-  "0x" + (process.env.TESTNET_PRIVATE_KEY_ASTRO as string),
+  "0x" + (process.env.PRIVATE_KEY_ASTRO as string),
   provider
 );
 const walletAddress = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
