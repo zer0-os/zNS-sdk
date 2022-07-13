@@ -1,5 +1,5 @@
 import { Domain, Maybe } from "../../../types";
-import { DomainCollection, RequestBody } from "../types";
+import { DomainCollection } from "../types";
 import { makeApiCall } from "../../helpers";
 import { ethers } from "ethers";
 
@@ -10,8 +10,8 @@ export const getSubdomainsById = async (
   let response: Maybe<DomainCollection>;
   try {
     response = await makeApiCall<DomainCollection>(
-      `${apiUri}/v1/domains/subdomains/${tokenId}?projection=false`,
-      "GET",
+      `${apiUri}v1/domains/subdomains/${tokenId}?projection=false`,
+      "GET"
     );
   } catch (e) {
     throw Error(`Failed to get subdomains for ${tokenId}: ${e}`);

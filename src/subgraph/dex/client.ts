@@ -1,8 +1,5 @@
 import { Maybe, TokenInfo } from "../../types";
 import { getLogger } from "../../utilities";
-// export { TokenInfo };
-
-import * as queries from "./queries";
 
 import * as actions from "./actions";
 import { createApolloClient } from "../helpers";

@@ -4,7 +4,7 @@ import { getRegistrarForDomain } from "../helpers";
 
 import { getLogger } from "../utilities";
 
-const logger = getLogger("actions:setPaymentTokenForDomain");
+const logger = getLogger("actions:transferOwnership");
 
 export const transferOwnership = async (
   to: string,
@@ -12,6 +12,9 @@ export const transferOwnership = async (
   signer: ethers.Signer,
   hub: ZNSHub
 ): Promise<ethers.ContractTransaction> => {
+  logger.trace(
+    `Calling to transfer ownership of domain ${domainId} to user ${to}`
+  );
   const signerAddress = await signer.getAddress();
   const registrar = await getRegistrarForDomain(hub, domainId);
   const currentOwner = await registrar.ownerOf(domainId);

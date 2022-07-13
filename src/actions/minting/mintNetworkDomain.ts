@@ -1,5 +1,5 @@
 import { getLogger } from "../../utilities";
-import { ContractTransaction, ethers } from "ethers";
+import * as ethers from "ethers";
 import { isNetworkDomainAvailable } from "./isNetworkDomainAvailable";
 import { getPriceOfNetworkDomain } from "../getPriceOfNetworkDomain";
 import { isMinterApprovedToSpendTokens } from ".";
@@ -7,7 +7,7 @@ import { getDomainPurchaserContract, getERC20Contract } from "../../contracts";
 import { NetworkDomainMintableConfig } from "./types";
 import { Maybe } from "../../types";
 
-const logger = getLogger("actions:getDomainMetadata");
+const logger = getLogger("actions:mintNetworkDomain");
 
 export const mintNetworkDomain = async (
   name: string,
@@ -22,6 +22,7 @@ export const mintNetworkDomain = async (
   );
   const price = await getPriceOfNetworkDomain(name, domainPurchaserContract);
   const user = await signer.getAddress();
+  logger.debug(`Calling to mint network domain ${name} by user ${user}`);
   const approved = await isMinterApprovedToSpendTokens(
     user,
     domainPurchaserContract,
@@ -63,6 +64,7 @@ export const mintNetworkDomain = async (
     logger.trace(
       `Attempt to mint domain failed for domain: ${name} with metadata uri ${metadataUri} for reason ${e}`
     );
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     if ((e as any).code === 4001) {
       throw Error(`User rejected transaction.`);
     }

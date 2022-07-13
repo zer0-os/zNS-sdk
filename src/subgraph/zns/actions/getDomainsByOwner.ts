@@ -3,6 +3,7 @@ import { Domain } from "../../../types";
 import * as queries from "../queries";
 import { DomainsQueryDto } from "../types";
 import { convertDomainDtoToDomain, performQuery } from "../../helpers";
+import { sortDomains } from "../../../helpers";
 
 export const getDomainsByOwner = async <T>(
   apolloClient: ApolloClient<T>,
@@ -16,5 +17,8 @@ export const getDomainsByOwner = async <T>(
 
   const queriedDomains = queryResult.data.domains;
   const domains: Domain[] = queriedDomains.map(convertDomainDtoToDomain);
+
+  // Will sort in Ascending ASCII order
+  sortDomains(domains);
   return domains;
 };

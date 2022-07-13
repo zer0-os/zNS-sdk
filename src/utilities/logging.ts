@@ -10,7 +10,7 @@ export const getLogger = (tag?: string): Consola => {
   return logger;
 };
 
-export const setLogLevel = (level?: LogLevel) => {
+export const setLogLevel = (level?: LogLevel): void => {
   if (level === undefined || typeof level != "number") {
     console.log("Provide a number");
     Object.entries(LogLevel).forEach(([key, value]) => {

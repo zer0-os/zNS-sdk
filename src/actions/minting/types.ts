@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { znsApiClient } from "../../api";
 import { ZNSHub } from "../../contracts/types";
-import { DomainPurchaser } from "../../contracts/types/DomainPurchaser";
 
 export interface NetworkDomainMintableConfig {
   znsHub: ZNSHub;
