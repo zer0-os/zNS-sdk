@@ -91,7 +91,7 @@ describe("SDK test", () => {
     expect(domains.length).to.be.gt(0);
   });
   it("Validates that returns from the subgraph and data store API are the same", async () => {
-    const dataStoreDomains = await sdk.getDomainsByOwner(mainAccount);
+    const dataStoreDomains = await sdk.getDomainsByOwner(mainAccount, true);
     const subgraphDomains = await sdk.getDomainsByOwner(mainAccount, false);
 
     // Temporarily blocked while the DS needs to resolve a bug reading locked and lockedBy for a domain

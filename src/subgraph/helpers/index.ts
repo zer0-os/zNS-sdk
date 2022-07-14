@@ -1,5 +1,6 @@
 import * as apollo from "@apollo/client/core";
 import fetch from "cross-fetch";
+import { BigNumber } from "ethers";
 
 export const createApolloClient = (
   subgraphUri: string
@@ -64,8 +65,15 @@ export const convertDomainDtoToDomain = (e: DomainDto): Domain => {
     lockedBy: e.lockedBy?.id.toLowerCase() ?? ethers.constants.AddressZero,
     isLocked: e.isLocked,
     contract: e.contract?.id.toLowerCase() ?? ethers.constants.AddressZero,
-    metadataName: e.metadataName,
   };
 
   return domain;
+};
+
+export const sortDomains = (domains: Domain[]): Domain[] => {
+  return domains.sort((a, b) => {
+    if (BigNumber.from(a.id).lt(b.id)) return -1;
+    if (BigNumber.from(a.id).gt(b.id)) return 1;
+    return 0;
+  });
 };

@@ -2,17 +2,17 @@ import { Domain, Maybe } from "../../../types";
 import { DomainCollection } from "../types";
 import { makeApiCall } from "../../helpers";
 import { ethers } from "ethers";
-import { sortDomains } from "../../../helpers";
 
 export const getDomainsByOwner = async (
   apiUri: string,
-  ownerAddress: string
+  ownerAddress: string,
+  limit = 1000
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   try {
-    // Set limit up to 1000 to match the subgraph maximum
+    // Set default limit up to 1000 to match the subgraph maximum
     response = await makeApiCall<DomainCollection>(
-      `${apiUri}v1/domains/search/owner/${ownerAddress}?projection=false&limit=1000`,
+      `${apiUri}v1/domains/search/owner/${ownerAddress}?projection=false&limit=${limit}&sort=domainId&sortDirection=asc`,
       "GET"
     );
   } catch (e) {
@@ -37,9 +37,6 @@ export const getDomainsByOwner = async (
     };
     return domain;
   });
-
-  // Will sort in ascending ASCII order
-  sortDomains(domains);
 
   return domains;
 };

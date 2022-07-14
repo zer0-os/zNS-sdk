@@ -3,7 +3,7 @@ import { Domain } from "../../../types";
 import * as queries from "../queries";
 import { DomainsQueryDto } from "../types";
 import { convertDomainDtoToDomain, performQuery } from "../../helpers";
-import { sortDomains } from "../../../helpers";
+import { sortDomains } from "../../helpers";
 
 export const getDomainsByOwner = async <T>(
   apolloClient: ApolloClient<T>,
