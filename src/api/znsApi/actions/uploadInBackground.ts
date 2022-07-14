@@ -6,7 +6,6 @@ import {
   UrlToIPFS,
   UrlToJobId,
 } from "../../../types";
-import * as fs from "fs";
 
 const URLS_PER_CHUNK_START = 100;
 const URLS_PER_CHUNK_CHECK = 1000;

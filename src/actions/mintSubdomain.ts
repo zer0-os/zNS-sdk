@@ -1,11 +1,7 @@
+/* eslint-disable */
 import { ethers } from "ethers";
 import { SubdomainParams } from "../types";
-import {
-  DomainMetadata,
-  MintSubdomainStatusCallback,
-  MintSubdomainStep,
-} from "../types";
-
+import { DomainMetadata, MintSubdomainStatusCallback } from "../types";
 type RegisterSubdomainFunction = (
   parentId: string,
   label: string,

@@ -2,7 +2,7 @@ import { domainNameToId, getLogger } from "../../utilities";
 import { ZNSHub } from "../../contracts/types";
 import { znsApiClient } from "../../api";
 
-const logger = getLogger("actions:getDomainMetadata");
+const logger = getLogger("actions:isNetworkDomainAvailable");
 
 export const isNetworkDomainAvailable = async (
   name: string,

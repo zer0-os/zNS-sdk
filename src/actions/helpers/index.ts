@@ -31,7 +31,7 @@ export const validateUserOwnsDomain = async (
   domainId: string,
   potentialOwner: string,
   registrar: Registrar
-) => {
+): Promise<void> => {
   const owner = await registrar.ownerOf(domainId);
   if (potentialOwner !== owner) throw Error("Must own domain to modify");
 };
@@ -41,7 +41,7 @@ export const validateStatus = async (
   registrar: Registrar,
   desiredLock: boolean,
   potentialOwner: string
-) => {
+): Promise<void> => {
   const isCurrentlyLocked = await registrar.isDomainMetadataLocked(domainId);
   if (isCurrentlyLocked === desiredLock)
     throw Error("Metadata must be unlocked to be modified");
@@ -58,7 +58,7 @@ export const validateOwnerAndStatus = async (
   registrar: Registrar,
   potentialOwner: string,
   desiredLock: boolean
-) => {
+): Promise<void> => {
   logger.trace(
     `Validate the potential owner ${potentialOwner} of domain ${domainId} and set lock status to ${desiredLock}`
   );

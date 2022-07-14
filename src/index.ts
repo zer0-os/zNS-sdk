@@ -53,9 +53,6 @@ export { configuration };
 const invalidInputMessage =
   "Please only make requests of up to 100 URLs at a time.";
 
-const networkDomainNotAvailable =
-  "The requested network domain is not available.";
-
 export const createInstance = (config: Config): Instance => {
   logger.debug(`Creating instance of zNS SDK`);
   logger.debug(config);
@@ -78,7 +75,19 @@ export const createInstance = (config: Config): Instance => {
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
     getDomainsByName: subgraphClient.getDomainsByName,
-    getDomainsByOwner: subgraphClient.getDomainsByOwner,
+    getDomainsByOwner: async (
+      ownerAddress: string,
+      useDataStoreAPI = false
+    ) => {
+      // Change default for `useDataStoreAPI` when bug is resolved for parity
+      let domains: Domain[];
+      if (useDataStoreAPI) {
+        domains = await dataStoreApiClient.getDomainsByOwner(ownerAddress);
+      } else {
+        domains = await subgraphClient.getDomainsByOwner(ownerAddress);
+      }
+      return domains;
+    },
     getSubdomainsById: async (
       domainId: string,
       useDataStoreAPI = true

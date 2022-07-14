@@ -22,7 +22,7 @@ describe("SDK test", () => {
   // shkoobyinushnax
   const tokenOnUniNotCG = "0x000000000427e37c32b2be749610c5e4dd7b6d18";
   // King Token
-  const tokenOnSushiNotUni = "0x002cdebfce2f5e3fd704da0fa346ad2621353b92"
+  const tokenOnSushiNotUni = "0x002cdebfce2f5e3fd704da0fa346ad2621353b92";
   const wildTokenMainnet = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34";
   const randomToken = "0x02b7031e808dbed9b934e8e43beeef0922386ef4";
   const ZNSHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
@@ -80,10 +80,22 @@ describe("SDK test", () => {
       `Token info with address ${randomToken} could not be found`
     );
   });
-  it("Gets domains by owner", async () => {
-    const domains = await sdk.getDomainsByOwner(astroAccount);
-    // 1000 is the max returned in a single call to the subgraph, but there may be more 
-    expect(domains.length).to.eq(1000);
+  it("Gets domains by owner with default to DataStoreApi", async () => {
+    const domains = await sdk.getDomainsByOwner(mainAccount);
+    
+    expect(domains.length).to.be.gt(0);
+  });
+  it("Gets domains by owner using the Subgraph", async () => {
+    const domains = await sdk.getDomainsByOwner(mainAccount, false);
+
+    expect(domains.length).to.be.gt(0);
+  });
+  it("Validates that returns from the subgraph and data store API are the same", async () => {
+    const dataStoreDomains = await sdk.getDomainsByOwner(mainAccount, true);
+    const subgraphDomains = await sdk.getDomainsByOwner(mainAccount, false);
+
+    // Temporarily blocked while the DS needs to resolve a bug reading locked and lockedBy for a domain
+    // expect(dataStoreDomains).to.deep.eq(subgraphDomains);
   });
   it("Gets a user's balance of a specific ERC20 token", async () => {
     const balance = await sdk.zauction.getUserBalanceForPaymentToken(

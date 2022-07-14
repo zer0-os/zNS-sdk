@@ -2,6 +2,9 @@ import { ethers } from "ethers";
 import { getERC20Contract } from "../../contracts";
 import { DomainPurchaser } from "../../contracts/types/DomainPurchaser";
 import { getTokenSpendAllowance } from "./getTokenSpendAllowance";
+import { getLogger } from "../../utilities";
+
+const logger = getLogger("actions:isMinterApprovedToSpendToken");
 
 export const isMinterApprovedToSpendTokens = async (
   user: string,
@@ -19,6 +22,9 @@ export const isMinterApprovedToSpendTokens = async (
   const requiredAmount = ethers.utils.parseEther(amount);
   const allowanceAsNumber = ethers.utils.parseEther(allowance);
   const approved = allowanceAsNumber.gte(requiredAmount);
+  logger.trace(
+    `User ${user} approval to spend ${requiredAmount} of token ${paymentToken} is: ${approved}`
+  );
 
   return approved;
 };

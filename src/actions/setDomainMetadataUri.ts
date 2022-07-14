@@ -1,4 +1,4 @@
-import { Registrar, ZNSHub } from "../contracts/types";
+import { ZNSHub } from "../contracts/types";
 import { validateOwnerAndStatus } from "./helpers";
 import { ethers } from "ethers";
 import { getRegistrarForDomain } from "../helpers";

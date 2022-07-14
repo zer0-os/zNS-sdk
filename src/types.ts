@@ -154,8 +154,13 @@ export interface Instance {
   /**
    * Gets all domains owner by an address
    * @param owner Owner address
+   * @param useDataStoreAPI Optional, indicate whether to query with
+   * the DataStore or the Subgraph. Default is to use the DataStore
    */
-  getDomainsByOwner(owner: string): Promise<Domain[]>;
+  getDomainsByOwner(
+    owner: string,
+    useDataStoreAPI?: boolean
+  ): Promise<Domain[]>;
 
   /**
    * Finds all subdomains of a given domain
@@ -738,7 +743,6 @@ export interface Domain {
   lockedBy: string;
   contract: string;
   isRoot?: boolean;
-  metadataName?: string;
 }
 
 export interface DomainMetadata {

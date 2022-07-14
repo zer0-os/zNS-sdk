@@ -1,12 +1,6 @@
 import { ApolloClient, DocumentNode } from "@apollo/client/core";
-import { Maybe, TokenInfo } from "../../../types";
-import * as queries from "../queries";
-import {
-  UniswapTokenDto,
-  QueryOptions,
-  TokenCollectionBase,
-  TokenDto,
-} from "../types";
+import { Maybe } from "../../../types";
+import { QueryOptions, TokenCollectionBase, TokenDto } from "../types";
 import { performQuery } from "../../helpers";
 import { getLogger } from "../../../utilities";
 

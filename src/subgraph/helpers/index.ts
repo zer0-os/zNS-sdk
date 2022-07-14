@@ -1,5 +1,6 @@
 import * as apollo from "@apollo/client/core";
 import fetch from "cross-fetch";
+import { BigNumber } from "ethers";
 
 export const createApolloClient = (
   subgraphUri: string
@@ -54,18 +55,25 @@ export const performQuery = async <T, TCacheShape = unknown>(
  */
 export const convertDomainDtoToDomain = (e: DomainDto): Domain => {
   const domain: Domain = {
-    id: e.id,
+    id: e.id.toLowerCase(),
     name: e.name,
-    parentId: e.parent?.id ?? ethers.constants.HashZero,
-    owner: e.owner.id,
-    minter: e.minter?.id ?? ethers.constants.AddressZero,
+    parentId: e.parent?.id.toLowerCase() ?? ethers.constants.HashZero,
+    owner: e.owner.id.toLowerCase(),
+    minter: e.minter?.id.toLowerCase() ?? ethers.constants.AddressZero,
     metadataUri: e.metadata,
     isRoot: e.id === ethers.constants.HashZero,
-    lockedBy: e.lockedBy?.id ?? ethers.constants.AddressZero,
+    lockedBy: e.lockedBy?.id.toLowerCase() ?? ethers.constants.AddressZero,
     isLocked: e.isLocked,
-    contract: e.contract?.id ?? ethers.constants.AddressZero,
-    metadataName: e.metadataName,
+    contract: e.contract?.id.toLowerCase() ?? ethers.constants.AddressZero,
   };
 
   return domain;
+};
+
+export const sortDomains = (domains: Domain[]): Domain[] => {
+  return domains.sort((a, b) => {
+    if (BigNumber.from(a.id).lt(b.id)) return -1;
+    if (BigNumber.from(a.id).gt(b.id)) return 1;
+    return 0;
+  });
 };
