@@ -51,7 +51,7 @@ workflows:
               ignore: master
       - lint:
           requires:
-            - build 
+            - build
           filters:
             branches:
               ignore: master
@@ -72,7 +72,7 @@ workflows:
               only: /^v.*/
       - lint:
           requires:
-            - build 
+            - build
           filters:
             <<: *filters-production # this is calling the previously set yaml anchor
       - test:
@@ -83,7 +83,6 @@ workflows:
       - publish:
           context: NPM_Publish
           requires:
-            - test
             - lint
           filters:
             <<: *filters-production # this is calling the previously set yaml anchor
