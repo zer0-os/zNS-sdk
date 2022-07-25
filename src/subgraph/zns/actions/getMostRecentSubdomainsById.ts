@@ -43,7 +43,7 @@ export const getMostRecentSubdomainsById = async <T>(
       subDomains.push(convertDomainDtoToDomain(domain));
     }
     yetUnreceived -= queriedDomains.length;
-    skip = queriedDomains[queriedDomains.length - 1].indexId;
+    skip = parseInt(queriedDomains[queriedDomains.length - 1].indexId);
   } while (yetUnreceived > 0 && queriedDomains.length === count);
   logger.trace(`Found ${subDomains.length} recent subdomains of ${domainId}`);
 

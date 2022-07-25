@@ -85,7 +85,7 @@ export const getDomainsByMetadataName = gql`
 `;
 
 export const getSubdomainsById = gql`
-  query Subdomains($parent: ID!, $count: Int!, $startIndex: Int!) {
+  query Subdomains($parent: ID!, $count: Int!, $startIndex: BigInt!) {
     domains(
       where: { parent: $parent, indexId_gt: $startIndex }
       first: $count
@@ -171,7 +171,7 @@ export const getDomainMintEvent = gql`
 `;
 
 export const getAllDomains = gql`
-  query Domains($count: Int!, $startIndex: Int!) {
+  query Domains($count: Int!, $startIndex: BigInt!) {
     domains(
       first: $count
       where: { indexId_gte: $startIndex }
@@ -203,7 +203,7 @@ export const getAllDomains = gql`
 `;
 
 export const getPastNDomains = gql`
-  query Domains($count: Int!, $startIndex: Int!) {
+  query Domains($count: Int!, $startIndex: BigInt!) {
     domains(
       first: $count
       orderBy: indexId
@@ -236,7 +236,7 @@ export const getPastNDomains = gql`
 `;
 
 export const getRecentSubdomainsById = gql`
-  query Subdomains($parent: ID!, $count: Int!, $startIndex: Int!) {
+  query Subdomains($parent: ID!, $count: Int!, $startIndex: BigInt!) {
     domains(
       where: { parent: $parent, indexId_gt: $startIndex }
       first: $count
