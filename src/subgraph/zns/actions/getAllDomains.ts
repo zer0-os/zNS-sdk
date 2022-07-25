@@ -35,7 +35,8 @@ export const getAllDomains = async <T>(
     for (const domain of queriedDomains) {
       domains.push(convertDomainDtoToDomain(domain));
     }
-    skip = queriedDomains[queriedDomains.length - 1].indexId + 1;
+    console.log(queriedDomains[queriedDomains.length - 1]);
+    skip = parseInt(queriedDomains[queriedDomains.length - 1].indexId) + 1;
   } while (queriedDomains.length >= queryCount);
 
   logger.trace(`Found ${domains.length} domains`);

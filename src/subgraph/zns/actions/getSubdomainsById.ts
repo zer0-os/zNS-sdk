@@ -37,7 +37,7 @@ export const getSubdomainsById = async <T>(
     for (const domain of queriedDomains) {
       domains.push(convertDomainDtoToDomain(domain));
     }
-    skip = queriedDomains[queriedDomains.length - 1].indexId;
+    skip = parseInt(queriedDomains[queriedDomains.length - 1].indexId);
   } while (queriedDomains.length >= queryCount);
 
   logger.trace(`Found ${domains.length} subdomains of ${domainId}`);

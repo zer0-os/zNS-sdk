@@ -23,7 +23,7 @@ export interface DomainDto extends DomainIdDto {
   lockedBy?: AccountDto;
   contract?: RegistrarContractDto;
   isLocked: boolean;
-  indexId: number;
+  indexId: string;
   metadataName?: string; // experimental feature
 }
 
