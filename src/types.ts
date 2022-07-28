@@ -557,6 +557,17 @@ export interface Instance {
     listBids(domainId: string): Promise<zAuction.Bid[]>;
 
     /**
+     * View all the bids for a set of domain IDs
+     * @param domainIds Array of id's of the domains
+     */
+    listBidsBulk(domainIds: string[]): Promise<zAuction.TokenBidCollection>;
+
+    /**
+     * Get a list of all sales that have happened with zAuction
+     */
+    listAllSales(): Promise<zAuction.TokenSaleCollection>;
+
+    /**
      * View all the bids placed by an account
      * @param account The account placing the bids
      */
