@@ -72,6 +72,13 @@ export const createInstance = (config: Config): Instance => {
   const zAuctionSdkInstance: zAuction.Instance =
     zAuction.createInstance(zAuctionConfig);
 
+  const listBidsBulk = async (
+    domainIds: string[]
+  ): Promise<zAuction.TokenBidCollection> => {
+    const bidCollection = await zAuctionSdkInstance.listBids(domainIds);
+    return bidCollection;
+  };
+
   const instance: Instance = {
     getDomainById: subgraphClient.getDomainById,
     getDomainsByName: subgraphClient.getDomainsByName,
@@ -460,10 +467,15 @@ export const createInstance = (config: Config): Instance => {
         if (tx) return tx;
       },
       listBids: async (domainId: string): Promise<zAuction.Bid[]> => {
-        const bidCollection = await zAuctionSdkInstance.listBids([domainId]);
+        const bidCollection = await listBidsBulk([domainId]);
         const domainBids = bidCollection[domainId];
 
         return domainBids;
+      },
+      listBidsBulk: listBidsBulk,
+      listAllSales: async (): Promise<zAuction.TokenSaleCollection> => {
+        const sales = await zAuctionSdkInstance.listAllSales();
+        return sales;
       },
       listBidsByAccount: async (account: string): Promise<zAuction.Bid[]> => {
         const bids = await zAuctionSdkInstance.listBidsByAccount(account);

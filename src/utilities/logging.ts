@@ -23,4 +23,4 @@ export const setLogLevel = (level?: LogLevel): void => {
 };
 
 // eslint-disable-next-line
-(global as any).setZAuctionSDKLogLevel = setLogLevel
+(global as any).setZAuctionSDKLogLevel = setLogLevel;
