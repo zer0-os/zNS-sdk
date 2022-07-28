@@ -203,7 +203,7 @@ export const getAllDomains = gql`
 `;
 
 export const getPastNDomains = gql`
-  query Domains($count: Int!, $startIndex: BigInt!) {
+  query Domains($count: Int!, $startIndex: Int!) {
     domains(
       first: $count
       orderBy: indexId
