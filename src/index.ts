@@ -107,7 +107,21 @@ export const createInstance = (config: Config): Instance => {
       }
       return domains;
     },
-    getMostRecentSubdomainsById: subgraphClient.getMostRecentSubdomainsById,
+    getMostRecentSubdomainsById: async (
+      domainId: string,
+      limit = 100,
+      skip = 0,
+      useDataStoreAPI = true
+    ): Promise<Domain[]> => {
+      let domains: Domain[];
+      if (useDataStoreAPI) {
+        domains = await dataStoreApiClient.getMostRecentSubdomainsById(domainId, limit, skip);
+      } 
+      else {
+        domains = await subgraphClient.getMostRecentSubdomainsById(domainId, limit, skip);
+      }
+      return domains;
+    },
     getMostRecentDomains: subgraphClient.getMostRecentDomains,
     getDomainEvents: async (domainId: string) => {
       return actions.getDomainEvents(domainId, {
