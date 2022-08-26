@@ -34,7 +34,7 @@ export const getDomainsByOwner = async (
         : ethers.constants.AddressZero,
       contract: d.registrar.toLowerCase(),
       isRoot: d.isRoot,
-      created: d.created
+      created: d.created,
     };
     return domain;
   });

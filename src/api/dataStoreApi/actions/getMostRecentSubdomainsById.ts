@@ -11,7 +11,7 @@ export const getMostRecentSubdomainsById = async (
   apiUri: string,
   tokenId: string,
   limit = 100,
-  skip = 0,
+  skip = 0
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   if (limit >= MAX_RECORDS) {
@@ -25,10 +25,9 @@ export const getMostRecentSubdomainsById = async (
       `Querying for ${limit} recent subdomains of ${tokenId} starting at indexId ${skip}`
     );
 
-    response = await makeApiCall<DomainCollection>(
-      `${apiUri}v1/domains/subdomains/deep/${tokenId}?sortDirection=-1&sort=created&skip=${skip}&limit=${limit}`,
-      "GET"
-    );
+    const formattedUri = `${apiUri}v1/domains/subdomains/deep/${tokenId}?sortDirection=-1&sort=created&skip=${skip}&limit=${limit}`;
+
+    response = await makeApiCall<DomainCollection>(formattedUri, "GET");
   } catch (e) {
     throw Error(`Failed to get recently created domains for ${tokenId}: ${e}`);
   }
@@ -46,7 +45,7 @@ export const getMostRecentSubdomainsById = async (
       lockedBy: d.lockedBy ? d.lockedBy.value : ethers.constants.AddressZero,
       contract: d.registrar,
       isRoot: d.isRoot,
-      created: d.created
+      created: d.created,
     };
     return domain;
   });

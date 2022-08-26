@@ -30,7 +30,7 @@ export const getSubdomainsById = async (
       lockedBy: d.lockedBy ? d.lockedBy.value : ethers.constants.AddressZero,
       contract: d.registrar,
       isRoot: d.isRoot,
-      created: d.created
+      created: d.created,
     };
     return domain;
   });

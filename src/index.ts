@@ -115,10 +115,17 @@ export const createInstance = (config: Config): Instance => {
     ): Promise<Domain[]> => {
       let domains: Domain[];
       if (useDataStoreAPI) {
-        domains = await dataStoreApiClient.getMostRecentSubdomainsById(domainId, limit, skip);
-      } 
-      else {
-        domains = await subgraphClient.getMostRecentSubdomainsById(domainId, limit, skip);
+        domains = await dataStoreApiClient.getMostRecentSubdomainsById(
+          domainId,
+          limit,
+          skip
+        );
+      } else {
+        domains = await subgraphClient.getMostRecentSubdomainsById(
+          domainId,
+          limit,
+          skip
+        );
       }
       return domains;
     },

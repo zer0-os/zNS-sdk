@@ -745,9 +745,9 @@ export interface InvalidInputMessage {
 }
 
 export interface Created {
-  timestamp: string,
-  blockNumber: number,
-  logIndex: number
+  timestamp: string;
+  blockNumber: number;
+  logIndex: number;
 }
 
 export interface Domain {
