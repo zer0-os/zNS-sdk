@@ -21,10 +21,10 @@ export interface DataStoreDomain {
   isRoot: boolean;
   children: string[];
   history: DomainHistory;
-  owner: DomainProperty<string>;
+  owner: string;
   isValid: boolean;
-  royaltyAmount: DomainProperty<string>;
-  metadataUri: DomainProperty<string>;
+  royaltyAmount: string;
+  metadataUri: string;
   registrar: string;
   minter: string;
   label: string;
@@ -32,8 +32,8 @@ export interface DataStoreDomain {
   parent: string;
   created: Time;
   name: string;
-  locked?: DomainProperty<boolean>; // Older domains may not have these properties
-  lockedBy?: DomainProperty<string>;
+  locked: boolean; // Older domains may not have these properties
+  lockedBy: string;
 }
 
 type Show = 1;

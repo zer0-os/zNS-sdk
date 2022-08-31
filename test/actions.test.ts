@@ -203,7 +203,7 @@ describe("Test Custom SDK Logic", () => {
       );
       expect(domains.length).to.equal(2);
     });
-    it.only("gets most recent subdomains via the data store", async () => {
+    it("gets most recent subdomains via the data store", async () => {
       const sdkInstance = zNSSDK.createInstance(config);
       const domains = await sdkInstance.getMostRecentSubdomainsById(
         wilderDogsDomainId,

@@ -32,20 +32,21 @@ export const getMostRecentSubdomainsById = async (
     throw Error(`Failed to get recently created domains for ${tokenId}: ${e}`);
   }
 
-  // Map from DataStoreDomain -> Domain for downstream consistency
+ // Map from DataStoreDomain -> Domain for downstream consistency
   const domains: Domain[] = response.results.map((d) => {
     const domain: Domain = {
-      id: d.domainId,
+      id: d.domainId.toLowerCase(),
       name: d.name,
-      parentId: d.parent,
-      owner: d.owner.value,
-      minter: d.minter,
-      metadataUri: d.metadataUri.value,
-      isLocked: d.locked ? d.locked.value : false,
-      lockedBy: d.lockedBy ? d.lockedBy.value : ethers.constants.AddressZero,
-      contract: d.registrar,
+      parentId: d.parent.toLowerCase(),
+      owner: d.owner.toLowerCase(),
+      minter: d.minter.toLowerCase(),
+      metadataUri: d.metadataUri,
+      isLocked: d.locked,
+      lockedBy: d.lockedBy
+        ? d.lockedBy.toLowerCase()
+        : ethers.constants.AddressZero,
+      contract: d.registrar.toLowerCase(),
       isRoot: d.isRoot,
-      created: d.created,
     };
     return domain;
   });
