@@ -180,7 +180,8 @@ export interface Instance {
   getMostRecentSubdomainsById(
     domainId: string,
     count: number,
-    skip: number
+    skip: number,
+    useDataStoreApi: boolean
   ): Promise<Domain[]>;
 
   /**
@@ -743,6 +744,12 @@ export interface InvalidInputMessage {
   errorMessage: string;
 }
 
+export interface Created {
+  timestamp: string;
+  blockNumber: number;
+  logIndex: number;
+}
+
 export interface Domain {
   id: string;
   name: string;
@@ -753,6 +760,7 @@ export interface Domain {
   isLocked: boolean;
   lockedBy: string;
   contract: string;
+  created?: Created;
   isRoot?: boolean;
 }
 

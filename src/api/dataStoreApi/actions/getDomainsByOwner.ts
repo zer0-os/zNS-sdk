@@ -25,12 +25,12 @@ export const getDomainsByOwner = async (
       id: d.domainId.toLowerCase(),
       name: d.name,
       parentId: d.parent.toLowerCase(),
-      owner: d.owner.value.toLowerCase(),
+      owner: d.owner.toLowerCase(),
       minter: d.minter.toLowerCase(),
-      metadataUri: d.metadataUri.value,
-      isLocked: d.locked ? d.locked.value : false,
+      metadataUri: d.metadataUri,
+      isLocked: d.locked,
       lockedBy: d.lockedBy
-        ? d.lockedBy.value.toLowerCase()
+        ? d.lockedBy.toLowerCase()
         : ethers.constants.AddressZero,
       contract: d.registrar.toLowerCase(),
       isRoot: d.isRoot,

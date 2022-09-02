@@ -90,11 +90,28 @@ describe("SDK test", () => {
 
     expect(domains.length).to.be.gt(0);
   });
-  it("Validates that returns from the subgraph and data store API are the same", async () => {
+  xit("Validates that returns from the subgraph and data store API are the same", async () => {
+    // # of domains and locked status still bugged post 2.1 updates.
     const dataStoreDomains = await sdk.getDomainsByOwner(mainAccount, true);
     const subgraphDomains = await sdk.getDomainsByOwner(mainAccount, false);
 
-    // Temporarily blocked while the DS needs to resolve a bug reading locked and lockedBy for a domain
+    const dataStoreDomainIds = dataStoreDomains.map((domain) => {
+      return domain.id
+    });
+
+    const subgraphDomainIds = subgraphDomains.map((domain) => {
+      return domain.id
+    });
+
+    // DEBUG investigation
+    let missingDomain = subgraphDomainIds.filter((id) => {
+      if (dataStoreDomainIds.includes(id)) {
+        return false
+      }
+      return true;
+    })
+
+    expect(subgraphDomains).to.deep.equal(dataStoreDomains);
     // expect(dataStoreDomains).to.deep.eq(subgraphDomains);
   });
   it("Gets a user's balance of a specific ERC20 token", async () => {

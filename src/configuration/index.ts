@@ -26,7 +26,7 @@ export const mainnetConfiguration = (
     },
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics.herokuapp.com",
-    dataStoreUri: "",
+    dataStoreUri: "https://apim-data-store-api-dev.azure-api.net/",
     utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(mainnetConfig),
