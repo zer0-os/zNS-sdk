@@ -70,11 +70,11 @@ describe("SDK test", () => {
     const info = await sdk.zauction.getPaymentTokenInfo(tokenOnUniNotCG);
     expect(info.symbol).to.eq("SHKOOBYSHNAX");
   });
-  xit("Reaches out to Sushiswap for a coin that's not on Uniswap", async () => {
+  it("Reaches out to Sushiswap for a coin that's not on Uniswap", async () => {
     const info = await sdk.zauction.getPaymentTokenInfo(tokenOnSushiNotUni);
     expect(info.symbol).to.eq("KING");
   });
-  xit("Fails when token is not found", async () => {
+  it("Fails when token is not found", async () => {
     const info = sdk.zauction.getPaymentTokenInfo(randomToken);
     await expect(info).to.be.rejectedWith(
       `Token info with address ${randomToken} could not be found`
