@@ -80,7 +80,18 @@ export const createInstance = (config: Config): Instance => {
   };
 
   const instance: Instance = {
-    getDomainById: subgraphClient.getDomainById,
+    getDomainById: async (
+      domainId: string, useDataStoreAPI: boolean = true
+    ) => {
+      let domain;
+      if (useDataStoreAPI) {
+        domain = await dataStoreApiClient.getDomainById(domainId);
+      }
+      else {
+        domain = await subgraphClient.getDomainById(domainId);
+      }
+      return domain;
+    },
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: async (
       ownerAddress: string,

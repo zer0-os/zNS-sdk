@@ -32,8 +32,20 @@ export interface DataStoreDomain {
   parent: string;
   created: Time;
   name: string;
+  buyNow: BuyNow
   locked: boolean; // Older domains may not have these properties
   lockedBy: string;
+}
+
+export interface BuyNowPriceListing {
+  lister: string,
+  price: string,
+  paymentToken: string,
+} 
+
+export interface BuyNow {
+  activeListing: BuyNowPriceListing
+  dormantListings: BuyNowPriceListing[] // Unresolved buy now listings from previous owners with the potential to be honored
 }
 
 type Show = 1;

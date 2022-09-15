@@ -5,6 +5,7 @@ import { getLogger } from "../../utilities";
 const logger = getLogger("api:client");
 
 export interface DataStoreApiClient {
+  getDomainById: (tokenId: string) => Promise<Domain>
   getDomainsByOwner: (ownerAddress: string) => Promise<Domain[]>;
   getSubdomainsById: (tokenId: string) => Promise<Domain[]>;
   getMostRecentSubdomainsById: (
@@ -18,6 +19,17 @@ export const createDataStoreApiClient = (
   apiUri: string
 ): DataStoreApiClient => {
   const apiClient: DataStoreApiClient = {
+    
+    getDomainById: async (domainId: string) => {
+      logger.debug("Calling to getDomainById");
+      const domain: Domain = await actions.getDomainById(
+        apiUri,
+        domainId
+      );
+
+      return domain;
+    },
+
     getDomainsByOwner: async (ownerAddress: string) => {
       logger.debug("Calling to getDomainsByOwner");
       const domains: Domain[] = await actions.getDomainsByOwner(
