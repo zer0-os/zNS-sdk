@@ -1,7 +1,7 @@
 import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid, BuyNowListing } from "./zAuction";
-import { BuyNow } from "./api/dataStoreApi/types";
+import { BuyNowPriceListing } from "./api/dataStoreApi/types";
 
 export type DexSubgraphUris = Map<string>;
 
@@ -763,7 +763,7 @@ export interface Domain {
   contract: string;
   created?: Created;
   isRoot?: boolean;
-  buyNow?: BuyNow
+  buyNow?: BuyNowPriceListing
 }
 
 export interface DomainMetadata {

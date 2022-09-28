@@ -1,3 +1,5 @@
+import { BuyNowListing } from "@zero-tech/zauction-sdk";
+
 // move these to more specific types file
 interface Time {
   timestamp: string;

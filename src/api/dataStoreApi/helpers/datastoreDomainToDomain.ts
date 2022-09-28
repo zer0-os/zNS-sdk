@@ -1,8 +1,12 @@
 import { ethers } from "ethers";
-import { Domain } from "../../../types";
-import { DataStoreDomain } from "../types";
+import { Domain, Maybe } from "../../../types";
+import { BuyNowPriceListing, DataStoreDomain } from "../types";
 
 export function datastoreDomainToDomain(d: DataStoreDomain): Domain {
+
+    // only show an active listing
+    const buyNow: Maybe<BuyNowPriceListing> = d.buyNow.isActive ? d.buyNow.listing : undefined;
+
     const domain: Domain = {
         id: d.domainId.toLowerCase(),
         name: d.name,
@@ -16,7 +20,7 @@ export function datastoreDomainToDomain(d: DataStoreDomain): Domain {
           : ethers.constants.AddressZero,
         contract: d.registrar.toLowerCase(),
         isRoot: d.isRoot,
-        buyNow: d.buyNow
+        buyNow: buyNow
       };
       return domain;
 
