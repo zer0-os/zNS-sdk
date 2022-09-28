@@ -16,7 +16,7 @@ export function datastoreDomainToDomain(d: DataStoreDomain): Domain {
           : ethers.constants.AddressZero,
         contract: d.registrar.toLowerCase(),
         isRoot: d.isRoot,
-        buyNow: d.buyNow.activeListing
+        buyNow: d.buyNow
       };
       return domain;
 

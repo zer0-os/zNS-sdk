@@ -44,8 +44,8 @@ export interface BuyNowPriceListing {
 } 
 
 export interface BuyNow {
-  activeListing: BuyNowPriceListing
-  dormantListings: BuyNowPriceListing[] // Unresolved buy now listings from previous owners with the potential to be honored
+  listing: BuyNowPriceListing
+  isActive: boolean
 }
 
 type Show = 1;
