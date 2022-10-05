@@ -1,6 +1,7 @@
 import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid, BuyNowListing } from "./zAuction";
+import { BuyNowPriceListing } from "./api/dataStoreApi/types";
 
 export type DexSubgraphUris = Map<string>;
 
@@ -143,7 +144,7 @@ export interface Instance {
    * Gets domain data for a domain
    * @param domainId Id of a domain
    */
-  getDomainById(domainId: string): Promise<Domain>;
+  getDomainById(domainId: string, useDataStoreAPI?: boolean): Promise<Domain>;
 
   /**
    * Finds domains whose name has *name* in their name
@@ -181,7 +182,7 @@ export interface Instance {
     domainId: string,
     count: number,
     skip: number,
-    useDataStoreApi: boolean
+    useDataStoreApi?: boolean
   ): Promise<Domain[]>;
 
   /**
@@ -762,6 +763,7 @@ export interface Domain {
   contract: string;
   created?: Created;
   isRoot?: boolean;
+  buyNow?: BuyNowPriceListing
 }
 
 export interface DomainMetadata {

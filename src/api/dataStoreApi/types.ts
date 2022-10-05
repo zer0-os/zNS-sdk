@@ -1,3 +1,5 @@
+import { BuyNowListing } from "@zero-tech/zauction-sdk";
+
 // move these to more specific types file
 interface Time {
   timestamp: string;
@@ -32,8 +34,20 @@ export interface DataStoreDomain {
   parent: string;
   created: Time;
   name: string;
+  buyNow: BuyNow
   locked: boolean; // Older domains may not have these properties
   lockedBy: string;
+}
+
+export interface BuyNowPriceListing {
+  lister: string,
+  price: string,
+  paymentToken: string,
+} 
+
+export interface BuyNow {
+  listing: BuyNowPriceListing
+  isActive: boolean
 }
 
 type Show = 1;

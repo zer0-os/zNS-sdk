@@ -2,6 +2,7 @@ import { Domain, Maybe } from "../../../types";
 import { DomainCollection } from "../types";
 import { makeApiCall } from "../../helpers";
 import { ethers } from "ethers";
+import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
 
 export const getSubdomainsById = async (
   apiUri: string,
@@ -19,21 +20,7 @@ export const getSubdomainsById = async (
 
  // Map from DataStoreDomain -> Domain for downstream consistency
  const domains: Domain[] = response.results.map((d) => {
-  const domain: Domain = {
-    id: d.domainId.toLowerCase(),
-    name: d.name,
-    parentId: d.parent.toLowerCase(),
-    owner: d.owner.toLowerCase(),
-    minter: d.minter.toLowerCase(),
-    metadataUri: d.metadataUri,
-    isLocked: d.locked,
-    lockedBy: d.lockedBy
-      ? d.lockedBy.toLowerCase()
-      : ethers.constants.AddressZero,
-    contract: d.registrar.toLowerCase(),
-    isRoot: d.isRoot,
-  };
-  return domain;
+  return datastoreDomainToDomain(d);
 });
 
   return domains;
