@@ -130,7 +130,7 @@ export const goerliConfiguration = (
         "https://api.thegraph.com/subgraphs/name/steegecs/sushiswap-mainnet",
     },
     znsUri: "https://zns.api.zero.tech/api",
-    metricsUri: "https://zns-metrics-rinkeby.herokuapp.com", // TODO deploy
+    metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
     dataStoreUri: "https://apim-data-store-api-rinkeby-dev.azure-api.net/", // TODO create version on APIM
     utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
