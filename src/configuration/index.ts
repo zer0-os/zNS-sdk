@@ -131,7 +131,7 @@ export const goerliConfiguration = (
     },
     znsUri: "https://zns.api.zero.tech/api",
     metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
-    dataStoreUri: "https://apim-data-store-api-rinkeby-dev.azure-api.net/", // TODO create version on APIM
+    dataStoreUri: "https://apim-data-store-api-goerli.azure-api.net/",
     utilitiesUri: "https://zero-utilities.azure-api.net",
     zAuction: {
       ...configuration(goerliConfig),
