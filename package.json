@@ -47,6 +47,7 @@
     "@ethersproject/abi": "5.4.1",
     "@ethersproject/bytes": "5.4.0",
     "@ethersproject/providers": "5.4.5",
+    "@zero-tech/zero-contracts": "^0.0.4",
     "coingecko-api": "1.0.10",
     "consola": "2.15.3",
     "cross-fetch": "3.1.4",

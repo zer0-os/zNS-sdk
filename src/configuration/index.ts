@@ -108,3 +108,38 @@ export const rinkebyConfiguration = (
     domainPurchaser: rinkebyDomainPurchaser,
   };
 };
+
+const goerliRegistrar = "0x009A11617dF427319210e842D6B202f3831e0116";
+const goerliHub = "0xce1fE2DA169C313Eb00a2bad25103D2B9617b5e1";
+const goerliStaking = "";
+const goerliBasicController = "0xd23299F8f0BF17d2d037a12985F83c29A630E6F8";
+const goerliDomainPurchaser = "0x19f127f0a5ACCF0E6E2DdcE63085750a74EBc44A";
+export const goerliConfiguration = (
+  provider: ethers.providers.Provider
+): Config => {
+  const goerliConfig: zAuctionConfig = {
+    web3Provider: provider,
+    network: "goerli",
+    znsHubAddress: goerliHub,
+  };
+  return {
+    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zns-goerli",
+    dexSubgraphUris: {
+      Uniswap: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+      Sushiswap:
+        "https://api.thegraph.com/subgraphs/name/steegecs/sushiswap-mainnet",
+    },
+    znsUri: "https://zns.api.zero.tech/api",
+    metricsUri: "https://zns-metrics-rinkeby.herokuapp.com",
+    dataStoreUri: "https://apim-data-store-api-goerli.azure-api.net/",
+    utilitiesUri: "https://zero-utilities.azure-api.net",
+    zAuction: {
+      ...configuration(goerliConfig),
+    },
+    basicController: goerliBasicController,
+    registrar: goerliRegistrar,
+    hub: goerliHub,
+    provider: provider,
+    domainPurchaser: goerliDomainPurchaser,
+  }
+}
