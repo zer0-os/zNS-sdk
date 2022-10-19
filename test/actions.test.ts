@@ -88,6 +88,11 @@ describe("Test Custom SDK Logic", () => {
       // }
       // const tx = await sdkInstance.mintSubdomain(params, signer);
     });
+    it ("calls getSubdomainsById through the subgraph", async () => {
+      const sdkInstance = await zNSSDK.createInstance(config);
+      const rootSubdomains = await sdkInstance.getSubdomainsById(ethers.constants.HashZero, false);
+      expect(rootSubdomains).to.not.be.empty;
+    });
     it("gets all domains", async () => {
       const sdkInstance = await zNSSDK.createInstance(config);
       const allDomains = await sdkInstance.getAllDomains();
