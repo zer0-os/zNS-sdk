@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import * as dotenv from "dotenv";
 import * as fs from "fs";
 import {
   Config,
@@ -8,6 +9,11 @@ import {
   Instance,
 } from "../src";
 import { Registrar, Registrar__factory } from "../src/contracts/types";
+
+dotenv.config();
+
+const sleep = (m: number): Promise<void> =>
+  new Promise((r) => setTimeout(r, m));
 
 const getLabel = (name: string) => {
   if (name === null) return "";
@@ -45,25 +51,49 @@ const getAllDomains = async (): Promise<Domain[]> => {
   return domains;
 };
 
+const getDomainByName = async (
+  zNSInstance: Instance,
+  name: string
+): Promise<Domain | null> => {
+  const domains =
+    name.length < 1 || name === null
+      ? [
+          await zNSInstance.getDomainById(
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+            false
+          ),
+        ]
+      : await zNSInstance.getDomainsByName(name);
+  const parentDomain = domains.filter(
+    (domain) =>
+      domain.name === name || (name.length < 1 && domain.name === null)
+  );
+  return parentDomain.length > 0 ? parentDomain[0] : null;
+};
+
 const getParentDomain = async (
   zNSInstance: Instance,
   domain: Domain
 ): Promise<Domain | null> => {
   const parentDomainName = domain.name.split(".").slice(0, -1).join(".");
 
-  const domains = await zNSInstance.getDomainsByName(parentDomainName);
-  const parentDomain = domains.filter(
-    (domain) => domain.name === parentDomainName
-  );
-  return parentDomain.length > 0 ? parentDomain[0] : null;
+  return await getDomainByName(zNSInstance, parentDomainName);
 };
 
 const addFailedDomain = async (domain: Domain) => {
-  const text = fs.readFileSync("./failed-domains.json", "utf-8");
-  const domains =
-    text.length < 1 ? [] : (JSON.parse(text) as unknown as Domain[]);
-  domains.push(domain);
-  fs.writeFileSync("./failed-domains.json", JSON.stringify(domains), "utf-8");
+  let text = '';
+  try {
+    text = fs.readFileSync("./failed-domains.json", "utf-8");
+  } catch (error) {}
+
+  try {
+    const domains =
+      text.length < 1 ? [] : (JSON.parse(text) as unknown as Domain[]);
+    domains.push(domain);
+    fs.writeFileSync("./failed-domains.json", JSON.stringify(domains), "utf-8");
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const registerDomain = async (
@@ -71,15 +101,35 @@ const registerDomain = async (
   parentDomain: Domain,
   domain: Domain
 ) => {
-  const tx = await registrar.registerDomain(
-    parentDomain.id,
-    getLabel(domain.name),
-    domain.minter,
-    domain.metadataUri,
-    0,
-    false
-  );
-  await tx.wait();
+  try {
+    const tx = domain.minter === domain.owner ? 
+      await registrar.registerDomain(
+        parentDomain.id,
+        getLabel(domain.name),
+        domain.minter,
+        domain.metadataUri,
+        0,
+        false
+      ) : 
+      await registrar.registerDomainAndSend(
+        parentDomain.id,
+        getLabel(domain.name),
+        domain.minter,
+        domain.metadataUri,
+        0,
+        false,
+        domain.owner
+      );
+    await tx.wait();
+
+    // wait 10 seconds for waiting subgraph has been fully synchronized
+    await sleep(10 * 1000);
+    return true;
+  } catch (error) {
+    console.error(domain, error);
+    addFailedDomain(domain);
+    return false;
+  }
 };
 
 const main = async () => {
@@ -98,12 +148,17 @@ const main = async () => {
 
   for (const domain of allDomains) {
     if (domain.name === null) continue;
+    const alreadyRegistered = await getDomainByName(zNSInstance, domain.name);
+    if (alreadyRegistered !== null) {
+      console.log("already registered domain", domain);
+      continue;
+    }
 
     const parentDomain = await getParentDomain(zNSInstance, domain);
     if (!parentDomain) {
       addFailedDomain(domain);
     } else {
-      console.log('registering domain', domain);
+      console.log("registering domain", domain);
       await registerDomain(registrar, parentDomain, domain);
     }
   }
