@@ -81,7 +81,7 @@ const getParentDomain = async (
 };
 
 const addFailedDomain = async (domain: Domain) => {
-  let text = '';
+  let text = "";
   try {
     text = fs.readFileSync("./failed-domains.json", "utf-8");
   } catch (error) {}
@@ -102,24 +102,25 @@ const registerDomain = async (
   domain: Domain
 ) => {
   try {
-    const tx = domain.minter === domain.owner ? 
-      await registrar.registerDomain(
-        parentDomain.id,
-        getLabel(domain.name),
-        domain.minter,
-        domain.metadataUri,
-        0,
-        false
-      ) : 
-      await registrar.registerDomainAndSend(
-        parentDomain.id,
-        getLabel(domain.name),
-        domain.minter,
-        domain.metadataUri,
-        0,
-        false,
-        domain.owner
-      );
+    const tx =
+      domain.minter === domain.owner
+        ? await registrar.registerDomain(
+            parentDomain.id,
+            getLabel(domain.name),
+            domain.minter,
+            domain.metadataUri,
+            0,
+            false
+          )
+        : await registrar.registerDomainAndSend(
+            parentDomain.id,
+            getLabel(domain.name),
+            domain.minter,
+            domain.metadataUri,
+            0,
+            false,
+            domain.owner
+          );
     await tx.wait();
 
     // wait 10 seconds for waiting subgraph has been fully synchronized
@@ -146,10 +147,15 @@ const main = async () => {
   const zNSInstance = createInstance(goerliConfig);
   const registrar = Registrar__factory.connect(registrarAddress, signer);
 
+  const allGoerliDomains = await zNSInstance.getAllDomains();
+
   for (const domain of allDomains) {
     if (domain.name === null) continue;
-    const alreadyRegistered = await getDomainByName(zNSInstance, domain.name);
-    if (alreadyRegistered !== null) {
+    const alreadyRegistered =
+      allGoerliDomains.filter(
+        (registered: Domain) => registered.name === domain.name
+      ).length > 0; // || (await getDomainByName(zNSInstance, domain.name));
+    if (alreadyRegistered) {
       console.log("already registered domain", domain);
       continue;
     }
@@ -159,7 +165,9 @@ const main = async () => {
       addFailedDomain(domain);
     } else {
       console.log("registering domain", domain);
-      await registerDomain(registrar, parentDomain, domain);
+      if (await registerDomain(registrar, parentDomain, domain)) {
+        allGoerliDomains.push(domain);
+      }
     }
   }
 };
