@@ -34,6 +34,9 @@ export const getSubdomainsById = async <T>(
     );
 
     queriedDomains = queryResult.data.domains;
+    if (queriedDomains.length === 0) {
+      return [] as Domain[];
+    }
     for (const domain of queriedDomains) {
       domains.push(convertDomainDtoToDomain(domain));
     }

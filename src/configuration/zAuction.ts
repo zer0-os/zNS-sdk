@@ -50,7 +50,7 @@ export const configuration = (params: zAuctionConfig): zAuction.Config => {
     defaultWildTokenAddress = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
     defaultZnsHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
   } else if (params.network == "goerli") {
-    defaultApiUri = "https://zauction-api-rinkeby.herokuapp.com/api"; // TODO heroku deploy for API on goerli
+    defaultApiUri = "https://zauction-api-goerli.herokuapp.com/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-goerli";
     defaultZAuctionAddress = "0xdF0f9F007A38aD25E0c02959374f38719Af5fCf8";
