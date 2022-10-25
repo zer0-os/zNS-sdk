@@ -73,16 +73,6 @@ describe("SDK test", () => {
         expect(error.message).to.eq(expectedMessage);
     });
   });
-  it("Gets domains by owner with default to DataStoreApi", async () => {
-    const domains = await sdk.getDomainsByOwner(mainAccount);
-
-    expect(domains.length).to.be.gt(0);
-  });
-  it("Gets domains by owner using the Subgraph", async () => {
-    const domains = await sdk.getDomainsByOwner(mainAccount, false);
-
-    expect(domains.length).to.be.gt(0);
-  });
   xit("Validates that returns from the subgraph and data store API are the same", async (done) => {
     // # of domains and locked status still bugged post 2.1 updates.
     const dataStoreDomains = await sdk.getDomainsByOwner(astroAccount, true);
