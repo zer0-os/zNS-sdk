@@ -1,16 +1,16 @@
-import { ethers, Wallet } from "ethers";
+import { ethers } from "ethers";
 import { getHubContract, getRegistrar } from "../src/contracts";
 import * as dotenv from "dotenv";
 import { Registrar, ZNSHub } from "../src/contracts/types";
 import { Config, Instance, TokenAllowanceParams } from "../src/types";
-import { rinkebyConfiguration } from "../src/configuration";
+import { goerliConfiguration, rinkebyConfiguration } from "../src/configuration";
 import { createInstance } from "../src";
 import { assert, expect } from "chai";
 import * as zAuction from "@zero-tech/zauction-sdk";
 
 dotenv.config();
 
-// Rinkeby Addresses
+// Goerli Addresses
 describe("SDK test", () => {
   let registrar: Registrar;
   let signer: ethers.Signer;
@@ -19,37 +19,29 @@ describe("SDK test", () => {
   let sdk: Instance;
   let hub: ZNSHub;
 
+  // Mainnet for other token addresses to be resolved by coin gecko / uniswap / sushiswap
   // shkoobyinushnax
   const tokenOnUniNotCG = "0x000000000427e37c32b2be749610c5e4dd7b6d18";
   // King Token
   const tokenOnSushiNotUni = "0x002cdebfce2f5e3fd704da0fa346ad2621353b92";
   const wildTokenMainnet = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34";
   const randomToken = "0x02b7031e808dbed9b934e8e43beeef0922386ef4";
-  const ZNSHubAddress = "0x90098737eB7C3e73854daF1Da20dFf90d521929a";
-  const wildToken = "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79";
-  const lootToken = "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2";
-  const accountThatNeverApproved = "0x0f3b88095e750bdD54A25B2109c7b166A34B6dDb";
 
-  // 0://wilder as hex
-  const wilderDomainHex =
-    "0x196C0A1E30004B9998C97B363E44F1F4E97497E59D52AD151208E9393D70BB3B";
-  // 0://wilder
-  const wilderDomain =
-    "11498710528894704621672125451994986004212771421624589370395108607834545240891";
-  // wilder.pancakes
-  const wilderPancakesDomain =
-    "0x6e35a7ecbf6b6368bb8d42ee9b3dcfc8404857635036e60196931d4458c07622";
-  const wilderCatsDomain =
-    "0x617b3c878abfceb89eb62b7a24f393569c822946bbc9175c6c65a7d2647c5402";
-  const domainFromBrett =
-    "0xada136a490b49f140280941197b1c56cdc9668ec9c8b515c8f00d116b9942c09";
+  const ZNSHubAddress = "0xce1fE2DA169C313Eb00a2bad25103D2B9617b5e1";
+  const lootToken = "0x196bc789E03761904E3d7266fa57f2001592D25A";
+  const accountThatNeverApproved = "0x0f3b88095e750bdD54A25B2109c7b166A34B6dDb"; // random account
+
+  const meowDomain = "0x6b9d6f1edf4b298f7edbfe917276cd16b632cc6062109192f4880c5a45d5d34e";
+  const wilderDomain = "0x196c0a1e30004b9998c97b363e44f1f4e97497e59d52ad151208e9393d70bb3b";
+  const wilderWheelsDomain = "0x7445164548beaf364109b55d8948f056d6e4f1fd26aff998c9156b0b05f1641f";
+  const wildToken = "0x0e46c45f8aca3f89Ad06F4a20E2BED1A12e4658C";
 
   const pk = process.env.PRIVATE_KEY_ASTRO;
   if (!pk) throw Error("no private key");
 
   const provider = new ethers.providers.JsonRpcProvider(
     process.env.INFURA_URL,
-    4
+    5
   );
   const astroWallet = new ethers.Wallet(pk, provider);
 
@@ -58,7 +50,7 @@ describe("SDK test", () => {
   before(async () => {
     astroAccount = await astroWallet.getAddress();
     mainAccount = "0xaE3153c9F5883FD2E78031ca2716520748c521dB";
-    config = rinkebyConfiguration(provider);
+    config = goerliConfiguration(provider);
     hub = await getHubContract(provider, ZNSHubAddress);
     sdk = await createInstance(config);
   });
@@ -75,14 +67,15 @@ describe("SDK test", () => {
     expect(info.symbol).to.eq("KING");
   });
   it("Fails when token is not found", async () => {
-    const info = sdk.zauction.getPaymentTokenInfo(randomToken);
-    await expect(info).to.be.rejectedWith(
-      `Token info with address ${randomToken} could not be found`
-    );
+    return await sdk.zauction.getPaymentTokenInfo(randomToken)
+      .catch(error => {
+        const expectedMessage = `Token info with address ${randomToken} could not be found`;
+        expect(error.message).to.eq(expectedMessage);
+    });
   });
   it("Gets domains by owner with default to DataStoreApi", async () => {
     const domains = await sdk.getDomainsByOwner(mainAccount);
-    
+
     expect(domains.length).to.be.gt(0);
   });
   it("Gets domains by owner using the Subgraph", async () => {
@@ -90,10 +83,10 @@ describe("SDK test", () => {
 
     expect(domains.length).to.be.gt(0);
   });
-  xit("Validates that returns from the subgraph and data store API are the same", async () => {
+  xit("Validates that returns from the subgraph and data store API are the same", async (done) => {
     // # of domains and locked status still bugged post 2.1 updates.
-    const dataStoreDomains = await sdk.getDomainsByOwner(mainAccount, true);
-    const subgraphDomains = await sdk.getDomainsByOwner(mainAccount, false);
+    const dataStoreDomains = await sdk.getDomainsByOwner(astroAccount, true);
+    const subgraphDomains = await sdk.getDomainsByOwner(astroAccount, false);
 
     const dataStoreDomainIds = dataStoreDomains.map((domain) => {
       return domain.id
@@ -103,16 +96,8 @@ describe("SDK test", () => {
       return domain.id
     });
 
-    // DEBUG investigation
-    let missingDomain = subgraphDomainIds.filter((id) => {
-      if (dataStoreDomainIds.includes(id)) {
-        return false
-      }
-      return true;
-    })
-
-    expect(subgraphDomains).to.deep.equal(dataStoreDomains);
-    // expect(dataStoreDomains).to.deep.eq(subgraphDomains);
+    expect(subgraphDomainIds).to.deep.equal(dataStoreDomainIds);
+    done();
   });
   it("Gets a user's balance of a specific ERC20 token", async () => {
     const balance = await sdk.zauction.getUserBalanceForPaymentToken(
@@ -124,7 +109,7 @@ describe("SDK test", () => {
   it("Gets a user's balance of a specific ERC20 token through a domain", async () => {
     const balance = await sdk.zauction.getUserBalanceForPaymentTokenByDomain(
       astroAccount,
-      wilderPancakesDomain
+      wilderDomain
     );
     assert(balance.gt(0));
   });
@@ -148,9 +133,8 @@ describe("SDK test", () => {
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
   });
   it("gets allowance by tokenId", async () => {
-    // By tokenId
     const params = {
-      tokenId: wilderPancakesDomain,
+      tokenId: wilderWheelsDomain,
     };
     const allowance = await sdk.zauction.getZAuctionSpendAllowance(
       astroAccount,
@@ -159,7 +143,6 @@ describe("SDK test", () => {
     expect(allowance).to.not.eq(ethers.BigNumber.from("0"));
   });
   it("get allowance by bid", async () => {
-    // By Bid
     const params = {
       bid: {
         tokenId: wildToken,
@@ -190,9 +173,8 @@ describe("SDK test", () => {
     );
     assert(allowance.eq(ethers.BigNumber.from("0")));
 
-    // By tokenId
     params = {
-      tokenId: wilderPancakesDomain,
+      tokenId: wilderDomain,
     };
     allowance = await sdk.zauction.getZAuctionSpendAllowance(
       accountThatNeverApproved,
@@ -221,32 +203,11 @@ describe("SDK test", () => {
   });
   it("Gets the payment token for that domain", async () => {
     const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
-      wilderPancakesDomain
+      wilderWheelsDomain
     );
     const isWildOrLoot =
       paymentToken === wildToken || paymentToken === lootToken;
     expect(isWildOrLoot).to.eq(true);
-  });
-  it("Sets the payment token for a domain to a specific token", async () => {
-    // Passes but domain token modifies state, commenting out for other tests
-    // const paymentToken = await sdk.zauction.getPaymentTokenForDomain(
-    //   wilderPancakesDomain
-    // );
-    // let tx: ethers.ContractTransaction;
-    // if (paymentToken === wildToken) {
-    //   tx = await sdk.zauction.setPaymentTokenForDomain(
-    //     wilderDomain,
-    //     lootToken,
-    //     astroWallet
-    //   );
-    // } else {
-    //   tx = await sdk.zauction.setPaymentTokenForDomain(
-    //     wilderDomain,
-    //     wildToken,
-    //     astroWallet
-    //   );
-    // }
-    // await tx.wait(2);
   });
   it("Checks if a user needs to approve the trade token several ways", async () => {
     // User is not approved for any loot token, so they do need to approve
@@ -267,39 +228,20 @@ describe("SDK test", () => {
     expect(needsToApprove).to.eq(false);
   });
   it("Gets buynow sale events", async () => {
-    await sdk.getDomainEvents(wilderPancakesDomain);
+    await sdk.getDomainEvents(wilderDomain);
   });
   it("Confirm listbids working through the SDK", async () => {
     const sdk = createInstance(config);
-    const bids = await sdk.zauction.listBids(domainFromBrett);
+    const bids = await sdk.zauction.listBids(wilderDomain);
     const bids2 = await sdk.zauction.listBidsByAccount(
       "0xaE3153c9F5883FD2E78031ca2716520748c521dB"
     );
   });
   it("Get owner of domain", async () => {
     const registrarAddress = await hub.getRegistrarForDomain(
-      wilderPancakesDomain
+      wilderDomain
     );
     const registrar = await getRegistrar(provider, registrarAddress);
-    const currentOwner = await registrar.ownerOf(wilderPancakesDomain);
-  });
-  it("Creates an SDK instance and transfers ownership", async () => {
-    const config = rinkebyConfiguration(provider);
-
-    // Create two wallets for transfer
-    const pk = process.env.PRIVATE_KEY_ASTRO;
-    if (!pk) throw Error("Must provide a private key for a signer in .env");
-    const walletAstro = new Wallet(pk, provider);
-
-    const pk2 = process.env.PRIVATE_KEY_MAIN;
-    if (!pk2) throw Error("Must provide private key");
-    const walletMain = new Wallet(pk2, provider);
-
-    const toAddress = await walletMain.getAddress();
-    const domainId = wilderPancakesDomain;
-    const signer = walletAstro;
-
-    const sdkInstance = createInstance(config);
-    // const tx = await sdkInstance.transferDomainOwnership(toAddress, domainId, signer)
+    const currentOwner = await registrar.ownerOf(wilderDomain);
   });
 });

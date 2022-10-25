@@ -53,7 +53,7 @@ export const configuration = (params: zAuctionConfig): zAuction.Config => {
     defaultApiUri = "https://zauction-api-goerli.herokuapp.com/api";
     defaultSubgraphUri =
       "https://api.thegraph.com/subgraphs/name/zer0-os/zauction-goerli";
-    defaultZAuctionAddress = "0xdF0f9F007A38aD25E0c02959374f38719Af5fCf8";
+    defaultZAuctionAddress = "0x78764080e4Fb36CB24487d3Ca8e3aa92cD7C58fc";
     defaultTokenContract = "0x009A11617dF427319210e842D6B202f3831e0116"; // not ERC20 token, technically 721 token
     defaultLegacyZAuctionAddress = "0xeABfD3B80A38a95006899Ddf7e8d5F89A5dE6dF3";
     defaultWildTokenAddress = "0x0e46c45f8aca3f89Ad06F4a20E2BED1A12e4658C";
