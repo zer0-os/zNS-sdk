@@ -58,7 +58,7 @@ describe("Test Custom SDK Logic", () => {
     return domainData.name;
   };
 
-  describe("E2E with Rinkeby", () => {
+  describe("E2E with Goerli", () => {
     describe("getDomainMetadata", () => {
       it("runs using IPFS gateway", async () => {
         const hub = await getHubContract(provider, config.hub);
