@@ -15,7 +15,7 @@ export interface SubgraphClient {
   getDomainById(domainId: string): Promise<Domain>;
   getDomainsByName(name: string): Promise<Domain[]>;
   getDomainsByOwner(owner: string): Promise<Domain[]>;
-  getSubdomainsById(domainId: string): Promise<Domain[]>;
+  getSubdomainsById(domainId: string, orderDirection: string | undefined): Promise<Domain[]>;
   getMostRecentSubdomainsById(
     domainId: string,
     count: Maybe<number>,
@@ -49,9 +49,9 @@ export const createClient = (subgraphUri: string): SubgraphClient => {
       const domains = await actions.getDomainsByOwner(apolloClient, owner);
       return domains;
     },
-    getSubdomainsById: async (domainId: string): Promise<Domain[]> => {
+    getSubdomainsById: async (domainId: string, orderDirection: string | undefined): Promise<Domain[]> => {
       logger.debug(`Get subdomains by id: ${domainId}`);
-      const domains = await actions.getSubdomainsById(apolloClient, domainId);
+      const domains = await actions.getSubdomainsById(apolloClient, domainId, orderDirection);
       return domains;
     },
     getMostRecentSubdomainsById: async (

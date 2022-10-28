@@ -108,13 +108,14 @@ export const createInstance = (config: Config): Instance => {
     },
     getSubdomainsById: async (
       domainId: string,
-      useDataStoreAPI = true
+      useDataStoreAPI = true,
+      orderDirection: string = 'asc'
     ): Promise<Domain[]> => {
       let domains: Domain[];
       if (useDataStoreAPI) {
-        domains = await dataStoreApiClient.getSubdomainsById(domainId);
+        domains = await dataStoreApiClient.getSubdomainsById(domainId, orderDirection);
       } else {
-        domains = await subgraphClient.getSubdomainsById(domainId);
+        domains = await subgraphClient.getSubdomainsById(domainId, orderDirection);
       }
       return domains;
     },

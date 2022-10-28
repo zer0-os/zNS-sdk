@@ -7,7 +7,7 @@ const logger = getLogger("api:client");
 export interface DataStoreApiClient {
   getDomainById: (tokenId: string) => Promise<Domain>
   getDomainsByOwner: (ownerAddress: string) => Promise<Domain[]>;
-  getSubdomainsById: (tokenId: string) => Promise<Domain[]>;
+  getSubdomainsById: (tokenId: string, orderDirection: string | undefined) => Promise<Domain[]>;
   getMostRecentSubdomainsById: (
     tokenId: string,
     limit: number,
@@ -39,11 +39,12 @@ export const createDataStoreApiClient = (
 
       return domains;
     },
-    getSubdomainsById: async (tokenId: string) => {
+    getSubdomainsById: async (tokenId: string, orderDirection: string | undefined) => {
       logger.debug("Calling to getSubdomainsById");
       const domains: Domain[] = await actions.getSubdomainsById(
         apiUri,
-        tokenId
+        tokenId,
+        orderDirection
       );
 
       return domains;

@@ -6,12 +6,13 @@ import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
 
 export const getSubdomainsById = async (
   apiUri: string,
-  tokenId: string
+  tokenId: string,
+  sortDirection: string = 'asc'
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   try {
     response = await makeApiCall<DomainCollection>(
-      `${apiUri}v1/domains/subdomains/${tokenId}?projection=false&limit=0`,
+      `${apiUri}v1/domains/subdomains/${tokenId}?projection=false&limit=0&sort=created&sortDirection=${sortDirection}`,
       "GET"
     );
   } catch (e) {

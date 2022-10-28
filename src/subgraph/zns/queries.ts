@@ -89,8 +89,8 @@ export const getSubdomainsById = gql`
     domains(
       where: { parent: $parent, indexId_gt: $startIndex }
       first: $count
-      orderBy: indexId
-      orderDirection: asc
+      orderBy: creationTimestamp
+      orderDirection: $orderDirection
     ) {
       id
       indexId

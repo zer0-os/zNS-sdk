@@ -9,7 +9,8 @@ const logger = getLogger().withTag("subgraph:actions:getSubdomainsById");
 
 export const getSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
-  domainId: string
+  domainId: string,
+  orderDirection: string = 'asc'
 ): Promise<Domain[]> => {
   const queryCount = 1000;
   let skip = 0;
@@ -30,7 +31,7 @@ export const getSubdomainsById = async <T>(
     const queryResult = await performQuery<DomainsQueryDto>(
       apolloClient,
       queries.getSubdomainsById,
-      { parent: domainId, count: queryCount, startIndex: skip }
+      { parent: domainId, count: queryCount, startIndex: skip, orderDirection }
     );
 
     queriedDomains = queryResult.data.domains;

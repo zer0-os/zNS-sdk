@@ -93,7 +93,8 @@ describe("Test Custom SDK Logic", () => {
     describe("getSubdomainsById", () => {
       it("Returns a number of subdomains that isn't 0", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
-          wilderDomainId
+          wilderDomainId,
+          'asc'
         );
         expect(subdomains.length).to.not.eq(0);
       });
@@ -104,7 +105,8 @@ describe("Test Custom SDK Logic", () => {
       });
       it("Returns empty array for domains that have no subdomains", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
-          meowDomainId
+          meowDomainId,
+          'asc'
         );
         expect(subdomains.length).to.eq(0);
       });
