@@ -33,7 +33,7 @@ const getAllDomains = async (): Promise<Domain[]> => {
   // console.log(domains);
 
   const rootDomain = await zNSInstance.getDomainById(
-    "0x0000000000000000000000000000000000000000000000000000000000000000",
+    ethers.constants.HashZero,
     false
   );
   console.log("rootDomain", rootDomain);
