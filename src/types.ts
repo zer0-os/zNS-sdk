@@ -702,7 +702,7 @@ export interface Instance {
      * @param user The user to check
      * @returns The amount of tokens
      */
-    getTokenSpendAllowance(user: string): Promise<string>;
+    getTokenSpendAllowance(user: string): Promise<ethers.BigNumber>;
 
     /**
      * Mints a network domain with for a given domain, with the default metadata
