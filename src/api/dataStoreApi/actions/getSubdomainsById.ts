@@ -6,12 +6,14 @@ import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
 
 export const getSubdomainsById = async (
   apiUri: string,
-  tokenId: string
+  tokenId: string,
+  limit = 100,
+  skip = 0,
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   try {
     response = await makeApiCall<DomainCollection>(
-      `${apiUri}v1/domains/subdomains/${tokenId}?projection=false&limit=0`,
+      `${apiUri}v1/domains/subdomains/${tokenId}?projection=false&skip=${skip}&limit=${limit}`,
       "GET"
     );
   } catch (e) {

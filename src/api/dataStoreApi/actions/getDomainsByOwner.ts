@@ -7,13 +7,14 @@ import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
 export const getDomainsByOwner = async (
   apiUri: string,
   ownerAddress: string,
-  limit = 1000
+  limit = 100,
+  skip = 0,
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   try {
     // Set default limit up to 1000 to match the subgraph maximum
     response = await makeApiCall<DomainCollection>(
-      `${apiUri}v1/domains/search/owner/${ownerAddress}?projection=false&limit=${limit}&sort=domainId&sortDirection=asc`,
+      `${apiUri}v1/domains/search/owner/${ownerAddress}?projection=false&limit=${limit}&skip=${skip}&sort=domainId&sortDirection=asc`,
       "GET"
     );
   } catch (e) {
