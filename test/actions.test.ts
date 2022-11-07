@@ -15,6 +15,7 @@ import { goerliConfiguration } from "../src/configuration";
 import { BuyNowListing } from "@zero-tech/zauction-sdk";
 import { assert } from "console";
 import { generateDefaultMetadata } from "../src/actions";
+import { domainSortingOptionsReflection } from "../src/api/dataStoreApi/helpers/desiredSortToQueryParams";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -41,13 +42,17 @@ describe("Test Custom SDK Logic", () => {
   const config: Config = goerliConfiguration(provider);
   const zAuctionSdkInstance = zAuction.createInstance(config.zAuction);
 
-  const meowDomainId = "0x6b9d6f1edf4b298f7edbfe917276cd16b632cc6062109192f4880c5a45d5d34e";
-  const wilderDomainId = "0x196c0a1e30004b9998c97b363e44f1f4e97497e59d52ad151208e9393d70bb3b";
-  const wilderWheelsDomainId =  "0x7445164548beaf364109b55d8948f056d6e4f1fd26aff998c9156b0b05f1641f";
-  const fakeDomainId = "0x1231231231123123123112312312311231231231123123123112312312311231";
-  
-  const astroAccount = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53"
-  const dummyAccount = "0xa74b2de2D65809C613010B3C8Dc653379a63C55b"
+  const meowDomainId =
+    "0x6b9d6f1edf4b298f7edbfe917276cd16b632cc6062109192f4880c5a45d5d34e";
+  const wilderDomainId =
+    "0x196c0a1e30004b9998c97b363e44f1f4e97497e59d52ad151208e9393d70bb3b";
+  const wilderWheelsDomainId =
+    "0x7445164548beaf364109b55d8948f056d6e4f1fd26aff998c9156b0b05f1641f";
+  const fakeDomainId =
+    "0x1231231231123123123112312312311231231231123123123112312312311231";
+
+  const astroAccount = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
+  const dummyAccount = "0xa74b2de2D65809C613010B3C8Dc653379a63C55b";
   const wildToken = "0x0e46c45f8aca3f89Ad06F4a20E2BED1A12e4658C";
   const subgraphClient = subgraph.createClient(config.subgraphUri);
   const znsApiClient = api.createZnsApiClient(
@@ -93,24 +98,55 @@ describe("Test Custom SDK Logic", () => {
     describe("getSubdomainsById", () => {
       it("Returns a number of subdomains that isn't 0", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
-          wilderDomainId
+          wilderDomainId,
+          0,
+          0
         );
         expect(subdomains.length).to.not.eq(0);
       });
+
+      it("Return subdomains sorted by a domain property", async () => {
+        const supportedSortProps = Object.keys(domainSortingOptionsReflection);
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          0,
+          0
+        );
+        expect(subdomains.length).to.not.eq(0);
+
+        // awaiting ds bug fix..
+        // for (const key of supportedSortProps) {
+        //   const subdomains: Domain[] =
+        //     await dataStoreApiClient.getSubdomainsById(wilderDomainId, 100, 0, {
+        //       [key]: 1,
+        //     });
+
+        //   expect(subdomains.length).to.not.eq(0);
+        // }
+      });
+
       it("Returns a number of domains that isn't 0 through the subgraph", async () => {
         const sdkInstance = await zNSSDK.createInstance(config);
-        const subdomains = await sdkInstance.getSubdomainsById(wilderDomainId, false);
+        const subdomains = await sdkInstance.getSubdomainsById(
+          wilderDomainId,
+          false
+        );
         expect(subdomains.length).to.not.eq(0);
       });
       it("Returns empty array for domains that have no subdomains", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
-          meowDomainId
+          meowDomainId,
+          100,
+          0
         );
         expect(subdomains.length).to.eq(0);
       });
       it("Returns empty array for domains that have no subdomains through the subgraph", async () => {
         const sdkInstance = await zNSSDK.createInstance(config);
-        const subdomains = await sdkInstance.getSubdomainsById(meowDomainId, false);
+        const subdomains = await sdkInstance.getSubdomainsById(
+          meowDomainId,
+          false
+        );
         expect(subdomains.length).to.eq(0);
       });
     });
@@ -150,47 +186,67 @@ describe("Test Custom SDK Logic", () => {
       it("Fails when requesting over 5000 most recent subdomains", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         expect(
-          sdkInstance.getMostRecentSubdomainsById(wilderDomainId, 5000, 0, false)
+          sdkInstance.getMostRecentSubdomainsById(
+            wilderDomainId,
+            5000,
+            0,
+            false
+          )
         ).to.eventually.throw(Error);
       });
       it("Calls getDomainById", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const wilderWheelsDomain = await sdkInstance.getDomainById(wilderWheelsDomainId)
+        const wilderWheelsDomain = await sdkInstance.getDomainById(
+          wilderWheelsDomainId
+        );
         expect(wilderWheelsDomain.id).to.eq(wilderWheelsDomainId);
       });
       it("Calls getDomainById through the subgraph", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const wilderWheelsDomain = await sdkInstance.getDomainById(wilderWheelsDomainId, false);
+        const wilderWheelsDomain = await sdkInstance.getDomainById(
+          wilderWheelsDomainId,
+          false
+        );
         expect(wilderWheelsDomain.id).to.eq(wilderWheelsDomainId);
       });
       it("Fails when getDomainById is given a unknown ID", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         const wilderWheelsDomain = sdkInstance.getDomainById(fakeDomainId);
-        await expect(wilderWheelsDomain).to.be.rejectedWith(`Failed to get domain: ${fakeDomainId}`);
+        await expect(wilderWheelsDomain).to.be.rejectedWith(
+          `Failed to get domain: ${fakeDomainId}`
+        );
       });
       it("Fails through the subgraph when getDomainById is given a unknown ID", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const wilderWheelsDomain = sdkInstance.getDomainById(fakeDomainId)
-        await expect(wilderWheelsDomain).to.be.rejectedWith(`Failed to get domain: ${fakeDomainId}`);
+        const wilderWheelsDomain = sdkInstance.getDomainById(fakeDomainId);
+        await expect(wilderWheelsDomain).to.be.rejectedWith(
+          `Failed to get domain: ${fakeDomainId}`
+        );
       });
-      it("Gets domains by owner with default to DataStoreApi", async () => {
+      it("Gets domains by owner using the DataStore Api", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const domains = await sdkInstance.getDomainsByOwner(astroAccount);    
+        const domains = await sdkInstance.getDomainsByOwner(astroAccount, true);
         expect(domains.length).to.be.gt(0);
       });
       it("Gets domains by owner using the Subgraph", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const domains = await sdkInstance.getDomainsByOwner(astroAccount, false);
+        const domains = await sdkInstance.getDomainsByOwner(
+          astroAccount,
+          false
+        );
         expect(domains.length).to.be.gt(0);
       });
       it("Returns no domains when owner has none", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const domains = await sdkInstance.getDomainsByOwner(dummyAccount);    
+        const domains = await sdkInstance.getDomainsByOwner(dummyAccount);
         expect(domains.length).to.eq(0);
       });
       it("Returns no domains through the subgraph when owner has none", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const domains = await sdkInstance.getDomainsByOwner(dummyAccount, false);
+        const domains = await sdkInstance.getDomainsByOwner(
+          dummyAccount,
+          false
+        );
         expect(domains.length).to.eq(0);
       });
       it("Gets domains by name", async () => {
@@ -215,7 +271,10 @@ describe("Test Custom SDK Logic", () => {
       });
       it("Gets domain metrics", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        const metricsCollection = await sdkInstance.getDomainMetrics([meowDomainId, wilderDomainId]);
+        const metricsCollection = await sdkInstance.getDomainMetrics([
+          meowDomainId,
+          wilderDomainId,
+        ]);
         expect(metricsCollection).to.be.not.null;
       });
     });

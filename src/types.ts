@@ -2,6 +2,7 @@ import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid, BuyNowListing } from "./zAuction";
 import { BuyNowPriceListing } from "./api/dataStoreApi/types";
+import { DomainSortOptions } from "./api/dataStoreApi/helpers/desiredSortToQueryParams";
 
 export type DexSubgraphUris = Map<string>;
 
@@ -153,25 +154,38 @@ export interface Instance {
   getDomainsByName(name: string): Promise<Domain[]>;
 
   /**
-   * Gets all domains owner by an address
+   * Gets all domains owned by an address. 
+   * Note: @param sort @param limit and @param skip only effect the query when @param useDataStoreAPI is true
    * @param owner Owner address
-   * @param useDataStoreAPI Optional, indicate whether to query with
-   * the DataStore or the Subgraph. Default is to use the DataStore
+   * @param useDataStoreAPI Default: FALSE | indicates the data source to query from (Data Store or SubGraph)
+   * @param limit: Default: 100 | Limit the results returned, useful for pagination. Set 0 for no limit.
+   * @param skip: Default: 0 | Skip part of the result set, useful for pagination
+   * @param sort: Optional | Specify the sort order of result sets returned by a specific property
+   * 
    */
   getDomainsByOwner(
     owner: string,
-    useDataStoreAPI?: boolean
+    useDataStoreAPI?: boolean,
+    limit?: number,
+    skip?: number,
+    sort?: DomainSortOptions
   ): Promise<Domain[]>;
 
   /**
    * Finds all subdomains of a given domain
-   * @param domainId (parent) domain id
-   * @param useDataStoreAPI Optional, indicate whether to query with
-   * the DataStore or the Subgraph. Default is to use the DataStore
+   * Note: @param sort @param limit and @param skip only effect the query when @param useDataStoreAPI is true
+   * @param domainId the parent domain id
+   * @param useDataStoreAPI Default: TRUE | indicates the data source to query from (Data Store or SubGraph)
+   * @param limit: Default: 100 | Limit the results returned, useful for pagination. Set 0 for no limit.
+   * @param skip: Default: 0 | Skip part of the result set, useful for pagination
+   * @param sort: Optional | Specify the sort order of result sets returned by a specific property
    */
   getSubdomainsById(
     domainId: string,
-    useDataStoreApi?: boolean
+    useDataStoreAPI?: boolean,
+    limit?: number,
+    skip?: number,
+    sort?: DomainSortOptions
   ): Promise<Domain[]>;
 
   /**

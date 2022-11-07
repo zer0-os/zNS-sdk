@@ -1,19 +1,34 @@
 import { Domain, Maybe } from "../../../types";
 import { DomainCollection } from "../types";
 import { makeApiCall } from "../../helpers";
-import { ethers } from "ethers";
 import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
+import { desiredSortToQueryParams, DomainSortOptions } from "../helpers/desiredSortToQueryParams";
 
 export const getSubdomainsById = async (
   apiUri: string,
   tokenId: string,
   limit = 100,
   skip = 0,
+  sort?: DomainSortOptions
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
+  let sortBy = ""
+  let sortDirections = ""
+
+  if (sort) {
+    const sortQueryParameterStrings = desiredSortToQueryParams(sort);
+    sortBy = sortQueryParameterStrings.sortQueryString,
+    sortDirections = sortQueryParameterStrings.sortOrderQueryString
+  }
+  
   try {
+    let requestUri = `${apiUri}v1/domains/subdomains/${tokenId}?projection=false&skip=${skip}&limit=${limit}`;
+    if (sortBy && sortDirections) {
+      requestUri += `&${sortBy}&${sortDirections}`;
+    }
+
     response = await makeApiCall<DomainCollection>(
-      `${apiUri}v1/domains/subdomains/${tokenId}?projection=false&skip=${skip}&limit=${limit}`,
+      requestUri,
       "GET"
     );
   } catch (e) {
