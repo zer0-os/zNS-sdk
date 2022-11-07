@@ -19,11 +19,11 @@ export const isMinterApprovedToSpendTokens = async (
     user
   );
 
-  const requiredAmount = ethers.utils.parseEther(amount);
-  const allowanceAsNumber = ethers.utils.parseEther(allowance);
-  const approved = allowanceAsNumber.gte(requiredAmount);
+  const minimumAmount = ethers.BigNumber.from(amount);  
+  const approved = allowance.gte(minimumAmount);
+
   logger.trace(
-    `User ${user} approval to spend ${requiredAmount} of token ${paymentToken} is: ${approved}`
+    `User ${user} spend of ${paymentToken} for domain purchase is: ${approved}`
   );
 
   return approved;

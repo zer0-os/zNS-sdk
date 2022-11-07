@@ -1,4 +1,4 @@
-import { ContractTransaction, ethers } from "ethers";
+import { BigNumber, ContractTransaction, ethers } from "ethers";
 import * as zAuction from "@zero-tech/zauction-sdk";
 import { getLogger } from "./utilities";
 export const logger = getLogger().withTag("zns-sdk");
@@ -276,7 +276,7 @@ export const createInstance = (config: Config): Instance => {
     },
     setDomainRoyalty: async (
       domainId: string,
-      amount: ethers.BigNumber,
+      amount: BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const hub: ZNSHub = await getHubContract(signer, config.hub);
@@ -346,7 +346,7 @@ export const createInstance = (config: Config): Instance => {
       getZAuctionSpendAllowance: async (
         account: string,
         params: TokenAllowanceParams
-      ): Promise<ethers.BigNumber> => {
+      ): Promise<BigNumber> => {
         const allowance = await actions.getZauctionSpendAllowance(
           account,
           params,
@@ -369,7 +369,7 @@ export const createInstance = (config: Config): Instance => {
       needsToApproveZAuctionToSpendTokensByDomain: async (
         account: string,
         domainId: string,
-        bidAmount: ethers.BigNumber
+        bidAmount: BigNumber
       ): Promise<boolean> => {
         const allowance =
           await zAuctionSdkInstance.getZAuctionSpendAllowanceByDomain(
@@ -643,10 +643,7 @@ export const createInstance = (config: Config): Instance => {
           tokenAddress
         );
 
-        let approvalAmount = ethers.constants.MaxUint256;
-        if (amount) {
-          approvalAmount = ethers.utils.parseEther(amount);
-        }
+        let approvalAmount = amount ?? ethers.constants.MaxUint256;
 
         const tx = await paymentToken
           .connect(signer)
@@ -654,7 +651,7 @@ export const createInstance = (config: Config): Instance => {
 
         return tx;
       },
-      getTokenSpendAllowance: async (user: string): Promise<string> => {
+      getTokenSpendAllowance: async (user: string): Promise<BigNumber> => {
         const purchaser = await getDomainPurchaserContract(
           config.provider,
           config.domainPurchaser
