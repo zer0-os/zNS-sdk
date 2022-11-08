@@ -1,21 +1,4 @@
-export type DomainSortOptions = {
-    created?: number;
-    domainId?: number;
-    isRoot?: number;
-    children?: number;
-    history?: number;
-    label?: number;
-    name?: number;
-    parent?: number;
-    labelHash?: number;
-    minter?: number;
-    owner?: number;
-    metadataUri?: number;
-    royaltyAmount?: number;
-    registrar?: number;
-    isValid?: number;
-    buyNow?: number;
-  };
+import { DomainSortOptions } from "../types";
   
   export const domainSortingOptionsReflection = {
     domainId: "",

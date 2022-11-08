@@ -46,7 +46,7 @@ import {
   DomainPurchaserConfig,
   NetworkDomainMintableConfig,
 } from "./actions/minting/types";
-import { DomainSortOptions } from "./api/dataStoreApi/helpers/desiredSortToQueryParams";
+import { DomainSortOptions } from "./api/dataStoreApi/types";
 
 export * from "./types";
 export { configuration };
@@ -123,6 +123,18 @@ export const createInstance = (config: Config): Instance => {
       } else {
         domains = await subgraphClient.getSubdomainsById(domainId);
       }
+      return domains;
+    },
+    getSubdomainsByIdDeep: async (
+      domainId: string,
+      limit = 100,
+      skip = 0,
+      sort?: DomainSortOptions
+    ): Promise<Domain[]> => {
+      let domains: Domain[];
+
+        domains = await dataStoreApiClient.getSubdomainsByIdDeep(domainId, limit, skip, sort);
+
       return domains;
     },
     getMostRecentSubdomainsById: async (

@@ -1,8 +1,8 @@
 import { Domain, Maybe } from "../../../types";
-import { DomainCollection } from "../types";
+import { DomainCollection, DomainSortOptions } from "../types";
 import { makeApiCall } from "../../helpers";
 import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
-import { desiredSortToQueryParams, DomainSortOptions } from "../helpers/desiredSortToQueryParams";
+import { desiredSortToQueryParams } from "../helpers/desiredSortToQueryParams";
 
 export const getDomainsByOwner = async (
   apiUri: string,

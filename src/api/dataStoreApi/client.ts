@@ -1,7 +1,7 @@
 import { Domain } from "../../types";
 import * as actions from "./actions";
 import { getLogger } from "../../utilities";
-import { DomainSortOptions } from "./helpers/desiredSortToQueryParams";
+import { DomainSortOptions } from "./types";
 
 const logger = getLogger("api:client");
 
@@ -14,6 +14,12 @@ export interface DataStoreApiClient {
     sort?: DomainSortOptions
   ) => Promise<Domain[]>;
   getSubdomainsById: (
+    tokenId: string,
+    limit: number,
+    skip: number,
+    sort?: DomainSortOptions
+  ) => Promise<Domain[]>;
+  getSubdomainsByIdDeep: (
     tokenId: string,
     limit: number,
     skip: number,
@@ -71,7 +77,23 @@ export const createDataStoreApiClient = (
 
       return domains;
     },
+    getSubdomainsByIdDeep: async (
+      tokenId: string,
+      limit: number,
+      skip: number,
+      sort?: DomainSortOptions
+    ) => {
+      logger.debug("Calling to getSubdomainsByIdDeep");
+      const domains: Domain[] = await actions.getSubdomainsById(
+        apiUri,
+        tokenId,
+        limit,
+        skip,
+        sort
+      );
 
+      return domains;
+    },
     getMostRecentSubdomainsById: async (
       tokenId: string,
       limit: number,

@@ -1,8 +1,8 @@
 import { Domain, Maybe } from "../../../types";
-import { DomainCollection } from "../types";
+import { DomainCollection, DomainSortOptions } from "../types";
 import { makeApiCall } from "../../helpers";
 import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
-import { desiredSortToQueryParams, DomainSortOptions } from "../helpers/desiredSortToQueryParams";
+import { desiredSortToQueryParams } from "../helpers/desiredSortToQueryParams";
 
 export const getSubdomainsById = async (
   apiUri: string,
@@ -20,9 +20,9 @@ export const getSubdomainsById = async (
     sortBy = sortQueryParameterStrings.sortQueryString,
     sortDirections = sortQueryParameterStrings.sortOrderQueryString
   }
-  
+
   try {
-    let requestUri = `${apiUri}v1/domains/subdomains/${tokenId}?projection=false&skip=${skip}&limit=${limit}`;
+    let requestUri = `${apiUri}v1/domains/subdomains/${tokenId}?skip=${skip}&limit=${limit}`;
     if (sortBy && sortDirections) {
       requestUri += `&${sortBy}&${sortDirections}`;
     }

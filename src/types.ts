@@ -1,8 +1,7 @@
 import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid, BuyNowListing } from "./zAuction";
-import { BuyNowPriceListing } from "./api/dataStoreApi/types";
-import { DomainSortOptions } from "./api/dataStoreApi/helpers/desiredSortToQueryParams";
+import { BuyNowPriceListing, DomainSortOptions } from "./api/dataStoreApi/types";
 
 export type DexSubgraphUris = Map<string>;
 
@@ -188,13 +187,29 @@ export interface Instance {
     sort?: DomainSortOptions
   ): Promise<Domain[]>;
 
+  
+  /**
+   * Finds all deeply nested subdomains (children of children, and so forth) of a given domain
+   * Available only via data store
+   * @param domainId the parent domain id
+   * @param limit: Default: 100 | Limit the results returned, useful for pagination. Set 0 for no limit.
+   * @param skip: Default: 0 | Skip part of the result set, useful for pagination
+   * @param sort: Optional | Specify the sort order of result sets returned by a specific property
+   */
+   getSubdomainsByIdDeep(
+    domainId: string,
+    limit?: number,
+    skip?: number,
+    sort?: DomainSortOptions
+  ): Promise<Domain[]>;
+
   /**
    * Finds all recent subdomains of a given domain
    * @param domainId (parent) domain id
    */
   getMostRecentSubdomainsById(
     domainId: string,
-    count: number,
+    limit: number,
     skip: number,
     useDataStoreApi?: boolean
   ): Promise<Domain[]>;
