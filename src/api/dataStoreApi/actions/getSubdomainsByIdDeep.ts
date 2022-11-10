@@ -4,7 +4,10 @@ import { makeApiCall } from "../../helpers";
 import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
 import { desiredSortToQueryParams } from "../helpers/desiredSortToQueryParams";
 
-export const getSubdomainsById = async (
+/**
+ * Get's deeply nested subdomains (children of children and so forth) for a given domain id.
+ */
+export const getSubdomainsByIdDeep = async (
   apiUri: string,
   tokenId: string,
   limit = 100,
@@ -22,7 +25,7 @@ export const getSubdomainsById = async (
   }
 
   try {
-    let requestUri = `${apiUri}v1/domains/subdomains/${tokenId}?skip=${skip}&limit=${limit}`;
+    let requestUri = `${apiUri}v1/domains/subdomains/deep/${tokenId}?skip=${skip}&limit=${limit}`;
     if (sortBy && sortDirections) {
       requestUri += `&${sortBy}&${sortDirections}`;
     }

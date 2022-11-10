@@ -11,8 +11,8 @@ const MAX_RECORDS = 5000;
 export const getMostRecentSubdomainsById = async (
   apiUri: string,
   tokenId: string,
-  limit = 100,
-  skip = 0
+  limit: number,
+  skip: number
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   if (limit >= MAX_RECORDS) {
@@ -26,14 +26,14 @@ export const getMostRecentSubdomainsById = async (
       `Querying for ${limit} recent subdomains of ${tokenId} starting at indexId ${skip}`
     );
 
-    const formattedUri = `${apiUri}v1/domains/subdomains/deep/${tokenId}?sortDirection=-1&sort=created&skip=${skip}&limit=${limit}`;
+    const requestUri = `${apiUri}v1/domains/subdomains/deep/${tokenId}?sortDirection=-1&sort=created&skip=${skip}&limit=${limit}`;
 
-    response = await makeApiCall<DomainCollection>(formattedUri, "GET");
+    response = await makeApiCall<DomainCollection>(requestUri, "GET");
   } catch (e) {
     throw Error(`Failed to get recently created domains for ${tokenId}: ${e}`);
   }
 
- // Map from DataStoreDomain -> Domain for downstream consistency
+  // Map from DataStoreDomain -> Domain for downstream consistency
   const domains: Domain[] = response.results.map((d) => {
     return datastoreDomainToDomain(d);
   });

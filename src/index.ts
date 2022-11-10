@@ -46,6 +46,7 @@ import {
   DomainPurchaserConfig,
   NetworkDomainMintableConfig,
 } from "./actions/minting/types";
+import { DomainSortOptions } from "./api/dataStoreApi/types";
 
 export * from "./types";
 export { configuration };
@@ -80,14 +81,11 @@ export const createInstance = (config: Config): Instance => {
   };
 
   const instance: Instance = {
-    getDomainById: async (
-      domainId: string, useDataStoreAPI: boolean = true
-    ) => {
+    getDomainById: async (domainId: string, useDataStoreAPI = true) => {
       let domain;
       if (useDataStoreAPI) {
         domain = await dataStoreApiClient.getDomainById(domainId);
-      }
-      else {
+      } else {
         domain = await subgraphClient.getDomainById(domainId);
       }
       return domain;
@@ -95,12 +93,20 @@ export const createInstance = (config: Config): Instance => {
     getDomainsByName: subgraphClient.getDomainsByName,
     getDomainsByOwner: async (
       ownerAddress: string,
-      useDataStoreAPI = false
+      useDataStoreAPI = false,
+      limit = 100,
+      skip = 0,
+      sort?: DomainSortOptions
     ) => {
       // Change default for `useDataStoreAPI` when bug is resolved for parity
       let domains: Domain[];
       if (useDataStoreAPI) {
-        domains = await dataStoreApiClient.getDomainsByOwner(ownerAddress);
+        domains = await dataStoreApiClient.getDomainsByOwner(
+          ownerAddress,
+          limit,
+          skip,
+          sort
+        );
       } else {
         domains = await subgraphClient.getDomainsByOwner(ownerAddress);
       }
@@ -108,14 +114,37 @@ export const createInstance = (config: Config): Instance => {
     },
     getSubdomainsById: async (
       domainId: string,
-      useDataStoreAPI = true
+      useDataStoreAPI = true,
+      limit = 100,
+      skip = 0,
+      sort?: DomainSortOptions
     ): Promise<Domain[]> => {
       let domains: Domain[];
       if (useDataStoreAPI) {
-        domains = await dataStoreApiClient.getSubdomainsById(domainId);
+        domains = await dataStoreApiClient.getSubdomainsById(
+          domainId,
+          limit,
+          skip,
+          sort
+        );
       } else {
         domains = await subgraphClient.getSubdomainsById(domainId);
       }
+      return domains;
+    },
+    getSubdomainsByIdDeep: async (
+      domainId: string,
+      limit = 100,
+      skip = 0,
+      sort?: DomainSortOptions
+    ): Promise<Domain[]> => {
+      const domains = await dataStoreApiClient.getSubdomainsByIdDeep(
+        domainId,
+        limit,
+        skip,
+        sort
+      );
+
       return domains;
     },
     getMostRecentSubdomainsById: async (

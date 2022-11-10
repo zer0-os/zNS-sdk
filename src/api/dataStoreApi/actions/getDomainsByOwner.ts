@@ -1,21 +1,34 @@
 import { Domain, Maybe } from "../../../types";
-import { DomainCollection } from "../types";
+import { DomainCollection, DomainSortOptions } from "../types";
 import { makeApiCall } from "../../helpers";
-import { ethers } from "ethers";
 import { datastoreDomainToDomain } from "../helpers/datastoreDomainToDomain";
+import { desiredSortToQueryParams } from "../helpers/desiredSortToQueryParams";
 
 export const getDomainsByOwner = async (
   apiUri: string,
   ownerAddress: string,
-  limit = 1000
+  limit: number,
+  skip: number,
+  sort?: DomainSortOptions
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
+
+  let sortBy = "";
+  let sortDirections = "";
+
+  if (sort) {
+    const sortQueryParameterStrings = desiredSortToQueryParams(sort);
+    (sortBy = sortQueryParameterStrings.sortQueryString),
+      (sortDirections = sortQueryParameterStrings.sortOrderQueryString);
+  }
+
   try {
-    // Set default limit up to 1000 to match the subgraph maximum
-    response = await makeApiCall<DomainCollection>(
-      `${apiUri}v1/domains/search/owner/${ownerAddress}?projection=false&limit=${limit}&sort=domainId&sortDirection=asc`,
-      "GET"
-    );
+    let requestUri = `${apiUri}v1/domains/search/owner/${ownerAddress}?limit=${limit}&skip=${skip}`;
+    if (sortBy && sortDirections) {
+      requestUri += `&${sortBy}&${sortDirections}`;
+    }
+
+    response = await makeApiCall<DomainCollection>(requestUri, "GET");
   } catch (e) {
     throw Error(`Failed to get domains for owner ${ownerAddress}: ${e}`);
   }
