@@ -125,6 +125,17 @@ describe("Test Custom SDK Logic", () => {
         // }
       });
 
+      it("Return subdomains deep sorted by a domain property", async () => {
+        const supportedSortProps = Object.keys(domainSortingOptionsReflection);
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          0,
+          0,
+          { buyNow: "asc" }
+        );
+        expect(subdomains.length).to.not.eq(0);
+      });
+
       it("Returns a number of domains that isn't 0 through the subgraph", async () => {
         const sdkInstance = await zNSSDK.createInstance(config);
         const subdomains = await sdkInstance.getSubdomainsById(

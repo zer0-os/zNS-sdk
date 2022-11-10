@@ -26,14 +26,14 @@ export const getMostRecentSubdomainsById = async (
       `Querying for ${limit} recent subdomains of ${tokenId} starting at indexId ${skip}`
     );
 
-    let requestUri = `${apiUri}v1/domains/subdomains/deep/${tokenId}?sortDirection=-1&sort=created&skip=${skip}&limit=${limit}`;
+    const requestUri = `${apiUri}v1/domains/subdomains/deep/${tokenId}?sortDirection=-1&sort=created&skip=${skip}&limit=${limit}`;
 
     response = await makeApiCall<DomainCollection>(requestUri, "GET");
   } catch (e) {
     throw Error(`Failed to get recently created domains for ${tokenId}: ${e}`);
   }
 
- // Map from DataStoreDomain -> Domain for downstream consistency
+  // Map from DataStoreDomain -> Domain for downstream consistency
   const domains: Domain[] = response.results.map((d) => {
     return datastoreDomainToDomain(d);
   });

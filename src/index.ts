@@ -81,14 +81,11 @@ export const createInstance = (config: Config): Instance => {
   };
 
   const instance: Instance = {
-    getDomainById: async (
-      domainId: string, useDataStoreAPI: boolean = true
-    ) => {
+    getDomainById: async (domainId: string, useDataStoreAPI = true) => {
       let domain;
       if (useDataStoreAPI) {
         domain = await dataStoreApiClient.getDomainById(domainId);
-      }
-      else {
+      } else {
         domain = await subgraphClient.getDomainById(domainId);
       }
       return domain;
@@ -104,7 +101,12 @@ export const createInstance = (config: Config): Instance => {
       // Change default for `useDataStoreAPI` when bug is resolved for parity
       let domains: Domain[];
       if (useDataStoreAPI) {
-        domains = await dataStoreApiClient.getDomainsByOwner(ownerAddress, limit, skip, sort);
+        domains = await dataStoreApiClient.getDomainsByOwner(
+          ownerAddress,
+          limit,
+          skip,
+          sort
+        );
       } else {
         domains = await subgraphClient.getDomainsByOwner(ownerAddress);
       }
@@ -119,7 +121,12 @@ export const createInstance = (config: Config): Instance => {
     ): Promise<Domain[]> => {
       let domains: Domain[];
       if (useDataStoreAPI) {
-        domains = await dataStoreApiClient.getSubdomainsById(domainId, limit, skip, sort);
+        domains = await dataStoreApiClient.getSubdomainsById(
+          domainId,
+          limit,
+          skip,
+          sort
+        );
       } else {
         domains = await subgraphClient.getSubdomainsById(domainId);
       }
@@ -131,9 +138,12 @@ export const createInstance = (config: Config): Instance => {
       skip = 0,
       sort?: DomainSortOptions
     ): Promise<Domain[]> => {
-      let domains: Domain[];
-
-        domains = await dataStoreApiClient.getSubdomainsByIdDeep(domainId, limit, skip, sort);
+      const domains = await dataStoreApiClient.getSubdomainsByIdDeep(
+        domainId,
+        limit,
+        skip,
+        sort
+      );
 
       return domains;
     },

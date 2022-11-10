@@ -1,7 +1,10 @@
 import * as zAuction from "./zAuction";
 import { ContractTransaction, ethers } from "ethers";
 import { Bid, BuyNowListing } from "./zAuction";
-import { BuyNowPriceListing, DomainSortOptions } from "./api/dataStoreApi/types";
+import {
+  BuyNowPriceListing,
+  DomainSortOptions,
+} from "./api/dataStoreApi/types";
 
 export type DexSubgraphUris = Map<string>;
 
@@ -153,14 +156,14 @@ export interface Instance {
   getDomainsByName(name: string): Promise<Domain[]>;
 
   /**
-   * Gets all domains owned by an address. 
+   * Gets all domains owned by an address.
    * Note: @param sort @param limit and @param skip only effect the query when @param useDataStoreAPI is true
    * @param owner Owner address
    * @param useDataStoreAPI Default: FALSE | indicates the data source to query from (Data Store or SubGraph)
    * @param limit: Default: 100 | Limit the results returned, useful for pagination. Set 0 for no limit.
    * @param skip: Default: 0 | Skip part of the result set, useful for pagination
    * @param sort: Optional | Specify the sort order of result sets returned by a specific property
-   * 
+   *
    */
   getDomainsByOwner(
     owner: string,
@@ -187,7 +190,6 @@ export interface Instance {
     sort?: DomainSortOptions
   ): Promise<Domain[]>;
 
-  
   /**
    * Finds all deeply nested subdomains (children of children, and so forth) of a given domain
    * Available only via data store
@@ -196,7 +198,7 @@ export interface Instance {
    * @param skip: Default: 0 | Skip part of the result set, useful for pagination
    * @param sort: Optional | Specify the sort order of result sets returned by a specific property
    */
-   getSubdomainsByIdDeep(
+  getSubdomainsByIdDeep(
     domainId: string,
     limit?: number,
     skip?: number,
@@ -792,7 +794,7 @@ export interface Domain {
   contract: string;
   created?: Created;
   isRoot?: boolean;
-  buyNow?: BuyNowPriceListing
+  buyNow?: BuyNowPriceListing;
 }
 
 export interface DomainMetadata {

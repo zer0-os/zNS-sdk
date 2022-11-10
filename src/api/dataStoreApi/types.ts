@@ -34,20 +34,20 @@ export interface DataStoreDomain {
   parent: string;
   created: Time;
   name: string;
-  buyNow: BuyNow
+  buyNow: BuyNow;
   locked: boolean; // Older domains may not have these properties
   lockedBy: string;
 }
 
 export interface BuyNowPriceListing {
-  lister: string,
-  price: string,
-  paymentToken: string,
-} 
+  lister: string;
+  price: string;
+  paymentToken: string;
+}
 
 export interface BuyNow {
-  listing: BuyNowPriceListing
-  isActive: boolean
+  listing: BuyNowPriceListing;
+  isActive: boolean;
 }
 
 type Show = 1;
@@ -82,20 +82,20 @@ export interface RequestBody {
 }
 
 export type DomainSortOptions = {
-  created?: number;
-  domainId?: number;
-  isRoot?: number;
-  children?: number;
-  history?: number;
-  label?: number;
-  name?: number;
-  parent?: number;
-  labelHash?: number;
-  minter?: number;
-  owner?: number;
-  metadataUri?: number;
-  royaltyAmount?: number;
-  registrar?: number;
-  isValid?: number;
-  buyNow?: number;
+  created?: "asc" | "desc";
+  domainId?: "asc" | "desc";
+  isRoot?: "asc" | "desc";
+  children?: "asc" | "desc";
+  history?: "asc" | "desc";
+  label?: "asc" | "desc";
+  name?: "asc" | "desc";
+  parent?: "asc" | "desc";
+  labelHash?: "asc" | "desc";
+  minter?: "asc" | "desc";
+  owner?: "asc" | "desc";
+  metadataUri?: "asc" | "desc";
+  royaltyAmount?: "asc" | "desc";
+  registrar?: "asc" | "desc";
+  isValid?: "asc" | "desc";
+  buyNow?: "asc" | "desc";
 };

@@ -18,5 +18,5 @@ export const getDomainById = async (
   }
 
   // Map from DataStoreDomain -> Domain for downstream consistency
- return datastoreDomainToDomain(response);
+  return datastoreDomainToDomain(response);
 };

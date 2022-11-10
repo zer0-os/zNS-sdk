@@ -12,13 +12,13 @@ export const getSubdomainsById = async (
   sort?: DomainSortOptions
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
-  let sortBy = ""
-  let sortDirections = ""
+  let sortBy = "";
+  let sortDirections = "";
 
   if (sort) {
     const sortQueryParameterStrings = desiredSortToQueryParams(sort);
-    sortBy = sortQueryParameterStrings.sortQueryString,
-    sortDirections = sortQueryParameterStrings.sortOrderQueryString
+    (sortBy = sortQueryParameterStrings.sortQueryString),
+      (sortDirections = sortQueryParameterStrings.sortOrderQueryString);
   }
 
   try {
@@ -27,18 +27,15 @@ export const getSubdomainsById = async (
       requestUri += `&${sortBy}&${sortDirections}`;
     }
 
-    response = await makeApiCall<DomainCollection>(
-      requestUri,
-      "GET"
-    );
+    response = await makeApiCall<DomainCollection>(requestUri, "GET");
   } catch (e) {
     throw Error(`Failed to get subdomains for ${tokenId}: ${e}`);
   }
 
- // Map from DataStoreDomain -> Domain for downstream consistency
- const domains: Domain[] = response.results.map((d) => {
-  return datastoreDomainToDomain(d);
-});
+  // Map from DataStoreDomain -> Domain for downstream consistency
+  const domains: Domain[] = response.results.map((d) => {
+    return datastoreDomainToDomain(d);
+  });
 
   return domains;
 };
