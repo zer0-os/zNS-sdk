@@ -672,7 +672,7 @@ export const createInstance = (config: Config): Instance => {
           tokenAddress
         );
 
-        let approvalAmount = amount ?? ethers.constants.MaxUint256;
+        const approvalAmount = amount ?? ethers.constants.MaxUint256;
 
         const tx = await paymentToken
           .connect(signer)

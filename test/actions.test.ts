@@ -131,7 +131,7 @@ describe("Test Custom SDK Logic", () => {
           wilderDomainId,
           0,
           0,
-          { buyNow: "asc" }
+          { "buyNow.price": "asc" }
         );
         expect(subdomains.length).to.not.eq(0);
       });
@@ -145,19 +145,19 @@ describe("Test Custom SDK Logic", () => {
         expect(subdomains.length).to.not.eq(0);
       });
     });
-    describe("get domains", () => {
-      it("gets most recent domains", async () => {
+    describe("Get domains", () => {
+      it("Gets most recent domains", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         const domains = await sdkInstance.getMostRecentDomains(10, 0);
         expect(domains.length).to.equal(10);
       });
-      it("cannot get over 5000 most recent domains", async () => {
+      it("Cannot get over 5000 most recent domains", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         expect(sdkInstance.getMostRecentDomains(5000, 0)).to.eventually.throw(
           Error
         );
       });
-      it("gets most recent subdomains", async () => {
+      it("Gets most recent subdomains", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         const domains = await sdkInstance.getMostRecentSubdomainsById(
           wilderDomainId,
@@ -167,7 +167,7 @@ describe("Test Custom SDK Logic", () => {
         );
         expect(domains.length).to.equal(2);
       });
-      it("gets most recent subdomains via the data store", async () => {
+      it("Gets most recent subdomains via the data store", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         const domains = await sdkInstance.getMostRecentSubdomainsById(
           wilderDomainId,
@@ -272,6 +272,129 @@ describe("Test Custom SDK Logic", () => {
         expect(metricsCollection).to.be.not.null;
       });
     });
+    describe("Sort domains by order", async () => {
+      it("Sort domains by buyNow.price when get subdomains by domain Id", async () => {
+        const subDomainsDesc: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          0,
+          0,
+          {
+            "buyNow.price": "desc",
+          }
+        );
+
+        let prevDomain: Domain = subDomainsDesc[0];
+        expect(
+          subDomainsDesc.reduce((prev: boolean, currentDomain: Domain) => {
+            if (!prevDomain.buyNow || !currentDomain.buyNow) {
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow.price).gte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+
+        const subDomainsAsc: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          0,
+          0,
+          {
+            "buyNow.price": "asc",
+          }
+        );
+
+        prevDomain = subDomainsAsc[0];
+        expect(
+          subDomainsAsc.reduce((prev: boolean, currentDomain: Domain) => {
+            if (!prevDomain.buyNow || !currentDomain.buyNow) {
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow.price).lte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+      });
+      it("Sort domains by buyNow.time when get subdomains by domain Id", async () => {
+        const wilder_boat_notreal = "0x6f0975dc0b1afae3543b5ec60b4ff289a8b7fe9ed9afe026436ff6dcbdd646e4";
+        const subDomainsDesc: Domain[] = await dataStoreApiClient.getSubdomainsByIdDeep(
+          wilderDomainId,
+          100,
+          0,
+          {
+            "buyNow.time": "desc",
+          }
+        );
+
+        let prevDomain: Domain = subDomainsDesc[0];
+        expect(
+          subDomainsDesc.reduce((prev: boolean, currentDomain: Domain) => {
+            // buyNow.time should be applied on active buyNow
+            // check `datastoreDomainToDomain()` function
+            if (!prevDomain.buyNow && currentDomain.buyNow) {
+              return false;
+            }
+
+            if (!currentDomain.buyNow) {
+              prevDomain = currentDomain;
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow!.price).gte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+
+        const subDomainsAsc: Domain[] = await dataStoreApiClient.getSubdomainsByIdDeep(
+          wilderDomainId,
+          100,
+          0,
+          {
+            "buyNow.time": "asc",
+          }
+        );
+
+        prevDomain = subDomainsAsc[0];
+        expect(
+          subDomainsAsc.reduce((prev: boolean, currentDomain: Domain) => {
+            // buyNow.time should be applied on active buyNow
+            // check `datastoreDomainToDomain()` function
+            if (!prevDomain.buyNow && currentDomain.buyNow) {
+              return false;
+            }
+
+            if (!currentDomain.buyNow) {
+              prevDomain = currentDomain;
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow!.price).lte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+      });
+    });
 
     describe("content moderator", () => {
       it("flags inappropriate content", async () => {
@@ -307,32 +430,40 @@ describe("Test Custom SDK Logic", () => {
       it("Confirms a domain is available", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("candyDAO");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "candyDAO"
+        );
         expect(available).to.eq(true);
       });
       it("Confirms a domain is not available", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("wilder");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "wilder"
+        );
         expect(available).to.eq(false);
       });
       it("Returns false when network name is too long", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("wilderwilderwilderwilderwilderwilderwilderwilder");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "wilderwilderwilderwilderwilderwilderwilderwilder"
+        );
         expect(available).to.eq(false);
       });
       it("Returns false when network name is empty", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          ""
+        );
         expect(available).to.eq(false);
       });
       it("Gets the price of network domains based on length", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        
+
         let price: string;
-        
+
         // Short is < 4
         price = await sdkInstance.minting.getPriceOfNetworkDomain("can");
         expect(price).to.eq("1.0");
@@ -346,7 +477,9 @@ describe("Test Custom SDK Logic", () => {
       it("Fails to get price when network name is too long", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const price = await sdkInstance.minting.getPriceOfNetworkDomain("wilderwilderwilderwilderwilderwilderwilderwilder");
+        const price = await sdkInstance.minting.getPriceOfNetworkDomain(
+          "wilderwilderwilderwilderwilderwilderwilderwilder"
+        );
         expect(price).to.eq("-1.0");
       });
       it("Fails to get price when network name is empty", async () => {
@@ -358,23 +491,29 @@ describe("Test Custom SDK Logic", () => {
       it("Returns true when a minter who has approved is checked", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approved = await sdkInstance.minting.isMinterApprovedToSpendTokens(astroAccount);
+        const approved =
+          await sdkInstance.minting.isMinterApprovedToSpendTokens(astroAccount);
         expect(approved).to.eq(true);
       });
       it("Returns false when a minter who is not approved is checked", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approved = await sdkInstance.minting.isMinterApprovedToSpendTokens(dummyAccount);
+        const approved =
+          await sdkInstance.minting.isMinterApprovedToSpendTokens(dummyAccount);
         expect(approved).to.eq(false);
       });
       it("Always returns a user's allowance", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approvedDummy = await sdkInstance.minting.getTokenSpendAllowance(dummyAccount);
-        expect(approvedDummy.toString()).to.eq('0');
+        const approvedDummy = await sdkInstance.minting.getTokenSpendAllowance(
+          dummyAccount
+        );
+        expect(approvedDummy.toString()).to.eq("0");
 
-        const approvedAstro = await sdkInstance.minting.getTokenSpendAllowance(astroAccount);
-        expect(approvedAstro.toString()).to.not.eq('0');
+        const approvedAstro = await sdkInstance.minting.getTokenSpendAllowance(
+          astroAccount
+        );
+        expect(approvedAstro.toString()).to.not.eq("0");
       });
     });
   });

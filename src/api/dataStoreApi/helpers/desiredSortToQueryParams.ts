@@ -12,7 +12,8 @@ export const domainSortingOptionsReflection = {
   created: undefined,
   registrar: undefined,
   isValid: false,
-  buyNow: undefined,
+  "buyNow.price": undefined,
+  "buyNow.time": undefined,
 };
 
 export function desiredSortToQueryParams(sort: DomainSortOptions) {
