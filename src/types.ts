@@ -4,6 +4,9 @@ import { Bid, BuyNowListing } from "./zAuction";
 import {
   BuyNowPriceListing,
   DomainSortOptions,
+  MappingResourceAssociations,
+  ResourceAssociation,
+  ResourceRegistry,
 } from "./api/dataStoreApi/types";
 
 export type DexSubgraphUris = Map<string>;
@@ -238,6 +241,20 @@ export interface Instance {
    * @param domainIds Domain ids to get subdomain trading data for
    */
   getDomainMetrics(domainIds: string[]): Promise<DomainMetricsCollection>;
+
+  /**
+   * Gets all the resource associations for a domain
+   * @param domainId Domain id to get resource associations for
+   */
+  getDomainResourceAssociations(
+    domainId: string
+  ): Promise<ResourceAssociation[]>;
+
+  /**
+   * Get resource registry information for a resource type
+   * @param resourceType Resource type to get resource registry for
+   */
+  getResourceRegistry(resourceType: string): Promise<Maybe<ResourceRegistry>>;
 
   /**
    * Mints a new subdomain
@@ -795,6 +812,7 @@ export interface Domain {
   created?: Created;
   isRoot?: boolean;
   buyNow?: BuyNowPriceListing;
+  resources?: MappingResourceAssociations;
 }
 
 export interface DomainMetadata {

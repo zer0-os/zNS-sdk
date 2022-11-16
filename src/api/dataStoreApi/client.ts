@@ -1,7 +1,11 @@
-import { Domain } from "../../types";
+import { Domain, Maybe } from "../../types";
 import * as actions from "./actions";
 import { getLogger } from "../../utilities";
-import { DomainSortOptions } from "./types";
+import {
+  DomainSortOptions,
+  ResourceAssociation,
+  ResourceRegistry
+} from "./types";
 
 const logger = getLogger("api:client");
 
@@ -30,6 +34,12 @@ export interface DataStoreApiClient {
     limit: number,
     skip: number
   ) => Promise<Domain[]>;
+  getDomainResourceAssociations: (
+    domainId: string
+  ) => Promise<ResourceAssociation[]>;
+  getResourceRegistry: (
+    resourceType: string
+  ) => Promise<Maybe<ResourceRegistry>>;
 }
 
 export const createDataStoreApiClient = (
@@ -108,6 +118,26 @@ export const createDataStoreApiClient = (
       );
 
       return domains;
+    },
+
+    getDomainResourceAssociations: async (
+      domainId: string
+    ): Promise<ResourceAssociation[]> => {
+      logger.debug("Calling to getDomainResourceAssociations");
+      const resourceAssociations: ResourceAssociation[] =
+        await actions.getDomainResourceAssociations(apiUri, domainId);
+
+      return resourceAssociations;
+    },
+
+    getResourceRegistry: async (
+      resourceType: string
+    ): Promise<Maybe<ResourceRegistry>> => {
+      logger.debug("Calling to getResourceRegistry");
+      const resourceRegistry: Maybe<ResourceRegistry> =
+        await actions.getResourceRegistry(apiUri, resourceType);
+
+      return resourceRegistry;
     },
   };
 
