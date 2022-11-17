@@ -37,7 +37,7 @@ export interface DataStoreDomain {
   buyNow: BuyNow;
   locked: boolean; // Older domains may not have these properties
   lockedBy: string;
-  resources: MappingResourceAssociations;
+  resources: ResourceAssociations;
 }
 
 export interface BuyNowPriceListing {
@@ -60,7 +60,7 @@ export interface ResourceAssociation extends ResourceRegistry {
   resourceId: string;
 }
 
-export interface MappingResourceAssociations {
+export interface ResourceAssociations {
   [resourceType: string]: ResourceAssociation;
 }
 

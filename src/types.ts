@@ -4,8 +4,8 @@ import { Bid, BuyNowListing } from "./zAuction";
 import {
   BuyNowPriceListing,
   DomainSortOptions,
-  MappingResourceAssociations,
   ResourceAssociation,
+  ResourceAssociations,
   ResourceRegistry,
 } from "./api/dataStoreApi/types";
 
@@ -812,7 +812,7 @@ export interface Domain {
   created?: Created;
   isRoot?: boolean;
   buyNow?: BuyNowPriceListing;
-  resources?: MappingResourceAssociations;
+  resources?: ResourceAssociations;
 }
 
 export interface DomainMetadata {
