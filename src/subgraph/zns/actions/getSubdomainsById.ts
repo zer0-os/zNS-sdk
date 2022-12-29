@@ -11,7 +11,7 @@ export const getSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
   domainId: string
 ): Promise<Domain[]> => {
-  const queryCount = 1000;
+  const queryCount = 999;
   let skip = 0;
   let queriedDomains: DomainDto[] = [];
 
