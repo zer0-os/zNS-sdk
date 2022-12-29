@@ -50,6 +50,8 @@ describe("Test Custom SDK Logic", () => {
     "0x7445164548beaf364109b55d8948f056d6e4f1fd26aff998c9156b0b05f1641f";
   const fakeDomainId =
     "0x1231231231123123123112312312311231231231123123123112312312311231";
+  const wildercats1Id =
+    "0x6b2879c615f5d2dad3fb24438c6cc763d0f00c838491072b8cc20a1f16aa0f81"; // domain with no subdomains - wilder.cats.1
 
   const astroAccount = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
   const dummyAccount = "0xa74b2de2D65809C613010B3C8Dc653379a63C55b";
@@ -143,6 +145,23 @@ describe("Test Custom SDK Logic", () => {
           false
         );
         expect(subdomains.length).to.not.eq(0);
+      });
+
+      it("Returns empty array for domains that have no subdomains", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wildercats1Id,
+          100,
+          0
+        );
+        expect(subdomains.length).to.eq(0);
+      });
+      it("Returns empty array for domains that have no subdomains through the subgraph", async () => {
+        const sdkInstance = await zNSSDK.createInstance(config);
+        const subdomains = await sdkInstance.getSubdomainsById(
+          wildercats1Id,
+          false
+        );
+        expect(subdomains.length).to.eq(0);
       });
     });
     describe("get domains", () => {
@@ -307,32 +326,40 @@ describe("Test Custom SDK Logic", () => {
       it("Confirms a domain is available", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("candyDAO");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "candyDAO"
+        );
         expect(available).to.eq(true);
       });
       it("Confirms a domain is not available", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("wilder");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "wilder"
+        );
         expect(available).to.eq(false);
       });
       it("Returns false when network name is too long", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("wilderwilderwilderwilderwilderwilderwilderwilder");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "wilderwilderwilderwilderwilderwilderwilderwilder"
+        );
         expect(available).to.eq(false);
       });
       it("Returns false when network name is empty", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          ""
+        );
         expect(available).to.eq(false);
       });
       it("Gets the price of network domains based on length", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        
+
         let price: string;
-        
+
         // Short is < 4
         price = await sdkInstance.minting.getPriceOfNetworkDomain("can");
         expect(price).to.eq("1.0");
@@ -346,7 +373,9 @@ describe("Test Custom SDK Logic", () => {
       it("Fails to get price when network name is too long", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const price = await sdkInstance.minting.getPriceOfNetworkDomain("wilderwilderwilderwilderwilderwilderwilderwilder");
+        const price = await sdkInstance.minting.getPriceOfNetworkDomain(
+          "wilderwilderwilderwilderwilderwilderwilderwilder"
+        );
         expect(price).to.eq("-1.0");
       });
       it("Fails to get price when network name is empty", async () => {
@@ -358,23 +387,29 @@ describe("Test Custom SDK Logic", () => {
       it("Returns true when a minter who has approved is checked", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approved = await sdkInstance.minting.isMinterApprovedToSpendTokens(astroAccount);
+        const approved =
+          await sdkInstance.minting.isMinterApprovedToSpendTokens(astroAccount);
         expect(approved).to.eq(true);
       });
       it("Returns false when a minter who is not approved is checked", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approved = await sdkInstance.minting.isMinterApprovedToSpendTokens(dummyAccount);
+        const approved =
+          await sdkInstance.minting.isMinterApprovedToSpendTokens(dummyAccount);
         expect(approved).to.eq(false);
       });
       it("Always returns a user's allowance", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approvedDummy = await sdkInstance.minting.getTokenSpendAllowance(dummyAccount);
-        expect(approvedDummy.toString()).to.eq('0');
+        const approvedDummy = await sdkInstance.minting.getTokenSpendAllowance(
+          dummyAccount
+        );
+        expect(approvedDummy.toString()).to.eq("0");
 
-        const approvedAstro = await sdkInstance.minting.getTokenSpendAllowance(astroAccount);
-        expect(approvedAstro.toString()).to.not.eq('0');
+        const approvedAstro = await sdkInstance.minting.getTokenSpendAllowance(
+          astroAccount
+        );
+        expect(approvedAstro.toString()).to.not.eq("0");
       });
     });
   });

@@ -11,7 +11,7 @@ export const getSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
   domainId: string
 ): Promise<Domain[]> => {
-  const queryCount = 999;
+  const queryCount = 1000;
   let skip = 0;
   let queriedDomains: DomainDto[] = [];
 
@@ -34,12 +34,16 @@ export const getSubdomainsById = async <T>(
     );
 
     queriedDomains = queryResult.data.domains;
-    if (queriedDomains.length === 0) {
-      return [] as Domain[];
-    }
+    
     for (const domain of queriedDomains) {
       domains.push(convertDomainDtoToDomain(domain));
     }
+
+    // If there were no new queried domains, we can stop querying
+    if (queriedDomains.length === 0) {
+      return domains
+    }
+    
     skip = parseInt(queriedDomains[queriedDomains.length - 1].indexId);
   } while (queriedDomains.length >= queryCount);
 
