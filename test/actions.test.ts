@@ -144,22 +144,6 @@ describe("Test Custom SDK Logic", () => {
         );
         expect(subdomains.length).to.not.eq(0);
       });
-      it("Returns empty array for domains that have no subdomains", async () => {
-        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
-          meowDomainId,
-          100,
-          0
-        );
-        expect(subdomains.length).to.eq(0);
-      });
-      it("Returns empty array for domains that have no subdomains through the subgraph", async () => {
-        const sdkInstance = await zNSSDK.createInstance(config);
-        const subdomains = await sdkInstance.getSubdomainsById(
-          meowDomainId,
-          false
-        );
-        expect(subdomains.length).to.eq(0);
-      });
     });
     describe("get domains", () => {
       it("gets most recent domains", async () => {
