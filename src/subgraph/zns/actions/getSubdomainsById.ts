@@ -4,6 +4,7 @@ import { getLogger } from "../../../utilities";
 import * as queries from "../queries";
 import { DomainDto, DomainsQueryDto } from "../types";
 import { convertDomainDtoToDomain, performQuery } from "../../helpers";
+import { getSubdomainsByIdDefaultQueryCount } from "./defaults";
 
 const logger = getLogger().withTag("subgraph:actions:getSubdomainsById");
 
@@ -11,7 +12,7 @@ export const getSubdomainsById = async <T>(
   apolloClient: ApolloClient<T>,
   domainId: string
 ): Promise<Domain[]> => {
-  const queryCount = 1000;
+  const queryCount = getSubdomainsByIdDefaultQueryCount();
   let skip = 0;
   let queriedDomains: DomainDto[] = [];
 
@@ -41,9 +42,10 @@ export const getSubdomainsById = async <T>(
 
     // If there were no new queried domains, we can stop querying
     if (queriedDomains.length === 0) {
+      logger.trace(`Found ${domains.length} subdomains of ${domainId}`);
       return domains
     }
-    
+
     skip = parseInt(queriedDomains[queriedDomains.length - 1].indexId);
   } while (queriedDomains.length >= queryCount);
 
