@@ -30,7 +30,7 @@ const enum ChainId {
   kovan = 42,
 }
 
-describe.only("Test Custom SDK Logic", () => {
+describe("Test Custom SDK Logic", () => {
   const provider = new ethers.providers.StaticJsonRpcProvider(
     process.env["INFURA_URL"],
     ChainId.goerli
