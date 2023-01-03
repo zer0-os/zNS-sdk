@@ -16,6 +16,8 @@ import { BuyNowListing } from "@zero-tech/zauction-sdk";
 import { assert } from "console";
 import { generateDefaultMetadata } from "../src/actions";
 import { domainSortingOptionsReflection } from "../src/api/dataStoreApi/helpers/desiredSortToQueryParams";
+import * as subgraphActionDefaults from "../src//subgraph/zns/actions/defaults";
+import Sinon from "sinon";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -50,6 +52,9 @@ describe("Test Custom SDK Logic", () => {
     "0x7445164548beaf364109b55d8948f056d6e4f1fd26aff998c9156b0b05f1641f";
   const fakeDomainId =
     "0x1231231231123123123112312312311231231231123123123112312312311231";
+  const wildercats1Id =
+    "0x6b2879c615f5d2dad3fb24438c6cc763d0f00c838491072b8cc20a1f16aa0f81"; // domain with no subdomains - wilder.cats.1
+  const wapesId = "0xe5a72b935210b1d06e09b860d705571d5471274d31b10d8427341334b4bf4649" // domain with 1 subdomain - wilder.beaststestdrop.wape
 
   const astroAccount = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
   const dummyAccount = "0xa74b2de2D65809C613010B3C8Dc653379a63C55b";
@@ -143,6 +148,43 @@ describe("Test Custom SDK Logic", () => {
           false
         );
         expect(subdomains.length).to.not.eq(0);
+      });
+
+      it("Returns empty array for domains that have no subdomains", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wildercats1Id,
+          100,
+          0
+        );
+        expect(subdomains.length).to.eq(0);
+      });
+      it("Returns empty array for domains that have no subdomains through the subgraph", async () => {
+        const sdkInstance = await zNSSDK.createInstance(config);
+
+        const subdomains = await sdkInstance.getSubdomainsById(
+          wildercats1Id,
+          false
+        );
+
+        expect(subdomains.length).to.eq(0);
+      });
+
+      it("Returns results from subgraph when available subdomain results is exactly query count", async () => {
+        let queryCountStub = Sinon.stub(
+          subgraphActionDefaults,
+          "getSubdomainsByIdDefaultQueryCount"
+        );
+
+        queryCountStub.returns(1);
+        const sdkInstance = await zNSSDK.createInstance(config);
+
+        const subdomains = await sdkInstance.getSubdomainsById(
+          wapesId,
+          false
+        );
+
+        expect(subdomains.length).to.eq(1);
+        queryCountStub.restore();
       });
     });
     describe("Get domains", () => {
