@@ -84,7 +84,7 @@ export const createDataStoreApiClient = (
       sort?: DomainSortOptions
     ) => {
       logger.debug("Calling to getSubdomainsByIdDeep");
-      const domains: Domain[] = await actions.getSubdomainsById(
+      const domains: Domain[] = await actions.getSubdomainsByIdDeep(
         apiUri,
         tokenId,
         limit,
