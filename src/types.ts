@@ -181,13 +181,15 @@ export interface Instance {
    * @param limit: Default: 100 | Limit the results returned, useful for pagination. Set 0 for no limit.
    * @param skip: Default: 0 | Skip part of the result set, useful for pagination
    * @param sort: Optional | Specify the sort order of result sets returned by a specific property
+   * @param nameFilter: Filter results by name property (contains search) 
    */
   getSubdomainsById(
     domainId: string,
     useDataStoreAPI?: boolean,
     limit?: number,
     skip?: number,
-    sort?: DomainSortOptions
+    sort?: DomainSortOptions,
+    nameFilter?: string
   ): Promise<Domain[]>;
 
   /**
@@ -197,12 +199,15 @@ export interface Instance {
    * @param limit: Default: 100 | Limit the results returned, useful for pagination. Set 0 for no limit.
    * @param skip: Default: 0 | Skip part of the result set, useful for pagination
    * @param sort: Optional | Specify the sort order of result sets returned by a specific property
+   * @param nameFilter: Filter results by name property (contains search) 
+
    */
   getSubdomainsByIdDeep(
     domainId: string,
     limit?: number,
     skip?: number,
-    sort?: DomainSortOptions
+    sort?: DomainSortOptions,
+    nameFilter?: string
   ): Promise<Domain[]>;
 
   /**

@@ -1,4 +1,4 @@
-import { Domain } from "../../types";
+import { Domain, Maybe } from "../../types";
 import * as actions from "./actions";
 import { getLogger } from "../../utilities";
 import { DomainSortOptions } from "./types";
@@ -17,13 +17,15 @@ export interface DataStoreApiClient {
     tokenId: string,
     limit: number,
     skip: number,
-    sort?: DomainSortOptions
+    sort?: DomainSortOptions,
+    nameFilter?: string,
   ) => Promise<Domain[]>;
   getSubdomainsByIdDeep: (
     tokenId: string,
     limit: number,
     skip: number,
-    sort?: DomainSortOptions
+    sort?: DomainSortOptions,
+    nameFilter?: string,
   ) => Promise<Domain[]>;
   getMostRecentSubdomainsById: (
     tokenId: string,
@@ -64,7 +66,8 @@ export const createDataStoreApiClient = (
       tokenId: string,
       limit: number,
       skip: number,
-      sort?: DomainSortOptions
+      sort?: DomainSortOptions,
+      nameFilter?: string
     ) => {
       logger.debug("Calling to getSubdomainsById");
       const domains: Domain[] = await actions.getSubdomainsById(
@@ -72,7 +75,8 @@ export const createDataStoreApiClient = (
         tokenId,
         limit,
         skip,
-        sort
+        sort,
+        nameFilter,
       );
 
       return domains;
@@ -81,7 +85,8 @@ export const createDataStoreApiClient = (
       tokenId: string,
       limit: number,
       skip: number,
-      sort?: DomainSortOptions
+      sort?: DomainSortOptions,
+      nameFilter?: string
     ) => {
       logger.debug("Calling to getSubdomainsByIdDeep");
       const domains: Domain[] = await actions.getSubdomainsByIdDeep(
@@ -89,7 +94,8 @@ export const createDataStoreApiClient = (
         tokenId,
         limit,
         skip,
-        sort
+        sort,
+        nameFilter,
       );
 
       return domains;

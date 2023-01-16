@@ -9,7 +9,8 @@ export const getSubdomainsById = async (
   tokenId: string,
   limit = 100,
   skip = 0,
-  sort?: DomainSortOptions
+  sort?: DomainSortOptions,
+  nameFilter?: string
 ): Promise<Domain[]> => {
   let response: Maybe<DomainCollection>;
   let sortBy = "";
@@ -25,6 +26,9 @@ export const getSubdomainsById = async (
     let requestUri = `${apiUri}v1/domains/subdomains/${tokenId}?skip=${skip}&limit=${limit}`;
     if (sortBy && sortDirections) {
       requestUri += `&${sortBy}&${sortDirections}`;
+    }
+    if (nameFilter) {
+      requestUri += `&name=${nameFilter}`
     }
 
     response = await makeApiCall<DomainCollection>(requestUri, "GET");
