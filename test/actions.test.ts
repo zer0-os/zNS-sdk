@@ -140,6 +140,19 @@ describe("Test Custom SDK Logic", () => {
         expect(subdomains[1].name).to.eq("wilder.moto")
       });
 
+      it("Returns subdomains deep filtered by name descending", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsByIdDeep(
+          wilderDomainId,
+          100,
+          0,
+          { "name": "desc"},
+          "wa"
+        );
+        expect(subdomains.length).to.not.eq(0);
+        expect(subdomains[0].name).to.eq("wilder.ultra-beasts.wapes"),
+        expect(subdomains[subdomains.length - 1].name).to.eq("wilder.beaststestdrop.wape")
+      });
+
       it("Returns a number of subdomains that isn't 0", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
           wilderDomainId,
