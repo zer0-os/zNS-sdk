@@ -101,31 +101,43 @@ describe("Test Custom SDK Logic", () => {
         expect(metadata).contains("ipfs://Qm");
       });
     });
+    
+    describe("Action options", () => {
+      // https://wilderworld.atlassian.net/browse/MUD-91
+      xit("Returns all results via data store when limit is 0", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          100,
+          0,
+        );
+      })
+    })
+
     describe("getSubdomainsById", () => {
       it("Returns subdomains filtered by name aescending", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
           wilderDomainId,
-          0,
+          100,
           0,
           { "name": "asc"},
           "wilder.m"
         );
         expect(subdomains.length).to.eq(2);
-        expect(subdomains[0].name).to.eq("moto"),
-        expect(subdomains[0].name).to.eq("mountain")
+        expect(subdomains[0].name).to.eq("wilder.moto"),
+        expect(subdomains[1].name).to.eq("wilder.mountains")
       });
 
       it("Returns subdomains filtered by name descending", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
           wilderDomainId,
-          0,
+          100,
           0,
           { "name": "desc"},
           "wilder.m"
         );
         expect(subdomains.length).to.eq(2);
-        expect(subdomains[0].name).to.eq("mountain"),
-        expect(subdomains[0].name).to.eq("moto")
+        expect(subdomains[0].name).to.eq("wilder.mountains"),
+        expect(subdomains[1].name).to.eq("wilder.moto")
       });
 
       it("Returns a number of subdomains that isn't 0", async () => {
@@ -146,15 +158,16 @@ describe("Test Custom SDK Logic", () => {
         );
         expect(subdomains.length).to.not.eq(0);
 
-        // awaiting ds bug fix..
-        // for (const key of supportedSortProps) {
-        //   const subdomains: Domain[] =
-        //     await dataStoreApiClient.getSubdomainsById(wilderDomainId, 100, 0, {
-        //       [key]: 1,
-        //     });
-
-        //   expect(subdomains.length).to.not.eq(0);
-        // }
+        for (const key of supportedSortProps) {
+          const subdomains: Domain[] =
+            await dataStoreApiClient.getSubdomainsById(wilderDomainId, 100, 0, {
+              [key]: "asc",
+            });
+          if(subdomains.length === 0) {
+            console.log(key);
+          }
+          expect(subdomains.length).to.not.eq(0);
+        }
       });
 
       it("Return subdomains deep sorted by a domain property", async () => {
