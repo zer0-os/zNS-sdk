@@ -46,7 +46,11 @@ import {
   DomainPurchaserConfig,
   NetworkDomainMintableConfig,
 } from "./actions/minting/types";
-import { DomainSortOptions } from "./api/dataStoreApi/types";
+import {
+  DomainSortOptions,
+  ResourceAssociation,
+  ResourceRegistry,
+} from "./api/dataStoreApi/types";
 
 export * from "./types";
 export { configuration };
@@ -189,6 +193,16 @@ export const createInstance = (config: Config): Instance => {
     getAllDomains: subgraphClient.getAllDomains,
     getDomainMetrics: async (domainIds: string[]) =>
       getDomainMetrics(config.metricsUri, domainIds),
+    getDomainResourceAssociations: async (
+      domainId: string
+    ): Promise<ResourceAssociation[]> => {
+      return await dataStoreApiClient.getDomainResourceAssociations(domainId);
+    },
+    getResourceRegistry: async (
+      resourceType: string
+    ): Promise<Maybe<ResourceRegistry>> => {
+      return await dataStoreApiClient.getResourceRegistry(resourceType);
+    },
     mintSubdomain: async (
       params: SubdomainParams,
       signer: ethers.Signer,

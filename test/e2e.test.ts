@@ -62,11 +62,14 @@ describe("SDK test", () => {
     const info = await sdk.zauction.getPaymentTokenInfo(tokenOnUniNotCG);
     expect(info.symbol).to.eq("SHKOOBYSHNAX");
   });
-  it("Reaches out to Sushiswap for a coin that's not on Uniswap", async () => {
+
+  // Sushiswap subgraph no longer exists, so these tests are disabled until a new backup for token info is found.
+  // See https://wilderworld.atlassian.net/browse/MUD-210
+  xit("Reaches out to Sushiswap for a coin that's not on Uniswap", async () => {
     const info = await sdk.zauction.getPaymentTokenInfo(tokenOnSushiNotUni);
     expect(info.symbol).to.eq("KING");
   });
-  it("Fails when token is not found", async () => {
+  xit("Fails when token is not found", async () => {
     return await sdk.zauction.getPaymentTokenInfo(randomToken)
       .catch(error => {
         const expectedMessage = `Token info with address ${randomToken} could not be found`;

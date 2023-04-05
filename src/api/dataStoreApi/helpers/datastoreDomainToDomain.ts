@@ -22,6 +22,7 @@ export function datastoreDomainToDomain(d: DataStoreDomain): Domain {
     contract: d.registrar.toLowerCase(),
     isRoot: d.isRoot,
     buyNow: buyNow,
+    resources: d.resources,
   };
   return domain;
 }
