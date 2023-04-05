@@ -121,7 +121,8 @@ export const createInstance = (config: Config): Instance => {
       useDataStoreAPI = true,
       limit = 100,
       skip = 0,
-      sort?: DomainSortOptions
+      sort?: DomainSortOptions,
+      nameFilter?: string
     ): Promise<Domain[]> => {
       let domains: Domain[];
       if (useDataStoreAPI) {
@@ -129,9 +130,13 @@ export const createInstance = (config: Config): Instance => {
           domainId,
           limit,
           skip,
-          sort
+          sort,
+          nameFilter
         );
       } else {
+        if (nameFilter) {
+          console.log("Warning, using subgraph. Filter will have no affect.")
+        }
         domains = await subgraphClient.getSubdomainsById(domainId);
       }
       return domains;
@@ -140,13 +145,15 @@ export const createInstance = (config: Config): Instance => {
       domainId: string,
       limit = 100,
       skip = 0,
-      sort?: DomainSortOptions
+      sort?: DomainSortOptions,
+      nameFilter?: string
     ): Promise<Domain[]> => {
       const domains = await dataStoreApiClient.getSubdomainsByIdDeep(
         domainId,
         limit,
         skip,
-        sort
+        sort,
+        nameFilter
       );
 
       return domains;

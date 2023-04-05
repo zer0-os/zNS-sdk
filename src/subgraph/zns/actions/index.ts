@@ -7,3 +7,4 @@ export * from "./getDomainsByOwner";
 export * from "./getMostRecentDomains";
 export * from "./getMostRecentSubdomainsById";
 export * from "./getSubdomainsById";
+export * from "./defaults"

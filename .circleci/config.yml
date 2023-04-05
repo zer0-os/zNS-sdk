@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.7.0
+  node: circleci/node@5.1.0
 
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/node:14.17.5
+    - image: cimg/node:18.12
 
 jobs:
   build:
@@ -33,6 +33,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Run Lint
           command: yarn run lint
   test:
     <<: *defaults
@@ -40,49 +41,26 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Run Tests
           command: yarn run test
+
 workflows:
   version: 2
-  build:
+  build_test_publish:
     jobs:
-      - build:
-          filters:
-            branches:
-              ignore: master
+      - build
       - lint:
           requires:
             - build
-          filters:
-            branches:
-              ignore: master
       - test:
           requires:
-            - build
+            - lint
+      - publish:
+          context: NPM_Publish
+          requires:
+            - test
           filters:
-            branches:
-              ignore: master
-  production:
-    jobs:
-      - build:
-          filters:
-            &filters-production # this yaml anchor is setting these values to "filters-production"
             branches:
               ignore: /.*/
             tags:
               only: /^v.*/
-      - lint:
-          requires:
-            - build
-          filters:
-            <<: *filters-production # this is calling the previously set yaml anchor
-      - test:
-          requires:
-            - build
-          filters:
-            <<: *filters-production # this is calling the previously set yaml anchor
-      - publish:
-          context: NPM_Publish
-          requires:
-            - lint
-          filters:
-            <<: *filters-production # this is calling the previously set yaml anchor

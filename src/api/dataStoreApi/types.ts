@@ -111,5 +111,6 @@ export type DomainSortOptions = {
   royaltyAmount?: "asc" | "desc";
   registrar?: "asc" | "desc";
   isValid?: "asc" | "desc";
-  buyNow?: "asc" | "desc";
+  "buyNow.price"?: "asc" | "desc";
+  "buyNow.time"?: "asc" | "desc";
 };

@@ -16,6 +16,8 @@ import { BuyNowListing } from "@zero-tech/zauction-sdk";
 import { assert } from "console";
 import { generateDefaultMetadata } from "../src/actions";
 import { domainSortingOptionsReflection } from "../src/api/dataStoreApi/helpers/desiredSortToQueryParams";
+import * as subgraphActionDefaults from "../src//subgraph/zns/actions/defaults";
+import Sinon from "sinon";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -50,6 +52,10 @@ describe("Test Custom SDK Logic", () => {
     "0x7445164548beaf364109b55d8948f056d6e4f1fd26aff998c9156b0b05f1641f";
   const fakeDomainId =
     "0x1231231231123123123112312312311231231231123123123112312312311231";
+  const wildercats1Id =
+    "0x6b2879c615f5d2dad3fb24438c6cc763d0f00c838491072b8cc20a1f16aa0f81"; // domain with no subdomains - wilder.cats.1
+  const wapesId =
+    "0xe5a72b935210b1d06e09b860d705571d5471274d31b10d8427341334b4bf4649"; // domain with 1 subdomain - wilder.beaststestdrop.wape
 
   const astroAccount = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
   const dummyAccount = "0xa74b2de2D65809C613010B3C8Dc653379a63C55b";
@@ -95,7 +101,58 @@ describe("Test Custom SDK Logic", () => {
         expect(metadata).contains("ipfs://Qm");
       });
     });
+    
+    describe("Action options", () => {
+      // https://wilderworld.atlassian.net/browse/MUD-91
+      xit("Returns all results via data store when limit is 0", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          100,
+          0,
+        );
+      })
+    })
+
     describe("getSubdomainsById", () => {
+      it("Returns subdomains filtered by name aescending", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          100,
+          0,
+          { "name": "asc"},
+          "wilder.m"
+        );
+        expect(subdomains.length).to.eq(2);
+        expect(subdomains[0].name).to.eq("wilder.moto"),
+        expect(subdomains[1].name).to.eq("wilder.mountains")
+      });
+
+      it("Returns subdomains filtered by name descending", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
+          wilderDomainId,
+          100,
+          0,
+          { "name": "desc"},
+          "wilder.m"
+        );
+        expect(subdomains.length).to.eq(2);
+        expect(subdomains[0].name).to.eq("wilder.mountains"),
+        expect(subdomains[1].name).to.eq("wilder.moto")
+      });
+
+      it("Returns subdomains deep filtered by name descending", async () => {
+        const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsByIdDeep(
+          wilderDomainId,
+          100,
+          0,
+          { "name": "desc"},
+          "wa"
+        );
+        expect(subdomains.length).to.not.eq(0);
+        expect(subdomains[0].name).to.eq("wilder.ultra-beasts.wapes"),
+        expect(subdomains[subdomains.length - 1].name).to.eq("wilder.beaststestdrop.wape")
+      });
+
       it("Returns a number of subdomains that isn't 0", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
           wilderDomainId,
@@ -114,15 +171,16 @@ describe("Test Custom SDK Logic", () => {
         );
         expect(subdomains.length).to.not.eq(0);
 
-        // awaiting ds bug fix..
-        // for (const key of supportedSortProps) {
-        //   const subdomains: Domain[] =
-        //     await dataStoreApiClient.getSubdomainsById(wilderDomainId, 100, 0, {
-        //       [key]: 1,
-        //     });
-
-        //   expect(subdomains.length).to.not.eq(0);
-        // }
+        for (const key of supportedSortProps) {
+          const subdomains: Domain[] =
+            await dataStoreApiClient.getSubdomainsById(wilderDomainId, 100, 0, {
+              [key]: "asc",
+            });
+          if(subdomains.length === 0) {
+            console.log(key);
+          }
+          expect(subdomains.length).to.not.eq(0);
+        }
       });
 
       it("Return subdomains deep sorted by a domain property", async () => {
@@ -131,7 +189,7 @@ describe("Test Custom SDK Logic", () => {
           wilderDomainId,
           0,
           0,
-          { buyNow: "asc" }
+          { "buyNow.price": "asc" }
         );
         expect(subdomains.length).to.not.eq(0);
       });
@@ -144,9 +202,10 @@ describe("Test Custom SDK Logic", () => {
         );
         expect(subdomains.length).to.not.eq(0);
       });
+
       it("Returns empty array for domains that have no subdomains", async () => {
         const subdomains: Domain[] = await dataStoreApiClient.getSubdomainsById(
-          meowDomainId,
+          wildercats1Id,
           100,
           0
         );
@@ -154,26 +213,43 @@ describe("Test Custom SDK Logic", () => {
       });
       it("Returns empty array for domains that have no subdomains through the subgraph", async () => {
         const sdkInstance = await zNSSDK.createInstance(config);
+
         const subdomains = await sdkInstance.getSubdomainsById(
-          meowDomainId,
+          wildercats1Id,
           false
         );
+
         expect(subdomains.length).to.eq(0);
       });
+
+      it("Returns results from subgraph when available subdomain results is exactly query count", async () => {
+        let queryCountStub = Sinon.stub(
+          subgraphActionDefaults,
+          "getSubdomainsByIdDefaultQueryCount"
+        );
+
+        queryCountStub.returns(1);
+        const sdkInstance = await zNSSDK.createInstance(config);
+
+        const subdomains = await sdkInstance.getSubdomainsById(wapesId, false);
+
+        expect(subdomains.length).to.eq(1);
+        queryCountStub.restore();
+      });
     });
-    describe("get domains", () => {
-      it("gets most recent domains", async () => {
+    describe("Get domains", () => {
+      it("Gets most recent domains", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         const domains = await sdkInstance.getMostRecentDomains(10, 0);
         expect(domains.length).to.equal(10);
       });
-      it("cannot get over 5000 most recent domains", async () => {
+      it("Cannot get over 5000 most recent domains", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         expect(sdkInstance.getMostRecentDomains(5000, 0)).to.eventually.throw(
           Error
         );
       });
-      it("gets most recent subdomains", async () => {
+      it("Gets most recent subdomains", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         const domains = await sdkInstance.getMostRecentSubdomainsById(
           wilderDomainId,
@@ -183,7 +259,7 @@ describe("Test Custom SDK Logic", () => {
         );
         expect(domains.length).to.equal(2);
       });
-      it("gets most recent subdomains via the data store", async () => {
+      it("Gets most recent subdomains via the data store", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
         const domains = await sdkInstance.getMostRecentSubdomainsById(
           wilderDomainId,
@@ -288,6 +364,125 @@ describe("Test Custom SDK Logic", () => {
         expect(metricsCollection).to.be.not.null;
       });
     });
+    describe("Sort domains by order", async () => {
+      it("Sort domains by buyNow.price when get subdomains by domain Id", async () => {
+        const subDomainsDesc: Domain[] =
+          await dataStoreApiClient.getSubdomainsById(wilderDomainId, 0, 0, {
+            "buyNow.price": "desc",
+          });
+
+        let prevDomain: Domain = subDomainsDesc[0];
+        expect(
+          subDomainsDesc.reduce((prev: boolean, currentDomain: Domain) => {
+            if (!prevDomain.buyNow || !currentDomain.buyNow) {
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow.price).gte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+
+        const subDomainsAsc: Domain[] =
+          await dataStoreApiClient.getSubdomainsById(wilderDomainId, 0, 0, {
+            "buyNow.price": "asc",
+          });
+
+        prevDomain = subDomainsAsc[0];
+        expect(
+          subDomainsAsc.reduce((prev: boolean, currentDomain: Domain) => {
+            if (!prevDomain.buyNow || !currentDomain.buyNow) {
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow.price).lte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+      });
+      // broken in prod, disabling until fix identified
+      xit("Sort domains by buyNow.time when get subdomains by domain Id", async () => {
+        const wilder_boat_notreal =
+          "0x6f0975dc0b1afae3543b5ec60b4ff289a8b7fe9ed9afe026436ff6dcbdd646e4";
+        const subDomainsDesc: Domain[] =
+          await dataStoreApiClient.getSubdomainsByIdDeep(
+            wilderDomainId,
+            100,
+            0,
+            {
+              "buyNow.time": "desc",
+            }
+          );
+
+        let prevDomain: Domain = subDomainsDesc[0];
+        expect(
+          subDomainsDesc.reduce((prev: boolean, currentDomain: Domain) => {
+            // buyNow.time should be applied on active buyNow
+            // check `datastoreDomainToDomain()` function
+            if (!prevDomain.buyNow && currentDomain.buyNow) {
+              return false;
+            }
+
+            if (!currentDomain.buyNow) {
+              prevDomain = currentDomain;
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow!.price).gte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+
+        const subDomainsAsc: Domain[] =
+          await dataStoreApiClient.getSubdomainsByIdDeep(
+            wilderDomainId,
+            100,
+            0,
+            {
+              "buyNow.time": "asc",
+            }
+          );
+
+        prevDomain = subDomainsAsc[0];
+        expect(
+          subDomainsAsc.reduce((prev: boolean, currentDomain: Domain) => {
+            // buyNow.time should be applied on active buyNow
+            // check `datastoreDomainToDomain()` function
+            if (!prevDomain.buyNow && currentDomain.buyNow) {
+              return false;
+            }
+
+            if (!currentDomain.buyNow) {
+              prevDomain = currentDomain;
+              return prev;
+            }
+
+            const compared =
+              prev &&
+              ethers.BigNumber.from(prevDomain.buyNow!.price).lte(
+                ethers.BigNumber.from(currentDomain.buyNow.price)
+              );
+            prevDomain = currentDomain;
+            return compared;
+          }, true)
+        ).to.be.eq(true);
+      });
+    });
 
     describe("content moderator", () => {
       it("flags inappropriate content", async () => {
@@ -323,32 +518,40 @@ describe("Test Custom SDK Logic", () => {
       it("Confirms a domain is available", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("candyDAO");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "candyDAO"
+        );
         expect(available).to.eq(true);
       });
       it("Confirms a domain is not available", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("wilder");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "wilder"
+        );
         expect(available).to.eq(false);
       });
       it("Returns false when network name is too long", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("wilderwilderwilderwilderwilderwilderwilderwilder");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          "wilderwilderwilderwilderwilderwilderwilderwilder"
+        );
         expect(available).to.eq(false);
       });
       it("Returns false when network name is empty", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const available = await sdkInstance.minting.isNetworkDomainAvailable("");
+        const available = await sdkInstance.minting.isNetworkDomainAvailable(
+          ""
+        );
         expect(available).to.eq(false);
       });
       it("Gets the price of network domains based on length", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
-        
+
         let price: string;
-        
+
         // Short is < 4
         price = await sdkInstance.minting.getPriceOfNetworkDomain("can");
         expect(price).to.eq("1.0");
@@ -362,7 +565,9 @@ describe("Test Custom SDK Logic", () => {
       it("Fails to get price when network name is too long", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const price = await sdkInstance.minting.getPriceOfNetworkDomain("wilderwilderwilderwilderwilderwilderwilderwilder");
+        const price = await sdkInstance.minting.getPriceOfNetworkDomain(
+          "wilderwilderwilderwilderwilderwilderwilderwilder"
+        );
         expect(price).to.eq("-1.0");
       });
       it("Fails to get price when network name is empty", async () => {
@@ -374,23 +579,29 @@ describe("Test Custom SDK Logic", () => {
       it("Returns true when a minter who has approved is checked", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approved = await sdkInstance.minting.isMinterApprovedToSpendTokens(astroAccount);
+        const approved =
+          await sdkInstance.minting.isMinterApprovedToSpendTokens(astroAccount);
         expect(approved).to.eq(true);
       });
       it("Returns false when a minter who is not approved is checked", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approved = await sdkInstance.minting.isMinterApprovedToSpendTokens(dummyAccount);
+        const approved =
+          await sdkInstance.minting.isMinterApprovedToSpendTokens(dummyAccount);
         expect(approved).to.eq(false);
       });
       it("Always returns a user's allowance", async () => {
         const sdkInstance = zNSSDK.createInstance(config);
 
-        const approvedDummy = await sdkInstance.minting.getTokenSpendAllowance(dummyAccount);
-        expect(approvedDummy.toString()).to.eq('0');
+        const approvedDummy = await sdkInstance.minting.getTokenSpendAllowance(
+          dummyAccount
+        );
+        expect(approvedDummy.toString()).to.eq("0");
 
-        const approvedAstro = await sdkInstance.minting.getTokenSpendAllowance(astroAccount);
-        expect(approvedAstro.toString()).to.not.eq('0');
+        const approvedAstro = await sdkInstance.minting.getTokenSpendAllowance(
+          astroAccount
+        );
+        expect(approvedAstro.toString()).to.not.eq("0");
       });
     });
   });
